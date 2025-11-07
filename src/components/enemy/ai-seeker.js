@@ -1,30 +1,28 @@
 import { tweens } from '../../helpers/tweens';
+import { ROLE_SEEKER } from '../../models/game-const';
 import { SightRange } from '../sight-range';
 import { Enemy } from './enemy';
 
 export class AISeeker extends Enemy {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
-        this.role = 'seeker';
+        this.role = ROLE_SEEKER;
     }
 
-    init(parent, enemiesData, aiSeekerData) {
-        super.init(parent, enemiesData);
+    init() {
+        super.init();
 
         this.addSightRange();
     }
 
     addSightRange() {
-        const range = new SightRange();
-        range.init(this.group);
-        this.sightRange = range;
+        this.sightRange = new SightRange();
+        this.sightRange.init(this.group);
     }
 
     updateSightRange(walls, enemies, player) {
-        if (this.sightRange) {
-            this.sightRange.update(walls, enemies, player);
-        }
+        this.sightRange?.update(walls, enemies, player);
     }
 
     tutorialAnimation() {
@@ -32,9 +30,17 @@ export class AISeeker extends Enemy {
         const el = this.group.getObjectByName('mixamorig_Spine2');
         // const el = this.group
         const time = 1000;
-        const props = { repeat: -1, yoyo: true, repeatDelay: 500, easing: 'sineInOut' };
+        const props = {
+            repeat: -1,
+            yoyo: true,
+            repeatDelay: 500,
+            easing: 'sineInOut',
+        };
         const t = tweens.add(el.rotation, { y: -1 }, time * 0.5);
-        const t2 = tweens.add(el.rotation, { y: 1 }, time, { ...props, autostart: false });
+        const t2 = tweens.add(el.rotation, { y: 1 }, time, {
+            ...props,
+            autostart: false,
+        });
         this.tutorialTween = t;
 
         t.onComplete(() => {

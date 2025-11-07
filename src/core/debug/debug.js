@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import GUI from 'lil-gui';
 import { DebugGUI } from './debug.gui.js';
 import { DebugOrbitControls } from './debug.orbit-controls.js';
@@ -53,7 +52,9 @@ class Debug {
         const options = { ...this.defaultOptions, ...props };
         const keys = Object.keys(options);
 
-        keys.filter((key) => options[key] && this.controls[key]?.action).forEach((key) => {
+        keys.filter(
+            (key) => options[key] && this.controls[key]?.action,
+        ).forEach((key) => {
             this.controls[key].action(this);
         });
 
@@ -85,7 +86,9 @@ class Debug {
             scene: new DebugScene(this.panel, (t) => this.onAction('scene', t)),
             orbit: new DebugOrbitControls(),
             physics: new DebugPhysics(),
-            transform: new DebugTransformControls((t) => this.onAction('transform', t)),
+            transform: new DebugTransformControls((t) =>
+                this.onAction('transform', t),
+            ),
             select: new DebugSelectObject((t) => this.onAction('select', t)),
             objectProps: new DebugShowSceneObjectProps(this.panel),
         };
@@ -112,7 +115,11 @@ class Debug {
                     transform.controls.attach(target);
                 }
 
-                if (type === 'select' && target && transform.controls.isShiftPressed) {
+                if (
+                    type === 'select' &&
+                    target &&
+                    transform.controls.isShiftPressed
+                ) {
                     transform.controls.attach(target);
                 }
             }

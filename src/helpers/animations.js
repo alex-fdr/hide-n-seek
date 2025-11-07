@@ -1,5 +1,6 @@
 import { AnimationMixer, LoopOnce, LoopRepeat } from 'three';
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils';
+
 import { assets } from '../core/assets';
 
 class AnimationManager {
@@ -105,19 +106,26 @@ class AnimationManager {
             }
         });
 
-        animationsMap.forEach(({ key, name = key, loop = false, timeScale = 1, clipId = 0 }) => {
-            const anims = assets.models.getAnimations(key);
+        animationsMap.forEach(
+            ({ key, name = key, loop = false, timeScale = 1, clipId = 0 }) => {
+                const anims = assets.models.getAnimations(key);
 
-            if (anims.length) {
-                const anim = this.add(result.mesh, anims[clipId], loop, timeScale);
-                result.animationsMap[name] = anim;
-                result.animationsList.push(anim);
-                result.keys.push(name);
-            }
-        });
+                if (anims.length) {
+                    const anim = this.add(
+                        result.mesh,
+                        anims[clipId],
+                        loop,
+                        timeScale,
+                    );
+                    result.animationsMap[name] = anim;
+                    result.animationsList.push(anim);
+                    result.keys.push(name);
+                }
+            },
+        );
 
         return result;
     }
 }
 
-export const animationManager = new AnimationManager();
+export const animations = new AnimationManager();

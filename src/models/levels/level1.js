@@ -2,16 +2,8 @@ export const level1 = {
     color: 0xff0000,
 
     player: {
-        position: {
-            x: 0,
-            y: 0.1,
-            z: 0,
-        },
-        positionHider: {
-            x: 1,
-            y: 0,
-            z: 4.5,
-        },
+        position: { x: 0, y: 0.1, z: 0 },
+        positionHider: { x: 1, y: 0, z: 4.5 },
     },
 
     aiSeeker: {
@@ -19,11 +11,7 @@ export const level1 = {
         speed: 0.9,
         size: 1,
         spawn: {
-            position: {
-                x: 0,
-                y: 0,
-                z: 0,
-            },
+            position: { x: 0, y: 0, z: 0 },
         },
         route: {
             points: [
@@ -48,11 +36,7 @@ export const level1 = {
             name: 'blue',
             speed: 1.0,
             spawn: {
-                position: {
-                    x: 1.5,
-                    y: 0,
-                    z: 1,
-                },
+                position: { x: 1.5, y: 0, z: 1 },
             },
             route: {
                 points: [
@@ -70,11 +54,7 @@ export const level1 = {
             name: 'orange',
             speed: 1.0,
             spawn: {
-                position: {
-                    x: 1.5,
-                    y: 0,
-                    z: 1,
-                },
+                position: { x: 1.5, y: 0, z: 1 },
             },
             route: {
                 points: [
@@ -95,11 +75,7 @@ export const level1 = {
             name: 'green',
             speed: 1.0,
             spawn: {
-                position: {
-                    x: 1.5,
-                    y: 0,
-                    z: 1,
-                },
+                position: { x: 1.5, y: 0, z: 1 },
             },
             route: {
                 points: [
@@ -117,11 +93,7 @@ export const level1 = {
             name: 'purple',
             speed: 1.0,
             spawn: {
-                position: {
-                    x: 1.5,
-                    y: 0,
-                    z: 1,
-                },
+                position: { x: 1.5, y: 0, z: 1 },
             },
             route: {
                 points: [

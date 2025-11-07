@@ -1,23 +1,22 @@
-import config from '../assets/settings/config';
+import { gameSettings } from '../models/game-settings';
 import { AISeeker } from './enemy/ai-seeker';
 import { EnemiesCollection } from './enemy/enemies-collection';
 import { Player } from './player/player';
-import { TigerAI } from './tiger/tiger-ai';
-import { TigerPlayer } from './tiger/tiger-player';
+import config from '../assets/settings/config';
 
 export class Characters {
-    constructor() {
-        this.parent = null;
+    constructor({ parent }) {
+        this.parent = parent;
         this.player = null;
+        this.enemies = null;
+        this.aiSeeker = null;
 
         this.status = {
             caughtEnemies: 0,
         };
     }
 
-    init(parent, playerData, enemiesData, aiSeekerData) {
-        this.parent = parent;
-
+    init(playerData, enemiesData, aiSeekerData) {
         this.addPlayer(playerData);
         this.addEnemies(enemiesData);
 
@@ -39,12 +38,15 @@ export class Characters {
         const role = config.player.role.value;
         const { position, positionHider } = data;
 
-        this.player =
-            type === 'tiger' ? new TigerPlayer(size) : new Player(size);
-        this.player.init(this.parent, {
+        this.player = new Player({
+            size,
+            type,
             color,
+            animationsList: gameSettings.skins[type].animations,
             position: role === 'hider' ? positionHider : position,
+            parent: this.parent,
         });
+        this.player.init();
     }
 
     addEnemies(data) {
@@ -62,23 +64,29 @@ export class Characters {
                     index: i,
                     color: newColor,
                     size: enemySize,
+                    type: 'stickman',
                 });
             }
         }
 
-        this.enemies = new EnemiesCollection();
-        this.enemies.init(this.parent, newEnemiesData);
-        // this.enemies.getAllSkinnedMeshes().forEach((el) => {el.castShadow = true);
+        this.enemies = new EnemiesCollection({
+            parent: this.parent,
+            data: newEnemiesData,
+        });
     }
 
     addAISeeker(data) {
         const type = config.aiSeeker.model.value;
         const size = config.aiSeeker.size.value;
         const color = config.aiSeeker.color.value;
-        const newData = { ...data, size, color };
+        const newData = { ...data, size, color, type };
 
-        this.aiSeeker = type === 'tiger' ? new TigerAI(size) : new AISeeker();
-        this.aiSeeker.init(this.parent, newData);
+        this.aiSeeker = new AISeeker({
+            ...newData,
+            animationsList: gameSettings.skins[type].animations,
+            parent: this.parent,
+        });
+        this.aiSeeker.init();
 
         // this.aiSeeker.tutorialAnimation()
         // this.aiSeeker.activate()
@@ -110,11 +118,12 @@ export class Characters {
         }
 
         if (this.aiSeeker && this.player && this.enemies) {
-            const player = hasPlayerInteracted ? this.player : null;
-            this.aiSeeker.updateSightRange(walls, this.enemies, player);
+            this.aiSeeker.updateSightRange(
+                walls,
+                this.enemies,
+                hasPlayerInteracted ? this.player : null,
+            );
             this.player.tryReleaseEnemy(this.enemies);
         }
     }
 }
-
-export const characters = new Characters();

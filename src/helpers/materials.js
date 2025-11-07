@@ -1,4 +1,9 @@
-import { MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, MeshStandardMaterial } from 'three';
+import {
+    MeshBasicMaterial,
+    MeshLambertMaterial,
+    MeshPhongMaterial,
+    MeshStandardMaterial,
+} from 'three';
 
 class MaterialManager {
     constructor() {
@@ -45,7 +50,11 @@ class MaterialManager {
         const handler = (material) => {
             if (!this.cache[material.uuid]) {
                 material = clone ? material.clone() : material;
-                const newMaterial = this.copyProperties(material, this.add(type), props);
+                const newMaterial = this.copyProperties(
+                    material,
+                    this.add(type),
+                    props,
+                );
                 this.cache[material.uuid] = newMaterial;
             }
 
@@ -78,7 +87,9 @@ class MaterialManager {
                 let result = [];
 
                 if (child.material.length) {
-                    result = child.material.map((material) => callback(material, child));
+                    result = child.material.map((material) =>
+                        callback(material, child),
+                    );
                 } else {
                     result = callback(child.material, child);
                 }
@@ -96,7 +107,10 @@ class MaterialManager {
 
     copyProperties(materialOld, materialNew, extraProps) {
         const applyProp = (material, key) => {
-            let value = extraProps[key] || extraProps[key] >= 0 ? extraProps[key] : materialOld[key];
+            let value =
+                extraProps[key] || extraProps[key] >= 0
+                    ? extraProps[key]
+                    : materialOld[key];
 
             if (key === 'map' && extraProps.map === null) {
                 value = extraProps.map;
@@ -104,6 +118,8 @@ class MaterialManager {
 
             if (key === 'color' || key === 'emissive' || key === 'specular') {
                 this.copyColorProperties(material, key, value);
+            } else if (key === 'shininess' && !extraProps[key]) {
+                value = 0;
             } else {
                 material[key] = value;
             }

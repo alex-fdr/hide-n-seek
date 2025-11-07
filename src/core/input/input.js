@@ -1,25 +1,21 @@
-class InputSystem {
-    constructor() {
+export class InputSystem {
+    constructor(domElement) {
+        this.domElement = domElement;
+
         this.enabled = false;
         this.handler = null;
         this.mouseEvents = ['mousedown', 'mousemove', 'mouseup'];
         this.touchEvents = ['touchstart', 'touchmove', 'touchend'];
 
-        this.callbacks = {
-            down: [],
-            move: [],
-            up: [],
-        };
+        this.callbacks = { down: [], move: [], up: [] };
     }
 
-    init(element) {
-        this.element = element;
-
+    init() {
         const supportTouchEvent = 'ontouchstart' in document.documentElement;
         const isTouch = supportTouchEvent || navigator?.maxTouchPoints >= 1;
         const [down, move, up] = isTouch ? this.touchEvents : this.mouseEvents;
 
-        this.element.addEventListener(down, (e) => {
+        this.domElement.addEventListener(down, (e) => {
             if (!this.enabled) {
                 return;
             }
@@ -37,7 +33,7 @@ class InputSystem {
             }
         });
 
-        this.element.addEventListener(move, (e) => {
+        this.domElement.addEventListener(move, (e) => {
             if (this.handler?.pressed) {
                 this.handler.move(this.getEvent(e));
 
@@ -47,7 +43,7 @@ class InputSystem {
             }
         });
 
-        this.element.addEventListener(up, (e) => {
+        this.domElement.addEventListener(up, (e) => {
             if (this.handler) {
                 this.handler.up(this.getEvent(e));
 
@@ -79,5 +75,3 @@ class InputSystem {
         this.callbacks.up.push(cb);
     }
 }
-
-export const input = new InputSystem();

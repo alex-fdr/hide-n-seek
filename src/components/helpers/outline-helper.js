@@ -3,30 +3,20 @@ import { core } from '../../core/game-core';
 import { OutlineEffect } from '../../libs/OutlineEffect';
 
 export class OutlineHelper {
-    constructor() {
+    constructor({ color }) {
         this.outlineParameters = {
             thickness: 0.002,
-            color: [0.05, 0.05, 0.05],
+            color: color ? new Color(color).toArray() : [0, 0, 0],
             alpha: 0.8,
             visible: true,
             keepAlive: false,
         };
-    }
-
-    init(props = {}) {
-        const { color } = props;
-
-        if (color) {
-            this.outlineParameters.color = new Color(color).toArray();
-        }
 
         this.effect = new OutlineEffect(core.renderer);
     }
 
     update() {
-        if (this.effect) {
-            this.effect.render(core.scene, core.camera);
-        }
+        this.effect.renderOutline(core.scene, core.camera);
     }
 
     setOutlinedObjects(objects = []) {
@@ -37,5 +27,3 @@ export class OutlineHelper {
         this.effect.setOutlinedObjects(objects);
     }
 }
-
-export const outlineHelper = new OutlineHelper();

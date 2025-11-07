@@ -1,41 +1,44 @@
-import config from '../../assets/settings/config';
+import { gameSettings } from '../../models/game-settings';
 import { Enemy } from './enemy';
+import config from '../../assets/settings/config';
 
 export class EnemiesCollection {
-    constructor() {
-        this.parent = null;
-        this.enemies = [];
+    constructor({ parent, data }) {
+        this.parent = parent;
+        this.enemies = this.createEnemies(data);
 
         this.status = {
-            caughtEnemies: 0
+            caughtEnemies: 0,
         };
     }
 
-    init(parent, enemiesData) {
-        this.parent = parent;
-
-        this.enemies = enemiesData.map((data) => {
-            const enemy = new Enemy();
-            enemy.init(this.parent, data);
+    createEnemies(enemiesData) {
+        return enemiesData.map((data) => {
+            const enemy = new Enemy({
+                ...data,
+                parent: this.parent,
+                animationsList: [...gameSettings.skins[data.type].animations],
+            });
+            enemy.init();
             return enemy;
         });
     }
 
     update(dt) {
-        if (this.enemies) {
-            this.enemies.forEach((enemy) => enemy.update(dt));
+        for (const enemy of this.enemies) {
+            enemy.update(dt);
         }
     }
 
     activate() {
-        if (this.enemies) {
-            this.enemies.forEach((enemy) => enemy.activate());
+        for (const enemy of this.enemies) {
+            enemy.activate();
         }
     }
 
     deactivate() {
-        if (this.enemies) {
-            this.enemies.forEach((enemy) => enemy.deactivate());
+        for (const enemy of this.enemies) {
+            enemy.deactivate();
         }
     }
 
@@ -44,15 +47,15 @@ export class EnemiesCollection {
 
         const role = config.player.role.value;
 
-        if (role === 'seeker') {
-            // customEvents.foundEnemy(this.status.caughtEnemies);
-        }
+        // if (role === 'seeker') {
+        //     customEvents.foundEnemy(this.status.caughtEnemies);
+        // }
 
-        if (this.status.caughtEnemies === this.enemies.length) {
-            if (role === 'seeker') {
-            } else if (role === 'hider') {
-            }
-        }
+        // if (this.status.caughtEnemies === this.enemies.length) {
+        //     if (role === 'seeker') {
+        //     } else if (role === 'hider') {
+        //     }
+        // }
     }
 
     releaseEnemy() {
@@ -63,7 +66,7 @@ export class EnemiesCollection {
         return this.enemies.map((enemy) => enemy.collider);
     }
 
-    getAllEnemies() {
+    getAll() {
         return this.enemies;
     }
 

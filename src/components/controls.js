@@ -4,7 +4,11 @@ import { Quaternion, Vector3 } from 'three';
 const PLAYER_SPEED = 3.5;
 
 export class Controls {
-    constructor() {
+    constructor({ mesh, body }) {
+        console.log(mesh, body);
+        this.targetMesh = mesh;
+        this.targetBody = body;
+
         this.direction = new Vector3();
         this.destination = new Vector3();
 
@@ -14,14 +18,6 @@ export class Controls {
         this.forward = new Vec3(0, 0, 1);
         this.quaternion = new Quaternion();
         this.tempQuaternion = new Quaternion();
-
-        this.targetMesh = null;
-        this.targetBody = null;
-    }
-
-    init(targetMesh, targetBody) {
-        this.targetMesh = targetMesh;
-        this.targetBody = targetBody;
     }
 
     rotateAndMoveForward(inputData) {
@@ -60,5 +56,3 @@ export class Controls {
         }
     }
 }
-
-export const controls = new Controls();

@@ -1,9 +1,14 @@
 import { CylinderGeometry, Mesh, MeshPhongMaterial, Object3D } from 'three';
-import { core } from '../../core/game-core';
-import { animationManager } from '../../helpers/animations';
-import { materials } from '../../helpers/materials';
+import {
+    ENEMY_TAG,
+    ROLE_HIDER,
+    ROLE_SEEKER,
+    SKIN_TIGER,
+} from '../../models/game-const';
 import { Cage } from '../cage';
 import { PathFollower } from '../path-follower';
+import { StickmanSkin } from '../skins/stickman-skin';
+import { TigerSkin } from '../skins/tiger-skin';
 
 const STATES = {
     idle: 0,
@@ -13,13 +18,26 @@ const STATES = {
 };
 
 export class Enemy {
-    constructor() {
-        this.parent = null;
-        this.model = null;
+    constructor(props) {
+        this.parent = props.parent;
+        this.type = props.type;
+
+        this.group = new Object3D();
+        this.parent.add(this.group);
+
         this.animations = {};
         this.routes = {};
-        this.group = new Object3D();
         this.index = 0;
+        this.props = props;
+        this.name = props.name;
+        this.role = ROLE_HIDER;
+
+        this.skin = this.createSkin(
+            props.size,
+            props.color,
+            props.animationsList,
+        );
+        this.group.position.copy(props.spawn.position);
 
         this.status = {
             caught: false,
@@ -30,41 +48,43 @@ export class Enemy {
         };
 
         this.state = STATES.idle;
-
-        this.animationsList = [
-            { key: 'character-idle', name: 'idle', loop: true, timeScale: 1 },
-            { key: 'animation-dance', name: 'dance', loop: true, timeScale: 1 },
-            { key: 'animation-run', name: 'run', loop: true, timeScale: 1 },
-            { key: 'animation-sad', name: 'sad', loop: true, timeScale: 1 },
-        ];
     }
 
-    init(parent, data) {
-        this.parent = parent;
-        this.parent.add(this.group);
-
-        this.world = core.physics.world;
-
-        const { color, spawn, speed, route, index, size, name } = data;
-        this.addModel(color, size, spawn);
+    init() {
+        const { speed, route, index, name } = this.props;
         this.addPathFollower(route, speed, name);
         this.addCollider();
         this.addCage();
-        this.setupModel(color, size);
+
+        if (this.role === ROLE_HIDER) {
+            this.enableShadows();
+        }
 
         this.index = index;
         this.status.speed = speed;
     }
 
+    createSkin(size, color, animationsList) {
+        const skinProps = {
+            size,
+            color,
+            animationsList,
+            parent: this.group,
+        };
+        return this.type === SKIN_TIGER
+            ? new TigerSkin(skinProps)
+            : new StickmanSkin(skinProps);
+    }
+
     activate() {
         this.state = STATES.run;
-        this.animations.run.play();
+        this.skin.animations.run.play();
     }
 
     deactivate() {
         this.state = STATES.defeated;
-        this.animations.run.stop();
-        this.animations.idle.play();
+        this.skin.animations.run.stop();
+        this.skin.animations.idle.play();
     }
 
     update(dt) {
@@ -78,8 +98,8 @@ export class Enemy {
         this.status.caught = true;
         this.state = STATES.defeated;
 
-        this.animations.run.stop();
-        this.animations.idle.play();
+        this.skin.animations.run.stop();
+        this.skin.animations.idle.play();
 
         this.cage.show(this.group);
         this.getSkinnedMesh().castShadow = false;
@@ -89,20 +109,6 @@ export class Enemy {
         this.status.caught = false;
         this.activate();
         this.cage.hide();
-    }
-
-    addModel(color, size = 1, props = {}) {
-        const { position } = props;
-
-        const { mesh, animationsMap } = animationManager.parse(this.animationsList);
-        this.model = mesh;
-        this.animations = animationsMap;
-
-        // this.model.rotation.set(rotation.x, rotation.y, rotation.z)
-
-        this.group.position.copy(position);
-
-        this.group.add(this.model);
     }
 
     addPathFollower(route, speed, index) {
@@ -120,11 +126,11 @@ export class Enemy {
         const material = new MeshPhongMaterial({ color: 0xffffff });
         const collider = new Mesh(geometry, material);
         // collider.rotateX(Math.PI * 0.5);
-        collider.name = 'enemy';
+        collider.name = ENEMY_TAG;
         collider.parentClass = this;
         collider.visible = false;
         this.collider = collider;
-        this.model.add(collider);
+        this.skin.model.add(collider);
     }
 
     addCage() {
@@ -133,15 +139,12 @@ export class Enemy {
         this.cage = cage;
     }
 
-    setupModel(color, size) {
-        this.model.scale.multiplyScalar(size);
-
-        materials.replace(this.model, 'phong', { color, shininess: 300 }, true);
+    enableShadows() {
         const mesh = this.getSkinnedMesh();
         mesh.castShadow = true;
     }
 
     getSkinnedMesh() {
-        return this.group.getObjectByProperty('type', 'SkinnedMesh');
+        return this.skin.model.getObjectByProperty('type', 'SkinnedMesh');
     }
 }

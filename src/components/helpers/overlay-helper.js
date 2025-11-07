@@ -1,4 +1,11 @@
-import { FrontSide, Mesh, MeshLambertMaterial, PlaneGeometry, Scene } from 'three';
+import {
+    FrontSide,
+    Mesh,
+    MeshLambertMaterial,
+    PlaneGeometry,
+    Scene,
+} from 'three';
+
 import { core } from '../../core/game-core';
 import { tweens } from '../../helpers/tweens';
 import config from '../../assets/settings/config';
@@ -8,7 +15,7 @@ export class OverlayHelper {
         this.frontObjects = [];
 
         this.status = {
-            visible: false
+            visible: false,
         };
     }
 
@@ -21,15 +28,15 @@ export class OverlayHelper {
     createScene(frontObjects) {
         this.frontScene = new Scene();
 
-        frontObjects.forEach((o) => {
-            const copy = o.clone();
+        for (const obj of frontObjects) {
+            const copy = obj.clone();
             this.frontObjects.push(copy);
             this.frontScene.attach(copy);
-        });
+        }
 
-        core.scene.lights.forEach((light) => {
+        for (const light of core.scene.lights) {
             this.frontScene.attach(light.clone());
-        });
+        }
     }
 
     createMesh() {
@@ -39,7 +46,7 @@ export class OverlayHelper {
             color: 0x000000,
             transparent: true,
             opacity: config.overlay.opacity.value,
-            side: FrontSide
+            side: FrontSide,
         });
 
         this.mesh = new Mesh(geometry, material);
@@ -79,5 +86,3 @@ export class OverlayHelper {
         }
     }
 }
-
-export const overlayHelper = new OverlayHelper();

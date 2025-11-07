@@ -49,6 +49,7 @@ export const gameSettings = {
         ],
     },
     renderer: {
+        parentId: 'game',
         antialias: true,
         alpha: true,
         color: 0x000000,
@@ -91,4 +92,63 @@ export const gameSettings = {
         },
     },
     debug: {},
+
+    skins: {
+        stickman: {
+            animations: [
+                {
+                    key: 'character-idle',
+                    name: 'idle',
+                    loop: true,
+                    timeScale: 1,
+                },
+                {
+                    key: 'animation-dance',
+                    name: 'dance',
+                    loop: true,
+                    timeScale: 1,
+                },
+                {
+                    key: 'animation-run',
+                    name: 'run',
+                    loop: true,
+                    timeScale: 1,
+                },
+                {
+                    key: 'animation-sad',
+                    name: 'sad',
+                    loop: true,
+                    timeScale: 1,
+                },
+            ],
+        },
+        tiger: {
+            animations: [
+                {
+                    key: 'tiger-idle',
+                    name: 'idle',
+                    loop: true,
+                    timeScale: 1,
+                },
+                {
+                    key: 'animation-dance',
+                    name: 'dance',
+                    loop: true,
+                    timeScale: 0.9,
+                },
+                {
+                    key: 'animation-run',
+                    name: 'run',
+                    loop: true,
+                    timeScale: 1,
+                },
+                {
+                    key: 'animation-sad',
+                    name: 'sad',
+                    loop: true,
+                    timeScale: 1,
+                },
+            ],
+        },
+    },
 };

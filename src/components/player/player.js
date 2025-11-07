@@ -8,99 +8,82 @@ import {
     Vector3,
 } from 'three';
 import { core } from '../../core/game-core';
-import { animationManager } from '../../helpers/animations';
-import { materials } from '../../helpers/materials';
-import config from '../../assets/settings/config';
+import {
+    ENEMY_TAG,
+    PLAYER_TAG,
+    ROLE_HIDER,
+    ROLE_SEEKER,
+    SKIN_TIGER,
+} from '../../models/game-const';
 import { Cage } from '../cage';
 import { SightRange } from '../sight-range';
+import { StickmanSkin } from '../skins/stickman-skin';
+import { TigerSkin } from '../skins/tiger-skin';
+import config from '../../assets/settings/config';
 
 export class Player {
-    constructor(size = 1) {
-        this.parent = null;
-        this.model = null;
-        this.skinnedMesh = null;
+    constructor({ size, type, color, animationsList, parent, position }) {
+        this.parent = parent;
+        this.type = type;
+        this.animationsList = animationsList;
+        this.role = config.player.role.value;
 
-        this.animations = {};
         this.group = new Object3D();
+        this.group.position.copy(position);
+        this.parent.add(this.group);
 
-        this.size = size;
-        this.type = 'character';
-        this.role = '';
+        this.skin = this.createSkin(size, color, animationsList);
+        this.skin.animations.idle.play();
 
         this.status = {
             moving: false,
             caught: false,
         };
-
-        this.animationsList = [
-            { key: 'character-idle', name: 'idle', loop: true, timeScale: 1 },
-            { key: 'animation-dance', name: 'dance', loop: true, timeScale: 1 },
-            { key: 'animation-run', name: 'run', loop: true, timeScale: 1 },
-            { key: 'animation-sad', name: 'sad', loop: true, timeScale: 1 },
-        ];
     }
 
-    init(parent, data = {}) {
-        this.parent = parent;
-        this.parent.add(this.group);
+    createSkin(size, color, animationsList) {
+        const skinProps = {
+            size,
+            color,
+            animationsList,
+            parent: this.group,
+        };
+        return this.type === SKIN_TIGER
+            ? new TigerSkin(skinProps)
+            : new StickmanSkin(skinProps);
+    }
 
-        this.role = config.player.role.value;
-
-        const { color, position } = data;
-
-        this.addModel(position);
+    init() {
         this.addPhysicalBody();
 
-        if (this.role === 'seeker') {
+        if (this.role === ROLE_SEEKER) {
             this.addSightRange();
-        } else if (this.role === 'hider') {
+        } else if (this.role === ROLE_HIDER) {
             this.addCage();
             this.addCollider();
             this.addRaycaster();
+            this.enableShadows();
         }
-
-        this.setupModel(color);
-    }
-
-    addModel(position) {
-        const { mesh, animationsMap } = animationManager.parse(
-            this.animationsList,
-        );
-
-        this.model = mesh;
-        this.animations = animationsMap;
-
-        this.animations.idle.play();
-
-        this.group.position.copy(position);
-
-        this.group.add(this.model);
     }
 
     addPhysicalBody() {
         const radius = 0.5;
-        const body = new Body({ mass: 1 });
         const shape = new Sphere(radius);
-
-        body.addShape(shape);
-        body.position.copy(this.group.position);
-        body.fixedRotation = true;
-
-        core.physics.world.addBody(body);
-
-        this.body = body;
+        this.body = new Body({ mass: 1 });
+        this.body.addShape(shape);
+        this.body.position.copy(this.group.position);
+        this.body.fixedRotation = true;
+        core.physics.world.addBody(this.body);
     }
 
     addSightRange() {
-        const range = new SightRange();
-        range.init(this.group);
-        this.sightRange = range;
+        this.sightRange = new SightRange();
+        this.sightRange.init(this.group);
     }
 
     addCage() {
-        const cage = new Cage();
-        cage.init();
-        this.cage = cage;
+        this.cage = new Cage();
+        this.cage.init();
     }
 
     addCollider() {
@@ -108,47 +91,32 @@ export class Player {
         const height = 2;
         const geometry = new CylinderGeometry(radius, radius, height);
         const material = new MeshPhongMaterial({ color: 0xffffff });
-        const collider = new Mesh(geometry, material);
-        collider.rotateX(Math.PI * 0.5);
-        collider.name = 'player';
-        collider.parentClass = this;
-        collider.visible = false;
-        this.collider = collider;
-        this.model.add(collider);
+        this.collider = new Mesh(geometry, material);
+        this.collider.rotateX(Math.PI * 0.5);
+        this.collider.name = PLAYER_TAG;
+        this.collider.parentClass = this;
+        this.collider.visible = false;
+        this.skin.model.add(this.collider);
     }
 
     addRaycaster() {
-        const raycaster = new Raycaster();
-        raycaster.near = 0;
-        raycaster.far = 1;
-        this.raycaster = raycaster;
+        this.raycaster = new Raycaster();
+        this.raycaster.near = 0;
+        this.raycaster.far = 1;
         this.lookDirection = new Vector3();
     }
 
-    setupModel(color) {
-        this.model.scale.multiplyScalar(this.size);
-
-        if (color) {
-            materials.replace(
-                this.model,
-                'phong',
-                {
-                    color,
-                    shininess: 300,
-                },
-                true,
-            );
-        }
+    enableShadows() {
+        this.getSkinnedMesh().castShadow = true;
     }
-
-    setupMaterials() {}
 
     getModel() {
         return this.group;
     }
 
     getSkinnedMesh() {
-        return this.group.getObjectByProperty('type', 'SkinnedMesh');
+        return this.skin.skinnedMesh;
+        //     return this.skin.model.getObjectByProperty('type', 'SkinnedMesh');
     }
 
     getCollider() {
@@ -158,17 +126,17 @@ export class Player {
     startMoving() {
         this.status.moving = true;
 
-        this.animations.idle.crossFadeTo(this.animations.run, 0.2);
-        this.animations.run.reset();
-        this.animations.run.play();
+        this.skin.animations.idle.crossFadeTo(this.skin.animations.run, 0.2);
+        this.skin.animations.run.reset();
+        this.skin.animations.run.play();
     }
 
     stopMoving() {
         this.status.moving = false;
 
-        this.animations.run.crossFadeTo(this.animations.idle, 0.2);
-        this.animations.idle.reset();
-        this.animations.idle.play();
+        this.skin.animations.run.crossFadeTo(this.skin.animations.idle, 0.2);
+        this.skin.animations.idle.reset();
+        this.skin.animations.idle.play();
     }
 
     catch() {
@@ -185,9 +153,9 @@ export class Player {
     }
 
     finalDance() {
-        this.animations.idle.stop();
-        this.animations.run.stop();
-        this.animations.dance.play();
+        this.skin.animations.idle.stop();
+        this.skin.animations.run.stop();
+        this.skin.animations.dance.play();
 
         // reset rotation
         this.group.quaternion.set(0, 0, 0, 1);
@@ -198,9 +166,9 @@ export class Player {
     }
 
     finalLose() {
-        this.animations.idle.stop();
-        this.animations.run.stop();
-        this.animations.sad.play();
+        this.skin.animations.idle.stop();
+        this.skin.animations.run.stop();
+        this.skin.animations.sad.play();
 
         if (this.sightRange) {
             this.sightRange.hide();
@@ -216,9 +184,7 @@ export class Player {
     }
 
     updateSightRange(walls, enemies) {
-        if (this.sightRange) {
-            this.sightRange.update(walls, enemies);
-        }
+        this.sightRange?.update(walls, enemies);
     }
 
     tryReleaseEnemy(enemies) {
@@ -236,7 +202,7 @@ export class Player {
                     object: { name, parentClass },
                 } = data;
 
-                if (name === 'enemy' && parentClass.status.caught) {
+                if (name === ENEMY_TAG && parentClass.status.caught) {
                     parentClass.release();
                     enemies.releaseEnemy();
                 }

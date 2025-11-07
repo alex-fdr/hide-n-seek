@@ -12,7 +12,7 @@ export class DebugGUI {
             name: 'scene tree',
             closeOnTop: true,
             width: 100,
-            title: 'Debug'
+            title: 'Debug',
         });
 
         const el = this.gui.domElement;
@@ -26,11 +26,9 @@ export class DebugGUI {
         // el.style.display = 'none';
 
         setTimeout(() => {
-            el.querySelectorAll('.lil-name')
-                .forEach((p) => p.setAttribute('style', 'width: 80%;'));
-            el.querySelectorAll('.lil-widget')
-                .forEach((p) => p.setAttribute('style', 'float: right;'));
-            //     el.style.display = displayStatus;
+            el.querySelectorAll('.lil-name').forEach((p) => {
+                p.style.width = '80%';
+            });
         }, 0);
 
         // const root = this.gui.addFolder('Debug');
@@ -58,13 +56,13 @@ export class DebugGUI {
         }
     }
 
-    addCustomControl(name, handler, status = false) {
-        this.props[name] = status;
-        this.controls[name] = {
-            action: () => { },
+    addCustomToggle(label, initialValue = false, handler = () => {}) {
+        this.props[label] = initialValue;
+        this.controls[label] = {
+            action: () => {},
             toggle: (status) => handler(status),
         };
-        const ctrl = this.gui.add(this.props, name);
-        ctrl.onChange((value) => this.handler(name, value));
+        const ctrl = this.gui.add(this.props, label);
+        ctrl.onChange((value) => this.handler(label, value));
     }
 }

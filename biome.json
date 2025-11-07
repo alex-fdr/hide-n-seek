@@ -6,17 +6,19 @@
         "useIgnoreFile": true
     },
     "files": {
-        "ignoreUnknown": false,
-        "includes": [
-            "./src/**",
-            "!./src/libs"
-        ]
+        "ignoreUnknown": false
     },
     "formatter": {
         "enabled": true,
         "indentStyle": "space",
         "indentWidth": 4,
-        "lineWidth": 100
+        "lineWidth": 80,
+        "includes": [
+            "**",
+            "!**/tiger-player.js",
+            "!**/tiger-ai.js",
+            "!**/libs/**"
+        ]
     },
     "linter": {
         "enabled": true,
@@ -25,7 +27,12 @@
             "style": {
                 "useConst": "on"
             }
-        }
+        },
+        "includes": [
+            "**",
+            "!**/tiger-player.js",
+            "!**/libs/**"
+        ]
     },
     "javascript": {
         "formatter": {
@@ -34,6 +41,11 @@
     },
     "assist": {
         "enabled": true,
+        "includes": [
+            "**",
+            "!**/tiger-player.js",
+            "!**/libs/**"
+        ],
         "actions": {
             "source": {
                 "organizeImports": {
@@ -42,16 +54,11 @@
                         "identifierOrder": "natural",
                         "groups": [
                             ":PACKAGE:",
-                            [
-                                "**/core/**",
-                                "**/components/**"
-                            ],
-                            [
-                                "**/helpers/**"
-                            ],
-                            [
-                                "**/assets/**"
-                            ]
+                            "*/core/**",
+                            "*/helpers/**",
+                            "*/components/**",
+                            "!**/assets/**",
+                            "**/assets/models/"
                         ]
                     }
                 }

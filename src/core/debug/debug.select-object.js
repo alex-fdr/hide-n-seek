@@ -2,7 +2,12 @@ import { Raycaster, Vector2 } from 'three';
 
 export class DebugSelectObject {
     constructor(onActionComplete) {
-        this.excludeTypes = ['LineSegments', 'DirectionalLight', 'HemisphereLight', 'Line'];
+        this.excludeTypes = [
+            'LineSegments',
+            'DirectionalLight',
+            'HemisphereLight',
+            'Line',
+        ];
         this.selectable = [];
         this.isShiftPressed = false;
         this.intersected = null;
@@ -34,16 +39,21 @@ export class DebugSelectObject {
     bindEvents() {
         const isTouch =
             'ontouchstart' in document.documentElement ||
-            (window.navigator.maxTouchPoints && window.navigator.maxTouchPoints >= 1);
+            (window.navigator.maxTouchPoints &&
+                window.navigator.maxTouchPoints >= 1);
 
         if (isTouch) {
-            window.addEventListener('touchstart', (e) => this.click(e.changedTouches[0]), false);
+            window.addEventListener(
+                'touchstart',
+                (e) => this.click(e.changedTouches[0]),
+                false,
+            );
         } else {
             window.addEventListener('mousedown', (e) => this.click(e), false);
         }
 
         window.addEventListener('keydown', (e) => this.onKeyDown(e));
-        window.addEventListener('keyUp', (e) => this.onKeyUp(e));
+        window.addEventListener('keyup', (e) => this.onKeyUp(e));
     }
 
     onKeyDown(e) {
@@ -71,7 +81,10 @@ export class DebugSelectObject {
         this.pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera(this.pointer, this.camera);
 
-        const [firstIntersect] = this.raycaster.intersectObjects(this.selectable, true);
+        const [firstIntersect] = this.raycaster.intersectObjects(
+            this.selectable,
+            true,
+        );
 
         if (firstIntersect && firstIntersect.object !== this.intersected) {
             this.intersected = firstIntersect.object;

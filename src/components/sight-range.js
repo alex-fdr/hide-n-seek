@@ -10,6 +10,8 @@ import {
     Vector3,
 } from 'three';
 
+import { ENEMY_TAG, PLAYER_TAG } from '../models/game-const';
+
 const LINE_AMOUNT = 120;
 const LINE_LENGTH = 3;
 const ANGLE_STEP = 0.01;
@@ -166,7 +168,11 @@ export class SightRange {
     updateRange(walls, enemies, player) {
         const { x, y, z } = this.group.position;
         const { position } = this.parent;
-        const origin = new Vector3(position.x + x, position.y + y, position.z + z);
+        const origin = new Vector3(
+            position.x + x,
+            position.y + y,
+            position.z + z,
+        );
         this.parent.getWorldDirection(this.lookDirection);
 
         this.prepareDrawing();
@@ -178,7 +184,10 @@ export class SightRange {
             this.direction.applyAxisAngle(this.Y_AXIS, currentAngle + HALF_PI);
             this.raycaster.set(origin, this.direction);
 
-            const intersections = this.raycaster.intersectObjects(walls.children, true);
+            const intersections = this.raycaster.intersectObjects(
+                walls.children,
+                true,
+            );
 
             let drawn = false;
             let currentLength = LINE_LENGTH;
@@ -220,7 +229,10 @@ export class SightRange {
             targets.push(player.getCollider());
         }
 
-        const intersections = this.enemyRaycaster.intersectObjects(targets, false);
+        const intersections = this.enemyRaycaster.intersectObjects(
+            targets,
+            false,
+        );
 
         if (intersections.length === 0) {
             return;
@@ -230,12 +242,12 @@ export class SightRange {
             const { object } = intersection;
             const { name, parentClass } = object;
 
-            if (name === 'enemy' && !parentClass.status.caught) {
+            if (name === ENEMY_TAG && !parentClass.status.caught) {
                 parentClass.catch();
                 enemies.catchEnemy();
             }
 
-            if (name === 'player' && !parentClass.status.caught) {
+            if (name === PLAYER_TAG && !parentClass.status.caught) {
                 parentClass.catch();
             }
         }

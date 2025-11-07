@@ -1,24 +1,11 @@
-// import screenManager from '@components/screen';
-// import tweenManager from '@components/tween';
-// import threeAssets from '@components/three-assets';
-// import threeScene from '@components/three-scene';
-
-// import { animationManager } from './helpers/animations';
-// import { gameSettings } from './models/game-settings';
-// import { levelMediator } from './level-mediator';
-
-// import { sqHelper } from './components/helpers/sq-helper';
-// import { tweens } from './helpers/tweens';
-
 import { assets } from './core/assets';
 import { debug } from './core/debug/debug';
 import { core } from './core/game-core';
-import { input } from './core/input/input';
-
-import { animationManager } from './helpers/animations';
+import { screens } from './core/screens';
+import { animations } from './helpers/animations';
 import { tweens } from './helpers/tweens';
-import { enableShadows } from './helpers/utils/enable-shadows';
-
+import { level } from './level-instance';
+import { level1 as level1Data } from './models/levels/level1';
 import modelAnimationDance from './assets/models/animation-dance.glb';
 import modelAnimationRun from './assets/models/animation-run.glb';
 import modelAnimationSad from './assets/models/animation-sad.glb';
@@ -27,20 +14,13 @@ import modelCharacterIdle from './assets/models/character-idle.glb';
 import modelLevel from './assets/models/level.glb';
 import modelTigerIdle from './assets/models/tiger-idle.glb';
 
-import { LevelInstance } from './level-instance';
-import { level1 } from './models/levels/level1';
-
 export class Game {
-    constructor({ width = 960, height = 960 } = {}) {
-        core.init({ width, height });
-        input.init(core.renderer.domElement);
-
-        core.screens.add('loading');
-
-        this.level = new LevelInstance();
+    constructor() {
+        this.running = true;
+        screens.add('loading');
     }
 
-    async load() {
+    async start({ width = 960, height = 960 }) {
         await assets.load({
             models: [
                 { key: 'level', file: modelLevel },
@@ -54,36 +34,56 @@ export class Game {
             textures: [],
         });
 
-        this.level.init(level1);
-
-        core.camera.lookAt(0, 0, 0);
-        core.screens.hide('loading');
-
-        core.updateableList.push(this);
-
+        core.init(width, height);
+        level.init(level1Data);
         debug.init(core, {
             orbit: false,
             scene: false,
             physics: false,
         });
 
-        // input.enabled = false;
+        core.onUpdate(this.update.bind(this));
+        screens.hide('loading');
 
-        debug.gui.addCustomControl(
-            'user input',
-            (status) => {
-                input.enabled = status;
-            },
-            input.enabled,
-        );
-
-        enableShadows(core.renderer, core.scene);
+        this.setupCustomDebugControls();
     }
 
-    update(time, dt) {
-        animationManager.update(dt);
+    setupCustomDebugControls() {
+        debug.gui.addCustomToggle('user input', core.input.enabled, (value) => {
+            core.input.enabled = value;
+        });
+
+        debug.gui.addCustomToggle('game loop', this.running, (value) => {
+            this.running = value;
+        });
+
+        for (const enemy of level.characters.enemies.getAll()) {
+            const { pathFollower } = enemy;
+
+            debug.gui.addCustomToggle(`path-${enemy.name}`, false, (status) => {
+                if (pathFollower.pathMesh) {
+                    pathFollower.pathMesh.visible = status;
+                } else {
+                    pathFollower.renderPath();
+                }
+
+                if (pathFollower.pointsGroup) {
+                    pathFollower.pointsGroup.visible = status;
+                } else {
+                    pathFollower.renderPoints();
+                }
+            });
+        }
+    }
+
+    update(time, deltaTime) {
+        if (!this.running) {
+            return;
+        }
+
+        animations.update(deltaTime);
         tweens.update(time);
-        this.level.update(dt);
-        debug.update(dt);
+        debug.update(deltaTime);
+        level.update(deltaTime);
     }
 }

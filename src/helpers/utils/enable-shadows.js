@@ -1,9 +1,15 @@
-import { CameraHelper, PCFShadowMap } from 'three';
+import {
+    CameraHelper,
+    FrontSide,
+    Mesh,
+    PCFShadowMap,
+    PlaneGeometry,
+    ShadowMaterial,
+} from 'three';
 import { applyTransform } from './apply-transform';
 
 export function enableShadows(renderer, scene, props = {}) {
     const {
-        type = PCFShadowMap,
         mapSize = 1024,
         shadowCamera = {},
         shadowReceivePlane = {},
@@ -11,8 +17,8 @@ export function enableShadows(renderer, scene, props = {}) {
     } = props;
 
     const {
-        near = 1,
-        far = 50,
+        near = 0.1,
+        far = 100,
         left = -10,
         right = 10,
         top = 10,
@@ -20,7 +26,7 @@ export function enableShadows(renderer, scene, props = {}) {
     } = shadowCamera;
 
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = type;
+    renderer.shadowMap.type = PCFShadowMap;
 
     const light = scene.getObjectByProperty('type', 'DirectionalLight');
     light.castShadow = true;
@@ -41,25 +47,27 @@ export function enableShadows(renderer, scene, props = {}) {
     }
 
     if (shadowReceivePlane?.enabled) {
-        createShadowReceivePlane(shadowReceivePlane);
+        createShadowReceivePlane(scene, shadowReceivePlane);
     }
 }
 
-function createShadowReceivePlane(shadowPlane) {
+function createShadowReceivePlane(parent, shadowPlane) {
     const { color = 0x000000, opacity = 0.5 } = shadowPlane;
     const geometry = new PlaneGeometry(1, 1);
     const material = new ShadowMaterial({
         color,
         opacity,
-        transparent: false,
-        side: DoubleSide,
+        transparent: true,
+        side: FrontSide,
     });
 
     const plane = new Mesh(geometry, material);
     plane.receiveShadow = true;
     plane.name = 'shadows-receiver';
-    plane.position.set(0, 0.1, 0);
-    scene.add(plane);
+    // plane.position.set(0, 0.5, 0);
+    parent.add(plane);
+
+    console.log('shadow plane', plane);
 
     applyTransform(plane, shadowPlane);
 

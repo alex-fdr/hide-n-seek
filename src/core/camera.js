@@ -3,14 +3,14 @@ import { gameSettings } from '../models/game-settings';
 
 export class Camera extends PerspectiveCamera {
     constructor(props, scene) {
-        const { fov, near, far, position } = props;
+        const { fov, near, far, position, following } = props;
 
         super(fov.portrait, 1, near, far);
 
         this.position.copy(position);
 
-        if (props.following) {
-            this.addWrapper(scene, props.following);
+        if (following) {
+            this.addWrapper(scene, following);
         }
     }
 
@@ -24,7 +24,7 @@ export class Camera extends PerspectiveCamera {
     }
 
     resize(width, height) {
-        const fov = gameSettings.camera.fov;
+        const { fov } = gameSettings.camera;
         this.aspect = width / height;
         this.fov = this.aspect > 1 ? fov.landscape : fov.portrait;
         this.updateProjectionMatrix();

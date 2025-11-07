@@ -1,25 +1,27 @@
-import { AmbientLight, Scene as BaseScene, Color, DirectionalLight, Fog, HemisphereLight } from 'three';
+import {
+    AmbientLight,
+    Scene as BaseScene,
+    Color,
+    DirectionalLight,
+    Fog,
+    HemisphereLight,
+} from 'three';
 
 export class Scene extends BaseScene {
     constructor(props) {
-        const { bg } = props;
-
         super();
 
-        if (bg) {
-            this.background = new Color(bg);
-        }
-
+        const { bg, fog, lights } = props;
         this.name = 'root';
         this.lights = [];
 
-        if (props.lights) {
-            this.addLights(props.lights);
-        }
+        if (bg) this.addBackground(bg);
+        if (lights) this.addLights(lights);
+        if (fog) this.addFog(fog);
+    }
 
-        if (props.fog) {
-            this.addFog(props.fog);
-        }
+    addBackground(color) {
+        this.background = new Color(color);
     }
 
     addFog(props) {
@@ -29,11 +31,11 @@ export class Scene extends BaseScene {
 
     addLights(lightsSettings = []) {
         for (const props of lightsSettings) {
-            const { type } = props;
+            const { type, data } = props;
             const light = this.createLightInstance(type, props);
 
-            if (props.data.position) {
-                light.position.copy(props.data.position);
+            if (data.position) {
+                light.position.copy(data.position);
             }
 
             this.add(light);
@@ -42,13 +44,14 @@ export class Scene extends BaseScene {
     }
 
     createLightInstance(type, props) {
+        const { intensity, color, skyColor, groundColor } = props;
         switch (type) {
             case 'directional':
-                return new DirectionalLight(props.color, props.intensity);
+                return new DirectionalLight(color, intensity);
             case 'hemisphere':
-                return new HemisphereLight(props.skyColor, props.groundColor, props.intensity);
+                return new HemisphereLight(skyColor, groundColor, intensity);
             case 'ambient':
-                return new AmbientLight(props.color, props.intensity);
+                return new AmbientLight(color, intensity);
             default:
                 return new AmbientLight('#ff0000', 1);
         }
