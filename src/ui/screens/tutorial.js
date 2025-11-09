@@ -1,5 +1,5 @@
-import { factory } from '../helpers/pixi/pixi-factory';
 import { tweens } from '../../helpers/tweens';
+import { factory } from '../pixi-factory';
 import config from '../../assets/settings/config';
 
 export class TutorialScreen {
@@ -8,9 +8,11 @@ export class TutorialScreen {
         const key = role === 'hider' ? 'tutorialHide' : 'tutorialSeek';
 
         this.text = factory.text(key, {
-            color: '#ffffff',
-            stroke: '#1c80e1',
-            strokeThickness: 5,
+            fill: '#ffffff',
+            stroke: {
+                color: '#1c80e1',
+                width: 5,
+            },
             letterSpacing: 2,
         });
 

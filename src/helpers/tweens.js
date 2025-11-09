@@ -1,53 +1,53 @@
 import { Easing, Group, Tween } from '@tweenjs/tween.js';
 
 const mapping = {
-    'linear': Easing.Linear.None,
+    linear: Easing.Linear.None,
 
-    'quad': Easing.Quadratic.InOut,
-    'quadIn': Easing.Quadratic.In,
-    'quadOut': Easing.Quadratic.Out,
+    quad: Easing.Quadratic.InOut,
+    quadIn: Easing.Quadratic.In,
+    quadOut: Easing.Quadratic.Out,
 
-    'cubic': Easing.Cubic.InOut,
-    'cubicIn': Easing.Cubic.In,
-    'cubicOut': Easing.Cubic.Out,
+    cubic: Easing.Cubic.InOut,
+    cubicIn: Easing.Cubic.In,
+    cubicOut: Easing.Cubic.Out,
 
-    'quar': Easing.Quartic.InOut,
-    'quarIn': Easing.Quartic.In,
-    'quarOut': Easing.Quartic.Out,
+    quar: Easing.Quartic.InOut,
+    quarIn: Easing.Quartic.In,
+    quarOut: Easing.Quartic.Out,
 
-    'quint': Easing.Quintic.InOut,
-    'quintIn': Easing.Quintic.In,
-    'quintOut': Easing.Quintic.Out,
+    quint: Easing.Quintic.InOut,
+    quintIn: Easing.Quintic.In,
+    quintOut: Easing.Quintic.Out,
 
-    'sine': Easing.Sinusoidal.InOut,
-    'sineIn': Easing.Sinusoidal.In,
-    'sineOut': Easing.Sinusoidal.Out,
+    sine: Easing.Sinusoidal.InOut,
+    sineIn: Easing.Sinusoidal.In,
+    sineOut: Easing.Sinusoidal.Out,
 
-    'exp': Easing.Exponential.InOut,
-    'expIn': Easing.Exponential.In,
-    'expOut': Easing.Exponential.Out,
+    exp: Easing.Exponential.InOut,
+    expIn: Easing.Exponential.In,
+    expOut: Easing.Exponential.Out,
 
-    'circ': Easing.Circular.InOut,
-    'circIn': Easing.Circular.In,
-    'circOut': Easing.Circular.Out,
+    circ: Easing.Circular.InOut,
+    circIn: Easing.Circular.In,
+    circOut: Easing.Circular.Out,
 
-    'elastic': Easing.Elastic.InOut,
-    'elasticIn': Easing.Elastic.In,
-    'elasticOut': Easing.Elastic.Out,
+    elastic: Easing.Elastic.InOut,
+    elasticIn: Easing.Elastic.In,
+    elasticOut: Easing.Elastic.Out,
 
-    'back': Easing.Back.InOut,
-    'backIn': Easing.Back.In,
-    'backOut': Easing.Back.Out,
+    back: Easing.Back.InOut,
+    backIn: Easing.Back.In,
+    backOut: Easing.Back.Out,
 
-    'bounce': Easing.Bounce.InOut,
-    'bounceIn': Easing.Bounce.In,
-    'bounceOut': Easing.Bounce.Out,
+    bounce: Easing.Bounce.InOut,
+    bounceIn: Easing.Bounce.In,
+    bounceOut: Easing.Bounce.Out,
 };
 
 class TweensFactory {
     constructor() {
         this.tweens = [];
-        this.group = new Group;
+        this.group = new Group();
     }
 
     add(target, data, time = 300, props = {}) {
@@ -62,11 +62,13 @@ class TweensFactory {
 
         const tween = new Tween(target)
             .to(data, time)
-            .easing(mapping[easing]);
+            .easing(mapping[easing])
+            // .delay(delay)
+            .yoyo(yoyo);
 
         if (autostart) tween.start();
-        if (repeatDelay) tween.repeatDelay(repeatDelay);
-        if (yoyo && !repeat) tween.repeat(1);
+        // if (repeatDelay) tween.repeatDelay(repeatDelay);
+        // if (yoyo && !repeat) tween.repeat(1);
         if (repeat === -1) tween.repeat(Infinity);
 
         this.tweens.push(tween);
@@ -80,7 +82,7 @@ class TweensFactory {
         const t = this.add(from, to, time, {
             easing: 'linear',
             autostart: true,
-            delay
+            delay,
         });
         return new Promise((resolve) => {
             t.onComplete(() => resolve());
@@ -93,35 +95,38 @@ class TweensFactory {
     }
 
     pause() {
-        this.tweens.forEach(tween => tween.pause());
-
+        this.tweens.forEach((tween) => {
+            tween.pause();
+        });
     }
 
     resume() {
-        this.tweens.forEach(tween => tween.resume());
+        this.tweens.forEach((tween) => {
+            tween.resume();
+        });
     }
 
     update(time) {
         this.group.update(time);
     }
 
-    // fadeIn(target, time = 300, props = {}) {
-    //     target.alpha = 0;
+    fadeIn(target, time = 300, props = {}) {
+        target.alpha = 0;
 
-    //     const tween = this.add(target, { alpha: 1 }, time, props);
+        const tween = this.add(target, { alpha: 1 }, time, props);
 
-    //     if (props.autostart === false || props.delay) {
-    //         tween.onStart(() => {
-    //             target.alpha = 0;
-    //         });
-    //     }
+        if (props.autostart === false || props.delay) {
+            tween.onStart(() => {
+                target.alpha = 0;
+            });
+        }
 
-    //     return tween;
-    // }
+        return tween;
+    }
 
-    // fadeOut(target, time = 200, props = {}) {
-    //     return this.add(target, { alpha: 0 }, time, props);
-    // }
+    fadeOut(target, time = 200, props = {}) {
+        return this.add(target, { alpha: 0 }, time, props);
+    }
 
     // zoomIn(target, scaleFrom = 0, time = 300, props = {}) {
     //     const scaleTo = target.scale.x || 1;
@@ -133,12 +138,12 @@ class TweensFactory {
     //     return this.scale(target, scaleTo, time, props);
     // }
 
-    // pulse(target, scaleTo = 1.1, time = 300, props = {}) {
-    //     props.repeat = props.repeat || 1;
-    //     props.yoyo = true;
-    //     const to = { x: target.scale.x * scaleTo, y: target.scale.y * scaleTo };
-    //     return this.add(target.scale, to, time, props);
-    // }
+    pulse(target, scaleTo = 1.1, time = 300, props = {}) {
+        props.repeat = props.repeat || 1;
+        props.yoyo = true;
+        const to = { x: target.scale.x * scaleTo, y: target.scale.y * scaleTo };
+        return this.add(target.scale, to, time, props);
+    }
 
     // scale(target, scaleTo, time, props) {
     //     const to = { x: scaleTo, y: scaleTo };
@@ -155,7 +160,10 @@ class TweensFactory {
     // }
 
     dummy(time, props = {}) {
-        return this.add({ value: 0 }, { value: 1 }, time, { easing: 'linear', ...props });
+        return this.add({ value: 0 }, { value: 1 }, time, {
+            easing: 'linear',
+            ...props,
+        });
     }
 
     // float(target, data, time = 300, props = {}) {
@@ -287,15 +295,20 @@ class TweensFactory {
     }
 
     pulse3(target, scaleTo = 1.1, time = 300, props = {}) {
-        return this.add(target.scale, {
-            x: target.scale.x * scaleTo,
-            y: target.scale.y * scaleTo,
-            z: target.scale.z * scaleTo
-        }, time, {
-            easing: 'cubic',
-            yoyo: true,
-            ...props,
-        });
+        return this.add(
+            target.scale,
+            {
+                x: target.scale.x * scaleTo,
+                y: target.scale.y * scaleTo,
+                z: target.scale.z * scaleTo,
+            },
+            time,
+            {
+                easing: 'cubic',
+                yoyo: true,
+                ...props,
+            },
+        );
     }
 
     switchColor3(target, color, time, props = {}) {

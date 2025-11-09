@@ -6,7 +6,12 @@ import { tweens } from './helpers/tweens';
 import { level } from './level';
 import { gameSettings } from './models/game-settings';
 import { level1 as level1Data } from './models/levels/level1';
-import { pixiUI } from './pixi';
+import { pixiUI } from './ui/pixi-ui';
+import { HintScreen } from './ui/screens/hint';
+import { LoseScreen } from './ui/screens/lose';
+import { TutorialScreen } from './ui/screens/tutorial';
+import { UIScreen } from './ui/screens/ui';
+import { WinScreen } from './ui/screens/win';
 import modelAnimationDance from './assets/models/animation-dance.glb';
 import modelAnimationRun from './assets/models/animation-run.glb';
 import modelAnimationSad from './assets/models/animation-sad.glb';
@@ -48,7 +53,20 @@ export class Game {
         core.onResize(this.resize.bind(this));
         screens.hide('loading');
 
-        this.setupCustomDebugControls();
+        this.addPixiScreens();
+        // this.setupCustomDebugControls();
+
+        this.resize(width, height);
+    }
+
+    addPixiScreens() {
+        pixiUI.screens.add('tutorial', new TutorialScreen(false));
+        pixiUI.screens.add('hint', new HintScreen(false));
+        pixiUI.screens.add('lose', new LoseScreen(false));
+        pixiUI.screens.add('win', new WinScreen(false));
+        pixiUI.screens.add('ui', new UIScreen(false));
+
+        pixiUI.screens.show('lose');
     }
 
     setupCustomDebugControls() {

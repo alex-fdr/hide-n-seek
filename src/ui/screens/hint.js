@@ -1,6 +1,6 @@
-import { factory } from '../helpers/pixi/pixi-factory';
+import { InfinityHint } from '../components/hints/infinity-hint';
 import { tweens } from '../../helpers/tweens';
-import { InfinityHint } from '../../helpers/ui/hints/infinity-hint';
+import { factory } from '../pixi-factory';
 
 export class HintScreen {
     constructor(visible) {
