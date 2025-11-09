@@ -1,3 +1,5 @@
+// import { debug } from '../core/debug/debug';
+import { core } from '@alexfdr/three-game-core';
 import {
     CatmullRomCurve3,
     Mesh,
@@ -7,8 +9,6 @@ import {
     TubeGeometry,
     Vector3,
 } from 'three';
-// import { debug } from '../core/debug/debug';
-import { core } from '../core/game-core';
 
 export class PathFollower {
     constructor() {

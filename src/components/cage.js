@@ -1,5 +1,4 @@
-import { assets } from '../core/assets';
-import { core } from '../core/game-core';
+import { assets, core } from '@alexfdr/three-game-core';
 import { materials } from '../helpers/materials';
 import { tweens } from '../helpers/tweens';
 import config from '../assets/settings/config';

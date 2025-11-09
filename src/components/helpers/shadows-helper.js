@@ -1,3 +1,4 @@
+import { applyTransform } from '@alexfdr/three-game-utils';
 import {
     CameraHelper,
     FrontSide,
@@ -6,8 +7,6 @@ import {
     PlaneGeometry,
     ShadowMaterial,
 } from 'three';
-
-import { applyTransform } from '../../helpers/utils/apply-transform';
 
 export class ShadowsHelper {
     constructor(renderer, scene, props = {}) {

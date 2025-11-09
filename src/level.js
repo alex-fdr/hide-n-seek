@@ -1,5 +1,5 @@
+import { core } from '@alexfdr/three-game-core';
 import { Object3D } from 'three';
-import { core } from './core/game-core';
 import { DragHandler } from './core/input/handlers/drag-handler';
 import { Background } from './components/background';
 import { Characters } from './components/characters';
@@ -214,6 +214,10 @@ class LevelInstance {
         // setTimeout(() => screens.ui.timer.start(), 500);
     }
 
+    render() {
+        this.outlineHelper?.render();
+    }
+
     update(dt) {
         // if (sqHelper.levelComplete) {
         //     this.outlineHelper.update();
@@ -225,7 +229,6 @@ class LevelInstance {
         }
 
         this.cameraHelper.update(this.characters.player);
-        this.outlineHelper?.update();
         this.overlayHelper?.update();
         this.characters.update(
             this.layout.walls,

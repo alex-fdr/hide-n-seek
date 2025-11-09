@@ -1,0 +1,39 @@
+import { Container, Text, WebGLRenderer } from 'pixi.js';
+
+class PixiUI {
+    constructor() {
+        this.renderer = new WebGLRenderer();
+        this.stage = new Container();
+    }
+
+    async init(threeRenderer, width, height) {
+        await this.renderer.init({
+            context: threeRenderer.getContext(),
+            width,
+            height,
+            clearBeforeRender: false,
+        });
+
+        this.text = new Text({
+            text: 'Pixi and Three.js',
+            style: {
+                fontFamily: 'Arial',
+                fontSize: 24,
+                fill: 'black',
+            },
+        });
+        this.text.position.set(200, 20);
+        this.stage.addChild(this.text);
+    }
+
+    resize(width, height) {
+        this.renderer.resize(width, height);
+    }
+
+    render() {
+        this.renderer.resetState();
+        this.renderer.render(this.stage);
+    }
+}
+
+export const pixiUI = new PixiUI();

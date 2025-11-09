@@ -13,11 +13,7 @@ export const gameSettings = {
                 intensity: 1,
                 data: {
                     castShadow: true,
-                    position: {
-                        x: -2,
-                        y: 10,
-                        z: -2,
-                    },
+                    position: { x: -2, y: 10, z: -2 },
                     shadow: {
                         mapSize: {
                             width: 1024,
@@ -39,11 +35,7 @@ export const gameSettings = {
                 groundColor: 0xffffff,
                 intensity: 0.9,
                 data: {
-                    position: {
-                        x: 0,
-                        y: 0,
-                        z: 0,
-                    },
+                    position: { x: 0, y: 0, z: 0 },
                 },
             },
         ],
@@ -54,7 +46,8 @@ export const gameSettings = {
         alpha: true,
         color: 0x000000,
         opacity: 0,
-        shadow: true,
+        stencil: true,
+        needResetState: true,
     },
     camera: {
         // orthographic: false,
@@ -67,11 +60,7 @@ export const gameSettings = {
         // shake: {
         //     span: 1,
         // },
-        position: {
-            x: 0,
-            y: 15,
-            z: 10,
-        },
+        position: { x: 0, y: 15, z: 10 },
         // following: {
         //     enabled: true,
         //     lerp: 0.5,
@@ -85,11 +74,7 @@ export const gameSettings = {
     physics: {
         debug: false,
 
-        gravity: {
-            x: 0,
-            y: -10,
-            z: 0,
-        },
+        gravity: { x: 0, y: -10, z: 0 },
     },
     debug: {},
 

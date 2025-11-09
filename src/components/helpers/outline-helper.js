@@ -1,5 +1,5 @@
+import { core } from '@alexfdr/three-game-core';
 import { Color } from 'three';
-import { core } from '../../core/game-core';
 import { OutlineEffect } from '../../libs/OutlineEffect';
 
 export class OutlineHelper {
@@ -15,7 +15,7 @@ export class OutlineHelper {
         this.effect = new OutlineEffect(core.renderer);
     }
 
-    update() {
+    render() {
         this.effect.renderOutline(core.scene, core.camera);
     }
 

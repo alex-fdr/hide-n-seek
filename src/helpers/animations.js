@@ -1,7 +1,6 @@
+import { assets } from '@alexfdr/three-game-core';
 import { AnimationMixer, LoopOnce, LoopRepeat } from 'three';
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils';
-
-import { assets } from '../core/assets';
 
 class AnimationManager {
     constructor() {

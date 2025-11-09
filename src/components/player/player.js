@@ -1,3 +1,4 @@
+import { core } from '@alexfdr/three-game-core';
 import { Body, Sphere } from 'cannon-es';
 import {
     CylinderGeometry,
@@ -7,7 +8,6 @@ import {
     Raycaster,
     Vector3,
 } from 'three';
-import { core } from '../../core/game-core';
 import {
     ENEMY_TAG,
     PLAYER_TAG,

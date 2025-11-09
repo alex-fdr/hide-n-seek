@@ -1,11 +1,12 @@
-import { assets } from './core/assets';
+import { assets, core } from '@alexfdr/three-game-core';
 import { debug } from './core/debug/debug';
-import { core } from './core/game-core';
 import { screens } from './core/screens';
 import { animations } from './helpers/animations';
 import { tweens } from './helpers/tweens';
-import { level } from './level-instance';
+import { level } from './level';
+import { gameSettings } from './models/game-settings';
 import { level1 as level1Data } from './models/levels/level1';
+import { pixiUI } from './pixi';
 import modelAnimationDance from './assets/models/animation-dance.glb';
 import modelAnimationRun from './assets/models/animation-run.glb';
 import modelAnimationSad from './assets/models/animation-sad.glb';
@@ -34,7 +35,8 @@ export class Game {
             textures: [],
         });
 
-        core.init(width, height);
+        core.init(width, height, gameSettings);
+        await pixiUI.init(core.renderer, width, height);
         level.init(level1Data);
         debug.init(core, {
             orbit: false,
@@ -43,6 +45,7 @@ export class Game {
         });
 
         core.onUpdate(this.update.bind(this));
+        core.onResize(this.resize.bind(this));
         screens.hide('loading');
 
         this.setupCustomDebugControls();
@@ -76,10 +79,18 @@ export class Game {
         }
     }
 
+    resize(width, height) {
+        pixiUI.resize(width, height);
+    }
+
     update(time, deltaTime) {
         if (!this.running) {
             return;
         }
+
+        core.render();
+        level.render();
+        pixiUI.render();
 
         animations.update(deltaTime);
         tweens.update(time);

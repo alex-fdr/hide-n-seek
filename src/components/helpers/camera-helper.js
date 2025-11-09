@@ -1,6 +1,5 @@
+import { core } from '@alexfdr/three-game-core';
 import { Object3D, Vector3 } from 'three';
-
-import { core } from '../../core/game-core';
 import { tweens } from '../../helpers/tweens';
 import { CAMERA_SETTINGS } from '../../models/game-const';
 import config from '../../assets/settings/config';

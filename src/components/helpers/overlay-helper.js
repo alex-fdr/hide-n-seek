@@ -1,3 +1,4 @@
+import { core } from '@alexfdr/three-game-core';
 import {
     FrontSide,
     Mesh,
@@ -5,8 +6,6 @@ import {
     PlaneGeometry,
     Scene,
 } from 'three';
-
-import { core } from '../../core/game-core';
 import { tweens } from '../../helpers/tweens';
 import config from '../../assets/settings/config';
 
