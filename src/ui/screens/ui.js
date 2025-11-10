@@ -1,12 +1,15 @@
-// import { TextCounter } from '../helpers/ui/text-counter';
+import { Container } from 'pixi.js';
 import { Timer } from '../components/timer';
 import { tweens } from '../../helpers/tweens';
-import { factory } from '../pixi-factory';
 import config from '../../assets/settings/config';
 
 export class UIScreen {
     constructor(visible) {
-        this.group = factory.group([], visible, 'ui');
+        this.group = new Container({
+            visible,
+            label: 'ui',
+            children: [],
+        });
 
         this.addTimer();
     }

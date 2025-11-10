@@ -1,25 +1,36 @@
+import { Assets, Container, TilingSprite } from 'pixi.js';
 import { Button } from '../components/button';
 import { tweens } from '../../helpers/tweens';
-import { factory } from '../pixi-factory';
 
 export class LoseScreen {
     constructor(visible) {
-        this.overlay = factory.tilesprite('dummy-white', 960, 960);
-        // this.overlay.tint = 0x00896c
-        this.overlay.tint = 0x000000;
-        this.overlay.alpha = 0.6;
+        this.overlay = new TilingSprite({
+            texture: Assets.get('dummy-white'),
+            label: 'lose-overlay',
+            width: 960,
+            height: 960,
+            tint: 0x000000,
+            alpha: 0.6,
+        });
 
-        this.btn = new Button('button', 'loseBtn', { color: '#ffffff' });
+        this.btn = new Button('button', 'loseBtn', {
+            fill: '#ffffff',
+            dropShadow: {
+                color: 0x444444,
+                alpha: 1,
+                distance: 1,
+                angle: Math.PI / 4,
+            },
+        });
+
         // this.btn.text.position.set(0, -3)
         // this.btn.sprite.scale.set(0.75)
 
-        factory.textShadow(this.btn.text, 0x444444, 1, 1);
-
-        this.group = factory.group(
-            [this.overlay, this.btn.group],
+        this.group = new Container({
             visible,
-            'win',
-        );
+            label: 'win',
+            children: [this.overlay, this.btn.group],
+        });
     }
 
     show() {

@@ -1,5 +1,5 @@
+import { Assets, Container, Sprite } from 'pixi.js';
 import { tweens } from '../../../helpers/tweens';
-import { factory } from '../../pixi-factory';
 
 export class InfinityHint {
     constructor(props) {
@@ -15,24 +15,29 @@ export class InfinityHint {
         this.offsetX = props.offsetX || 0;
         this.offsetY = props.offsetY || 0;
 
-        this.infinity = factory.sprite(props.baseKey || 'infinity');
+        this.infinity = new Sprite({
+            anchor: 0.5,
+            texture: Assets.get(props.baseKey || 'infinity'),
+        });
 
         // idea - apply offset to hand
 
-        this.pointer = factory.sprite(props.pointerKey || 'pointer');
-        // this.pointer.anchor.x = 0.05
-        this.pointer.scale.set(props.pointerScale || 1);
-        this.pointer.position.set(this.offsetX, this.offsetY);
+        this.pointer = new Sprite({
+            texture: Assets.get(props.pointerKey || 'pointer'),
+            anchor: 0.5,
+            scale: props.pointerScale || 1,
+            position: { x: this.offsetX, y: this.offsetY },
+        });
 
-        this.pointerGroup = factory.group([this.pointer]);
+        this.pointerGroup = new Container({
+            children: [this.pointer],
+        });
 
-        this.group = factory.group(
-            [this.infinity, this.pointerGroup],
-            props.visible,
-            'infinity-hint',
-        );
-
-        // this.group.visible = props.visible || false
+        this.group = new Container({
+            label: 'infinity-hint',
+            visible: props.visible,
+            children: [this.infinity, this.pointerGroup],
+        });
 
         // tween props
         this.propsIn = { easing: 'sineIn' };

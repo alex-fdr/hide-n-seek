@@ -1,4 +1,4 @@
-import { factory } from '../pixi-factory';
+import { Assets, Sprite } from 'pixi.js';
 import { TextCounter } from './text-counter';
 
 export class Timer {
@@ -16,7 +16,10 @@ export class Timer {
         this.onComplete = this.text.onComplete;
         this.initialValue = this.text.value;
 
-        this.bg = factory.sprite('timer-bg');
+        this.bg = new Sprite({
+            texture: Assets.get('timer-bg'),
+            anchor: 0.5,
+        });
         this.group.addChildAt(this.bg, 0);
     }
 

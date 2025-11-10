@@ -1,11 +1,28 @@
+import { Assets, Container, Sprite, Text } from 'pixi.js';
+import { locale } from '../../data/locale';
 import { tweens } from '../../helpers/tweens';
-import { factory } from '../pixi-factory';
 
 export class Button {
     constructor(spriteKey, textKey, textStyle) {
-        this.sprite = factory.sprite(spriteKey);
-        this.text = factory.text(textKey, textStyle);
-        this.group = factory.group([this.sprite, this.text]);
+        this.sprite = new Sprite({
+            texture: Assets.get(spriteKey),
+            label: 'btn-sprite',
+            anchor: 0.5,
+        });
+
+        this.text = new Text({
+            text: locale[textKey].text,
+            anchor: 0.5,
+            style: {
+                fontSize: locale[textKey].fontSize,
+                ...textStyle,
+            },
+        });
+
+        this.group = new Container({
+            label: 'btn-group',
+            children: [this.sprite, this.text],
+        });
     }
 
     getPosition() {

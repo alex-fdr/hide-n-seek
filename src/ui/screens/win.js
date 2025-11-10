@@ -1,27 +1,24 @@
+import { Container } from 'pixi.js';
 import { Button } from '../components/button';
 import { tweens } from '../../helpers/tweens';
-import { factory } from '../pixi-factory';
 
 export class WinScreen {
     constructor(visible) {
-        // this.overlay = factory.tilesprite('dummy-white', 960, 960)
-        // this.overlay.tint = 0x00896c
-        // this.overlay.alpha = 0.8
+        this.btn = new Button('button', 'winBtn', {
+            fill: '#ffffff',
+            dropShadow: {
+                color: 0x444444,
+                angle: Math.PI / 4,
+                distance: 1,
+                alpha: 1,
+            },
+        });
 
-        this.btn = new Button('button', 'winBtn', { color: '#ffffff' });
-        // this.btn.text.position.set(0, -3)
-        // this.btn.sprite.scale.set(0.75)
-
-        factory.textShadow(this.btn.text, 0x444444, 1, 1);
-
-        this.group = factory.group(
-            [
-                // this.overlay,
-                this.btn.group,
-            ],
+        this.group = new Container({
             visible,
-            'win',
-        );
+            label: 'win',
+            children: [this.btn.group],
+        });
     }
 
     show() {
@@ -36,14 +33,12 @@ export class WinScreen {
 
     handlePortrait(cx, cy) {
         this.group.scale.set(1);
-        // this.overlay.scale.set(1)
         this.group.position.set(cx, cy);
         this.btn.group.position.set(0, 360);
     }
 
     handleLandscape(cx, cy, factor) {
         this.group.scale.set(0.465 * factor);
-        // this.overlay.scale.set(1 / this.group.scale.x)
         this.group.position.set(cx, cy);
         this.btn.group.position.set(0, 360);
     }

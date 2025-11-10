@@ -66,7 +66,8 @@ export class Game {
         pixiUI.screens.add('win', new WinScreen(false));
         pixiUI.screens.add('ui', new UIScreen(false));
 
-        pixiUI.screens.show('lose');
+        pixiUI.screens.show('ui');
+        pixiUI.screens.show('hint');
     }
 
     setupCustomDebugControls() {

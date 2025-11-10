@@ -18,17 +18,6 @@ class PixiUI {
         });
 
         await loadAssets();
-
-        this.text = new Text({
-            text: 'Pixi and Three.js',
-            style: {
-                fontFamily: 'Arial',
-                fontSize: 24,
-                fill: 'black',
-            },
-        });
-        this.text.position.set(200, 20);
-        this.stage.addChild(this.text);
     }
 
     resize(width, height) {

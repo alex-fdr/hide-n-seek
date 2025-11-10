@@ -1,6 +1,6 @@
+import { Container } from 'pixi.js';
 import { InfinityHint } from '../components/hints/infinity-hint';
 import { tweens } from '../../helpers/tweens';
-import { factory } from '../pixi-factory';
 
 export class HintScreen {
     constructor(visible) {
@@ -18,7 +18,11 @@ export class HintScreen {
             animated: false,
         };
 
-        this.group = factory.group([this.hint.group], visible);
+        this.group = new Container({
+            visible,
+            label: 'hint-screen',
+            children: [this.hint.group],
+        });
     }
 
     show() {

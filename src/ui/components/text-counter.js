@@ -1,7 +1,6 @@
-import { Text } from 'pixi.js';
+import { Container, Text } from 'pixi.js';
 import { Signal } from '../../core/signal';
 import { tweens } from '../../helpers/tweens';
-import { factory } from '../pixi-factory';
 
 export class TextCounter {
     constructor(props) {
@@ -43,13 +42,17 @@ export class TextCounter {
 
         this.text = new Text({
             text: this.getValue(value),
+            anchor: 0.5,
             style: {
                 fontSize,
                 fontFamily: 'gamefont',
                 fill: color,
             },
         });
-        this.group = factory.group([this.text]);
+        this.group = new Container({
+            label: 'text-counter-group',
+            children: [this.text],
+        });
 
         this.onComplete = new Signal();
 

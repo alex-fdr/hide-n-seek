@@ -1,22 +1,35 @@
+import { Container, Text } from 'pixi.js';
+import { locale } from '../../data/locale';
 import { tweens } from '../../helpers/tweens';
-import { factory } from '../pixi-factory';
+import { ROLE_HIDER } from '../../models/game-const';
 import config from '../../assets/settings/config';
 
 export class TutorialScreen {
     constructor(visible) {
         const role = config.player.role.value;
-        const key = role === 'hider' ? 'tutorialHide' : 'tutorialSeek';
+        const key = role === ROLE_HIDER ? 'tutorialHide' : 'tutorialSeek';
+        const { text, fontSize } = locale[key];
 
-        this.text = factory.text(key, {
-            fill: '#ffffff',
-            stroke: {
-                color: '#1c80e1',
-                width: 5,
+        this.text = new Text({
+            text,
+            anchor: 0.5,
+            style: {
+                fontSize,
+                fill: '#ffffff',
+                fontFamily: 'gamefont',
+                letterSpacing: 2,
+                stroke: {
+                    color: '#1c80e1',
+                    width: 5,
+                },
             },
-            letterSpacing: 2,
         });
 
-        this.group = factory.group([this.text], visible, 'tutorial');
+        this.group = new Container({
+            visible,
+            label: 'tutorial',
+            children: [this.text],
+        });
     }
 
     show() {
