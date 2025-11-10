@@ -1,6 +1,6 @@
-import { gameSettings } from '../../models/game-settings';
 import { Enemy } from './enemy';
 import config from '../../assets/settings/config';
+import { gameSettings } from '../../data/game-settings';
 
 export class EnemiesCollection {
     constructor({ parent, data }) {

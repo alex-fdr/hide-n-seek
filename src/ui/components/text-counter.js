@@ -1,6 +1,6 @@
 import { Container, Text } from 'pixi.js';
-import { Signal } from '../../core/signal';
 import { tweens } from '../../helpers/tweens';
+import { Signal } from '../../core/signal';
 
 export class TextCounter {
     constructor(props) {

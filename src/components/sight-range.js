@@ -9,8 +9,7 @@ import {
     Texture,
     Vector3,
 } from 'three';
-
-import { ENEMY_TAG, PLAYER_TAG } from '../models/game-const';
+import { ENEMY_TAG, PLAYER_TAG } from '../data/game-const';
 
 const LINE_AMOUNT = 120;
 const LINE_LENGTH = 3;

@@ -54,11 +54,21 @@
                         "identifierOrder": "natural",
                         "groups": [
                             ":PACKAGE:",
+                            "*/*",
                             "*/core/**",
-                            "*/helpers/**",
-                            "*/components/**",
+                            "**/components/**",
+                            "**/helpers/**",
+                            "*/models/**",
+                            "*/ui/**",
+                            "**/assets/settings/*",
                             "!**/assets/**",
-                            "**/assets/models/"
+                            ":BLANK_LINE:",
+                            "**/assets/models/*",
+                            "**/assets/textures/*",
+                            ":BLANK_LINE:",
+                            "**/assets/fonts/*",
+                            "**/assets/images/*",
+                            ":BLANK_LINE:"
                         ]
                     }
                 }

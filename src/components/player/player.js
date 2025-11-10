@@ -8,18 +8,18 @@ import {
     Raycaster,
     Vector3,
 } from 'three';
+import { Cage } from '../cage';
+import { SightRange } from '../sight-range';
+import config from '../../assets/settings/config';
 import {
     ENEMY_TAG,
     PLAYER_TAG,
     ROLE_HIDER,
     ROLE_SEEKER,
     SKIN_TIGER,
-} from '../../models/game-const';
-import { Cage } from '../cage';
-import { SightRange } from '../sight-range';
+} from '../../data/game-const';
 import { StickmanSkin } from '../skins/stickman-skin';
 import { TigerSkin } from '../skins/tiger-skin';
-import config from '../../assets/settings/config';
 
 export class Player {
     constructor({ size, type, color, animationsList, parent, position }) {

@@ -1,12 +1,10 @@
-import { Container, Text, WebGLRenderer } from 'pixi.js';
-import { loadAssets } from './pixi-assets';
-import { PixiScreens } from './pixi-screens';
+import { Container, WebGLRenderer } from 'pixi.js';
 
 class PixiUI {
     constructor() {
         this.renderer = new WebGLRenderer();
         this.stage = new Container();
-        this.screens = new PixiScreens(this.stage);
+        this.screens = new Map();
     }
 
     async init(threeRenderer, width, height) {
@@ -16,8 +14,19 @@ class PixiUI {
             height,
             clearBeforeRender: false,
         });
+    }
 
-        await loadAssets();
+    addScreen(name, screen) {
+        this.screens.set(name, screen);
+        this.stage.addChild(screen.group);
+    }
+
+    showScreen(name) {
+        this.screens.get(name)?.show();
+    }
+
+    hideScreen(name) {
+        this.screens.get(name)?.hide();
     }
 
     resize(width, height) {
@@ -25,13 +34,13 @@ class PixiUI {
 
         const cx = width * 0.5;
         const cy = height * 0.5;
-        const maxAspectRatioInLandscape = 2.165; // iphonex ratio
-        const factor = maxAspectRatioInLandscape / (cx / cy);
+        // const maxAspectRatioInLandscape = 2.165; // iphonex ratio
+        // const factor = maxAspectRatioInLandscape / (cx / cy);
+        const factor = 1;
+        const method = cx > cy ? 'handleLandscape' : 'handlePortrait';
 
-        if (cx > cy) {
-            this.screens.handleLandscape(cx, cy, factor);
-        } else {
-            this.screens.handlePortrait(cx, cy);
+        for (const [, screen] of this.screens) {
+            screen[method](cx, cy, factor);
         }
     }
 

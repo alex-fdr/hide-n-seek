@@ -1,7 +1,7 @@
-import { tweens } from '../../helpers/tweens';
-import { ROLE_SEEKER } from '../../models/game-const';
 import { SightRange } from '../sight-range';
 import { Enemy } from './enemy';
+import { tweens } from '../../helpers/tweens';
+import { ROLE_SEEKER } from '../../data/game-const';
 
 export class AISeeker extends Enemy {
     constructor(props) {

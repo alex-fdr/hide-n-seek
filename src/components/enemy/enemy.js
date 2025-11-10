@@ -1,12 +1,7 @@
 import { CylinderGeometry, Mesh, MeshPhongMaterial, Object3D } from 'three';
-import {
-    ENEMY_TAG,
-    ROLE_HIDER,
-    ROLE_SEEKER,
-    SKIN_TIGER,
-} from '../../models/game-const';
 import { Cage } from '../cage';
 import { PathFollower } from '../path-follower';
+import { ENEMY_TAG, ROLE_HIDER, SKIN_TIGER } from '../../data/game-const';
 import { StickmanSkin } from '../skins/stickman-skin';
 import { TigerSkin } from '../skins/tiger-skin';
 

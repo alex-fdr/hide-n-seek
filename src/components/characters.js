@@ -1,8 +1,8 @@
-import { gameSettings } from '../models/game-settings';
+import config from '../assets/settings/config';
+import { gameSettings } from '../data/game-settings';
 import { AISeeker } from './enemy/ai-seeker';
 import { EnemiesCollection } from './enemy/enemies-collection';
 import { Player } from './player/player';
-import config from '../assets/settings/config';
 
 export class Characters {
     constructor({ parent }) {

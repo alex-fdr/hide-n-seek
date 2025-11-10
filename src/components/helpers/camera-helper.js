@@ -1,8 +1,8 @@
 import { core } from '@alexfdr/three-game-core';
 import { Object3D, Vector3 } from 'three';
 import { tweens } from '../../helpers/tweens';
-import { CAMERA_SETTINGS } from '../../models/game-const';
 import config from '../../assets/settings/config';
+import { CAMERA_SETTINGS } from '../../data/game-const';
 
 export class CameraHelper {
     constructor() {

@@ -1,8 +1,8 @@
 import { Container, Text } from 'pixi.js';
-import { locale } from '../../data/locale';
 import { tweens } from '../../helpers/tweens';
-import { ROLE_HIDER } from '../../models/game-const';
 import config from '../../assets/settings/config';
+import { ROLE_HIDER } from '../../data/game-const';
+import { locale } from '../../data/locale';
 
 export class TutorialScreen {
     constructor(visible) {

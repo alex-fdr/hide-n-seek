@@ -10,8 +10,8 @@ import { OverlayHelper } from './components/helpers/overlay-helper';
 import { ShadowsHelper } from './components/helpers/shadows-helper';
 // import { sqHelper } from './components/helpers/sq-helper';
 import { LevelLayout } from './components/level-layout';
-import { ROLE_HIDER, ROLE_SEEKER } from './models/game-const';
 import config from './assets/settings/config';
+import { ROLE_HIDER, ROLE_SEEKER } from './data/game-const';
 
 class LevelInstance {
     constructor() {
