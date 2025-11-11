@@ -24,7 +24,7 @@ export class WinScreen {
     show() {
         this.group.visible = true;
         tweens.fadeIn(this.group, 500);
-        tweens.pulse(this.btn.group, 1.1, 600, { repeat: -1 });
+        tweens.pulse(this.btn.group, 600, { scaleTo: 1.1, repeat: -1 });
     }
 
     hide() {

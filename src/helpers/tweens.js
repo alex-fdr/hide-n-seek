@@ -50,7 +50,7 @@ class TweensFactory {
         this.group = new Group();
     }
 
-    add(target, data, time = 300, props = {}) {
+    add(target, time = 300, props = {}) {
         const {
             easing = 'sine',
             autostart = true,
@@ -58,35 +58,29 @@ class TweensFactory {
             repeat = 0,
             repeatDelay = 0,
             yoyo = false,
+            to,
+            onComplete,
         } = props;
 
         const tween = new Tween(target)
-            .to(data, time)
+            .to(to, time)
             .easing(mapping[easing])
-            // .delay(delay)
+            .delay(delay)
+            .repeat(repeat === -1 ? Infinity : repeat)
+            .repeatDelay(repeatDelay)
             .yoyo(yoyo);
 
-        if (autostart) tween.start();
-        // if (repeatDelay) tween.repeatDelay(repeatDelay);
-        // if (yoyo && !repeat) tween.repeat(1);
-        if (repeat === -1) tween.repeat(Infinity);
+        if (autostart) {
+            tween.start();
+        }
+
+        if (onComplete) {
+            tween.onComplete(onComplete);
+        }
 
         this.tweens.push(tween);
         this.group.add(tween);
         return tween;
-    }
-
-    wait(time, delay = 0) {
-        const from = { k: 0 };
-        const to = { k: 1 };
-        const t = this.add(from, to, time, {
-            easing: 'linear',
-            autostart: true,
-            delay,
-        });
-        return new Promise((resolve) => {
-            t.onComplete(() => resolve());
-        });
     }
 
     remove(tween) {
@@ -110,10 +104,34 @@ class TweensFactory {
         this.group.update(time);
     }
 
+    wait(time) {
+        const from = { k: 0 };
+        const to = { k: 1 };
+        const t = this.add(from, time, {
+            easing: 'linear',
+            autostart: true,
+            to,
+        });
+        return new Promise((resolve) => {
+            t.onComplete(() => resolve());
+        });
+    }
+
+    dummy(time, props = {}) {
+        return this.add({ value: 0 }, time, {
+            ...props,
+            easing: 'linear',
+            to: { value: 1 },
+        });
+    }
+
     fadeIn(target, time = 300, props = {}) {
         target.alpha = 0;
 
-        const tween = this.add(target, { alpha: 1 }, time, props);
+        const tween = this.add(target, time, {
+            ...props,
+            to: { alpha: 1 },
+        });
 
         if (props.autostart === false || props.delay) {
             tween.onStart(() => {
@@ -125,7 +143,10 @@ class TweensFactory {
     }
 
     fadeOut(target, time = 200, props = {}) {
-        return this.add(target, { alpha: 0 }, time, props);
+        return this.add(target, time, {
+            ...props,
+            to: { alpha: 0 },
+        });
     }
 
     // zoomIn(target, scaleFrom = 0, time = 300, props = {}) {
@@ -138,11 +159,15 @@ class TweensFactory {
     //     return this.scale(target, scaleTo, time, props);
     // }
 
-    pulse(target, scaleTo = 1.1, time = 300, props = {}) {
-        props.repeat = props.repeat || 1;
-        props.yoyo = true;
-        const to = { x: target.scale.x * scaleTo, y: target.scale.y * scaleTo };
-        return this.add(target.scale, to, time, props);
+    pulse(target, time = 300, props = {}) {
+        const scaleTo = props.scaleTo || 1.1;
+        const s = target.scale;
+        return this.add(target.scale, time, {
+            ...props,
+            yoyo: true,
+            repeat: props.repeat || 1,
+            to: { x: s.x * scaleTo, y: s.y * scaleTo },
+        });
     }
 
     // scale(target, scaleTo, time, props) {
@@ -158,13 +183,6 @@ class TweensFactory {
     //     }
     //     return tween;
     // }
-
-    dummy(time, props = {}) {
-        return this.add({ value: 0 }, { value: 1 }, time, {
-            easing: 'linear',
-            ...props,
-        });
-    }
 
     // float(target, data, time = 300, props = {}) {
     //     const from = {
@@ -269,10 +287,13 @@ class TweensFactory {
             return tween;
         }
 
-        const opacity = target.material.opacity || 1;
+        const finalOpacity = target.material.opacity || 1;
         target.material.transparent = true;
         target.material.opacity = 0;
-        return this.add(target.material, { opacity }, time, props);
+        return this.add(target.material, time, {
+            ...props,
+            to: { opacity: finalOpacity },
+        });
     }
 
     fadeOut3(target, time, props = {}) {
@@ -285,30 +306,31 @@ class TweensFactory {
         }
 
         target.material.transparent = true;
-        return this.add(target.material, { opacity: 0 }, time, props);
+        return this.add(target.material, time, {
+            ...props,
+            to: { opacity: 0 },
+        });
     }
 
-    zoomIn3(target, scaleFrom, time, props = {}) {
+    zoomIn3(target, time, props = {}) {
         const { x: sx, y: sy, z: sz } = target.scale;
+        const scaleFrom = props.scaleFrom;
         target.scale.multiplyScalar(scaleFrom);
-        return this.add(target.scale, { x: sx, y: sy, z: sz }, time, props);
+        return this.add(target.scale, time, {
+            ...props,
+            to: { x: sx, y: sy, z: sz },
+        });
     }
 
-    pulse3(target, scaleTo = 1.1, time = 300, props = {}) {
-        return this.add(
-            target.scale,
-            {
-                x: target.scale.x * scaleTo,
-                y: target.scale.y * scaleTo,
-                z: target.scale.z * scaleTo,
-            },
-            time,
-            {
-                easing: 'cubic',
-                yoyo: true,
-                ...props,
-            },
-        );
+    pulse3(target, time = 300, props = {}) {
+        const scaleTo = props.scaleTo || 1.1;
+        const s = target.scale;
+        return this.add(target.scale, time, {
+            ...props,
+            easing: 'cubic',
+            yoyo: true,
+            to: { x: s.x * scaleTo, y: s.y * scaleTo, z: s.z * scaleTo },
+        });
     }
 
     switchColor3(target, color, time, props = {}) {

@@ -1,9 +1,9 @@
 import { assets, core } from '@alexfdr/three-game-core';
-import { Assets } from 'pixi.js';
+import { Assets as PixiAssets } from 'pixi.js';
 import { level } from './level';
-import { debug } from './core/debug/debug';
-import { screens } from './core/screens';
 import { animations } from './helpers/animations';
+import { debug } from './helpers/debug/debug';
+import { screens } from './helpers/screens';
 import { tweens } from './helpers/tweens';
 import { pixiUI } from './ui/pixi-ui';
 import { HintScreen } from './ui/screens/hint';
@@ -57,7 +57,7 @@ export class Game {
         await pixiUI.init(core.renderer, width, height);
 
         // load pixi assets
-        await Assets.load([
+        await PixiAssets.load([
             { alias: 'infinity-sign', src: infinitySign },
             { alias: 'pointer', src: pointer },
             { alias: 'dummy-white', src: dummyWhite },
@@ -66,27 +66,21 @@ export class Game {
             { alias: 'gamefont', src: gamefont },
         ]);
 
-        level.init(level1Data);
-        debug.init(core, { orbit: false, scene: false, physics: false });
-
-        core.onUpdate(this.update.bind(this));
-        core.onResize(this.resize.bind(this));
-
-        this.addPixiScreens();
-        this.resize(width, height);
-        // this.setupCustomDebugControls();
-        screens.hide('loading');
-    }
-
-    addPixiScreens() {
         pixiUI.addScreen('tutorial', new TutorialScreen(false));
         pixiUI.addScreen('hint', new HintScreen(false));
         pixiUI.addScreen('lose', new LoseScreen(false));
         pixiUI.addScreen('win', new WinScreen(false));
         pixiUI.addScreen('ui', new UIScreen(false));
 
-        pixiUI.showScreen('ui');
-        pixiUI.showScreen('hint');
+        level.init(level1Data);
+        debug.init(core, { orbit: false, scene: false, physics: false });
+
+        this.resize(width, height);
+        screens.hide('loading');
+        // this.setupCustomDebugControls();
+
+        core.onUpdate(this.update.bind(this));
+        core.onResize(this.resize.bind(this));
     }
 
     setupCustomDebugControls() {

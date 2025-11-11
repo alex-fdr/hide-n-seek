@@ -34,14 +34,10 @@ export class UIScreen {
     }
 
     handlePortrait(cx, cy) {
-        this.group.scale.set(1);
-        this.group.position.set(cx, cy);
-        this.timer.setPosition(0, -380);
+        this.timer.setPosition(0, -cy + 100);
     }
 
-    handleLandscape(cx, cy, factor) {
-        this.group.scale.set(0.465 * factor);
-        this.group.position.set(cx, cy);
-        this.timer.setPosition(0, -380);
+    handleLandscape(cx, cy) {
+        this.timer.setPosition(0, -cy + 70);
     }
 }

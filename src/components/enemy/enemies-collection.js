@@ -45,11 +45,7 @@ export class EnemiesCollection {
     catchEnemy() {
         this.status.caughtEnemies += 1;
 
-        const role = config.player.role.value;
-
-        // if (role === 'seeker') {
-        //     customEvents.foundEnemy(this.status.caughtEnemies);
-        // }
+        // const role = config.player.role.value;
 
         // if (this.status.caughtEnemies === this.enemies.length) {
         //     if (role === 'seeker') {

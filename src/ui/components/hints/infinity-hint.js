@@ -3,30 +3,41 @@ import { tweens } from '../../../helpers/tweens';
 
 export class InfinityHint {
     constructor(props) {
-        this.enabled = true;
+        const {
+            amplitudeX = 120,
+            amplitudeY = 50,
+            offsetX = 0,
+            offsetY = 0,
+            time = 2000,
+            baseKey = 'infinity',
+            pointerKey = 'pointer',
+            pointerScale = 1,
+            visible = true,
+        } = props;
 
-        this.halfAmplitudeX = props.amplitudeX
-            ? Math.floor(props.amplitudeX / 2)
-            : 116;
-        this.halfAmplitudeY = props.amplitudeY
-            ? Math.floor(props.amplitudeY / 2)
-            : 46;
-        this.time = props.time || 2000;
-        this.offsetX = props.offsetX || 0;
-        this.offsetY = props.offsetY || 0;
+        this.enabled = true;
+        this.halfAmplitudeX = Math.floor(amplitudeX / 2);
+        this.halfAmplitudeY = Math.floor(amplitudeY / 2);
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+        this.time = time;
+        this.timeHalf = time * 0.5;
+        this.timeQuarter = time * 0.25;
+
+        this.tweenX = null;
+        this.tweenY = null;
 
         this.infinity = new Sprite({
+            texture: Assets.get(baseKey),
             anchor: 0.5,
-            texture: Assets.get(props.baseKey || 'infinity'),
         });
 
-        // idea - apply offset to hand
-
         this.pointer = new Sprite({
-            texture: Assets.get(props.pointerKey || 'pointer'),
+            texture: Assets.get(pointerKey),
             anchor: 0.5,
-            scale: props.pointerScale || 1,
-            position: { x: this.offsetX, y: this.offsetY },
+            scale: pointerScale,
+            x: this.offsetX,
+            y: this.offsetY,
         });
 
         this.pointerGroup = new Container({
@@ -35,13 +46,9 @@ export class InfinityHint {
 
         this.group = new Container({
             label: 'infinity-hint',
-            visible: props.visible,
+            visible,
             children: [this.infinity, this.pointerGroup],
         });
-
-        // tween props
-        this.propsIn = { easing: 'sineIn' };
-        this.propsOut = { easing: 'sineOut' };
     }
 
     show() {
@@ -64,110 +71,86 @@ export class InfinityHint {
     }
 
     animate() {
-        this.animatePointerRightFrom9to12();
+        this.animateRightFrom9to12();
     }
 
-    animatePointerRightFrom9to12() {
-        this.tweenX = tweens.add(
-            this.pointerGroup,
-            { x: this.halfAmplitudeX },
-            this.time * 0.5,
-            this.propsOut,
-        );
-        this.tweenY = tweens.add(
-            this.pointerGroup,
-            { y: -this.halfAmplitudeY },
-            this.time * 0.25,
-            this.propsOut,
-        );
-        this.tweenY.onComplete(() => this.animatePointerRightFrom12to3());
+    animateRightFrom9to12() {
+        this.tweenX = tweens.add(this.pointerGroup, this.timeHalf, {
+            easing: 'sineOut',
+            to: { x: this.halfAmplitudeX },
+        });
+        this.tweenY = tweens.add(this.pointerGroup, this.timeQuarter, {
+            to: { y: -this.halfAmplitudeY },
+            easing: 'sineOut',
+            onComplete: () => this.animateRightFrom12to3(),
+        });
     }
 
-    animatePointerRightFrom12to3() {
-        this.tweenY = tweens.add(
-            this.pointerGroup,
-            { y: 0 },
-            this.time * 0.25,
-            this.propsIn,
-        );
-        this.tweenY.onComplete(() => this.animatePointerRightFrom3to6());
+    animateRightFrom12to3() {
+        this.tweenY = tweens.add(this.pointerGroup, this.timeQuarter, {
+            easing: 'sineIn',
+            to: { y: 0 },
+            onComplete: () => this.animateRightFrom3to6(),
+        });
     }
 
-    animatePointerRightFrom3to6() {
-        this.tweenX = tweens.add(
-            this.pointerGroup,
-            { x: 0 },
-            this.time * 0.5,
-            this.propsIn,
-        );
-        this.tweenY = tweens.add(
-            this.pointerGroup,
-            { y: this.halfAmplitudeY },
-            this.time * 0.25,
-            this.propsOut,
-        );
-        this.tweenY.onComplete(() => this.animatePointerRightFrom6to9());
+    animateRightFrom3to6() {
+        this.tweenX = tweens.add(this.pointerGroup, this.timeHalf, {
+            easing: 'sineIn',
+            to: { x: 0 },
+        });
+        this.tweenY = tweens.add(this.pointerGroup, this.timeQuarter, {
+            easing: 'sineOut',
+            to: { y: this.halfAmplitudeY },
+            onComplete: () => this.animateRightFrom6to9(),
+        });
     }
 
-    animatePointerRightFrom6to9() {
-        this.tweenY = tweens.add(
-            this.pointerGroup,
-            { y: 0 },
-            this.time * 0.25,
-            this.propsIn,
-        );
-        this.tweenY.onComplete(() => this.animatePointerLeftFrom3to12());
+    animateRightFrom6to9() {
+        this.tweenY = tweens.add(this.pointerGroup, this.timeQuarter, {
+            easing: 'sineIn',
+            to: { y: 0 },
+            onComplete: () => this.animateLeftFrom3to12(),
+        });
     }
 
-    animatePointerLeftFrom3to12() {
-        this.tweenX = tweens.add(
-            this.pointerGroup,
-            { x: -this.halfAmplitudeX },
-            this.time * 0.5,
-            this.propsOut,
-        );
-        this.tweenY = tweens.add(
-            this.pointerGroup,
-            { y: -this.halfAmplitudeY },
-            this.time * 0.25,
-            this.propsOut,
-        );
-        this.tweenY.onComplete(() => this.animatePointerLeftFrom12to9());
+    animateLeftFrom3to12() {
+        this.tweenX = tweens.add(this.pointerGroup, this.timeHalf, {
+            easing: 'sineOut',
+            to: { x: -this.halfAmplitudeX },
+        });
+        this.tweenY = tweens.add(this.pointerGroup, this.timeQuarter, {
+            easing: 'sineOut',
+            to: { y: -this.halfAmplitudeY },
+            onComplete: () => this.animateLeftFrom12to9(),
+        });
     }
 
-    animatePointerLeftFrom12to9() {
-        this.tweenY = tweens.add(
-            this.pointerGroup,
-            { y: 0 },
-            this.time * 0.25,
-            this.propsIn,
-        );
-        this.tweenY.onComplete(() => this.animatePointerLeftFrom9to6());
+    animateLeftFrom12to9() {
+        this.tweenY = tweens.add(this.pointerGroup, this.timeQuarter, {
+            easing: 'sineIn',
+            to: { y: 0 },
+            onComplete: () => this.animateLeftFrom9to6(),
+        });
     }
 
-    animatePointerLeftFrom9to6() {
-        this.tweenX = tweens.add(
-            this.pointerGroup,
-            { x: 0 },
-            this.time * 0.5,
-            this.propsIn,
-        );
-        this.tweenY = tweens.add(
-            this.pointerGroup,
-            { y: this.halfAmplitudeY },
-            this.time * 0.25,
-            this.propsOut,
-        );
-        this.tweenY.onComplete(() => this.animatePointerLeftFrom6to12());
+    animateLeftFrom9to6() {
+        this.tweenX = tweens.add(this.pointerGroup, this.timeHalf, {
+            easing: 'sineIn',
+            to: { x: 0 },
+        });
+        this.tweenY = tweens.add(this.pointerGroup, this.timeQuarter, {
+            easing: 'sineOut',
+            to: { y: this.halfAmplitudeY },
+            onComplete: () => this.animateLeftFrom6to12(),
+        });
     }
 
-    animatePointerLeftFrom6to12() {
-        this.tweenY = tweens.add(
-            this.pointerGroup,
-            { y: 0 },
-            this.time * 0.25,
-            this.propsIn,
-        );
-        this.tweenY.onComplete(() => this.animatePointerRightFrom9to12());
+    animateLeftFrom6to12() {
+        this.tweenY = tweens.add(this.pointerGroup, this.timeQuarter, {
+            easing: 'sineIn',
+            to: { y: 0 },
+            onComplete: () => this.animateRightFrom9to12(),
+        });
     }
 }

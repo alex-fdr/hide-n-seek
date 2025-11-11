@@ -1,4 +1,5 @@
 import { Assets, Container, TilingSprite } from 'pixi.js';
+import { pixiUI } from '../pixi-ui';
 import { Button } from '../components/button';
 import { tweens } from '../../helpers/tweens';
 
@@ -11,6 +12,7 @@ export class LoseScreen {
             height: 960,
             tint: 0x000000,
             alpha: 0.6,
+            anchor: 0.5,
         });
 
         this.btn = new Button('button', 'loseBtn', {
@@ -23,9 +25,6 @@ export class LoseScreen {
             },
         });
 
-        // this.btn.text.position.set(0, -3)
-        // this.btn.sprite.scale.set(0.75)
-
         this.group = new Container({
             visible,
             label: 'win',
@@ -36,7 +35,10 @@ export class LoseScreen {
     show() {
         this.group.visible = true;
         tweens.fadeIn(this.group, 500);
-        tweens.pulse(this.btn.group, 1.1, 600, { repeat: -1 });
+        tweens.pulse(this.btn.group, 600, {
+            scaleTo: 1.1,
+            repeat: -1,
+        });
     }
 
     hide() {
@@ -44,16 +46,12 @@ export class LoseScreen {
     }
 
     handlePortrait(cx, cy) {
-        this.group.scale.set(1);
-        this.overlay.scale.set(1);
-        this.group.position.set(cx, cy);
-        this.btn.group.position.set(0, 360);
+        this.overlay.setSize(cx * 2, cy * 2);
+        this.btn.group.position.set(0, cy - 100);
     }
 
-    handleLandscape(cx, cy, factor) {
-        this.group.scale.set(0.465 * factor);
-        this.overlay.scale.set(1 / this.group.scale.x);
-        this.group.position.set(cx, cy);
-        this.btn.group.position.set(0, 360);
+    handleLandscape(cx, cy) {
+        this.overlay.setSize(cx * 2, cy * 2);
+        this.btn.group.position.set(0, cy - 60);
     }
 }

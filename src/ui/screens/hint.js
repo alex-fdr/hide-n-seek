@@ -4,14 +4,14 @@ import { tweens } from '../../helpers/tweens';
 
 export class HintScreen {
     constructor(visible) {
-        this.hint = new InfinityHint({
-            time: 1300,
+        this.infinityHint = new InfinityHint({
+            time: 2000,
             baseKey: 'infinity-sign',
             pointerKey: 'pointer',
-            amplitudeX: 195,
+            amplitudeX: 190,
             amplitudeY: 90,
             offsetX: 30,
-            offsetY: 45,
+            offsetY: 50,
         });
 
         this.status = {
@@ -21,7 +21,7 @@ export class HintScreen {
         this.group = new Container({
             visible,
             label: 'hint-screen',
-            children: [this.hint.group],
+            children: [this.infinityHint.group],
         });
     }
 
@@ -40,22 +40,14 @@ export class HintScreen {
 
     animate() {
         tweens.fadeIn(this.group, 300);
-        this.hint.animate();
+        this.infinityHint.animate();
     }
 
     handlePortrait(cx, cy) {
-        this.group.scale.set(1);
-        this.group.position.set(cx, cy);
-        this.hint.setPosition(0, 225);
+        this.infinityHint.setPosition(0, cy - 180);
     }
 
     handleLandscape(cx, cy, factor) {
-        this.group.scale.set(0.465 * factor);
-        this.group.position.set(cx, cy);
-        this.hint.setPosition(0, 225);
-    }
-
-    setPosition(x, y) {
-        this.pointerOld.position.set(x, y);
+        this.infinityHint.setPosition(0, cy - 100);
     }
 }

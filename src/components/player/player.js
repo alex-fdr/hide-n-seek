@@ -10,6 +10,7 @@ import {
 } from 'three';
 import { Cage } from '../cage';
 import { SightRange } from '../sight-range';
+import { Signal } from '../../helpers/signal';
 import config from '../../assets/settings/config';
 import {
     ENEMY_TAG,
@@ -34,6 +35,8 @@ export class Player {
 
         this.skin = this.createSkin(size, color, animationsList);
         this.skin.animations.idle.play();
+
+        this.onCatch = new Signal();
 
         this.status = {
             moving: false,
@@ -116,7 +119,6 @@ export class Player {
 
     getSkinnedMesh() {
         return this.skin.skinnedMesh;
-        //     return this.skin.model.getObjectByProperty('type', 'SkinnedMesh');
     }
 
     getCollider() {
@@ -147,8 +149,7 @@ export class Player {
         this.status.caught = true;
 
         this.cage.show(this.group);
-
-        // customEvents.userFailedTimer(screens.ui.timer.getElapsedTime());
+        this.onCatch.dispatch();
         // sqHelper.levelLose();
     }
 

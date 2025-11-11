@@ -1,6 +1,5 @@
 import { core } from '@alexfdr/three-game-core';
 import { Object3D } from 'three';
-import { DragHandler } from './core/input/handlers/drag-handler';
 import { Background } from './components/background';
 import { Characters } from './components/characters';
 import { Controls } from './components/controls';
@@ -8,8 +7,11 @@ import { CameraHelper } from './components/helpers/camera-helper';
 import { OutlineHelper } from './components/helpers/outline-helper';
 import { OverlayHelper } from './components/helpers/overlay-helper';
 import { ShadowsHelper } from './components/helpers/shadows-helper';
-// import { sqHelper } from './components/helpers/sq-helper';
+import { sqHelper } from './components/helpers/sq-helper';
 import { LevelLayout } from './components/level-layout';
+import { DragHandler } from './helpers/drag-handler';
+import { tweens } from './helpers/tweens';
+import { pixiUI } from './ui/pixi-ui';
 import config from './assets/settings/config';
 import { ROLE_HIDER, ROLE_SEEKER } from './data/game-const';
 
@@ -123,14 +125,14 @@ class LevelInstance {
     }
 
     setupGameFlow() {
-        // screens.ui.timer.onComplete.addOnce(() => {
-        //     const role = config.player.role.value;
-        //     if (role === 'seeker') {
-        //         sqHelper.levelLose();
-        //     } else if (role === 'hider') {
-        //         sqHelper.levelWin();
-        //     }
-        // });
+        pixiUI.getScreen('ui').timer.onComplete.addOnce(() => {
+            const role = config.player.role.value;
+            if (role === 'seeker') {
+                sqHelper.levelLose();
+            } else if (role === 'hider') {
+                sqHelper.levelWin();
+            }
+        });
         // sqHelper.onWin.addOnce(() => {
         //     // screens.ui.timer.stop();
         //     // screens.ui.hide();
@@ -149,12 +151,19 @@ class LevelInstance {
         //     this.cameraHelper.focusOnPlayer(this.characters.player);
         //     this.overlayHelper?.hide();
         // });
-        // if (config.timer.startFrom.value === 'game') {
-        //     this.startTimer();
-        // }
-        // if (config.timer.appear.value === 'game') {
-        //     // screens.ui.show();
-        // }
+
+        this.characters.player.onCatch.addOnce(() => {
+            // handle lose
+        });
+
+        console.log(config.timer.startFrom);
+
+        if (config.timer.startFrom.value === 'game') {
+            this.startTimer();
+        }
+        if (config.timer.appear.value === 'game') {
+            pixiUI.showScreen('ui');
+        }
     }
 
     setupInput() {
@@ -205,13 +214,15 @@ class LevelInstance {
     }
 
     startTimer() {
+        console.log('start timer', this.status);
         if (this.status.timerStarted) {
             return;
         }
 
         this.status.timerStarted = true;
-        // screens.ui.show();
-        // setTimeout(() => screens.ui.timer.start(), 500);
+        tweens.wait(500).then(() => {
+            pixiUI.getScreen('ui').timer.start();
+        });
     }
 
     render() {
@@ -235,7 +246,6 @@ class LevelInstance {
             dt,
             this.status.firstInteraction,
         );
-        // gameTimer.update();
     }
 
     remove() {}

@@ -1,4 +1,4 @@
-import { Signal } from '../../core/signal';
+import { Signal } from '../../helpers/signal';
 
 const STATE = {
     game: 0,
@@ -19,7 +19,6 @@ class SqHelper {
 
         this.state = STATE.win;
         // GM.trigger.end(true);
-
         this.onWin.dispatch();
     }
 
@@ -29,7 +28,6 @@ class SqHelper {
         // GM.trigger.interactionComplete();
         this.state = STATE.lose;
         // GM.trigger.end(false);
-
         this.onLose.dispatch();
     }
 

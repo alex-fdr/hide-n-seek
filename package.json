@@ -8,7 +8,7 @@
     },
     "dependencies": {
         "@alexfdr/three-game-core": "^1.0.11",
-        "@tweenjs/tween.js": "^25.0.0",
+        "@tweenjs/tween.js": "^22.0.0",
         "cannon-es": "^0.20.0",
         "pixi.js": "^8.14.0",
         "three": "^0.181.0"

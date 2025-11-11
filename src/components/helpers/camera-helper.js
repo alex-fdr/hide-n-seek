@@ -46,12 +46,10 @@ export class CameraHelper {
     }
 
     focusOnPlayer(player) {
-        const { y: cy, z: cz } = threeScene.camera.position;
-        tweens.add(
-            threeScene.camera.position,
-            { y: cy * 0.5, z: cz * 0.5 },
-            1000,
-        );
+        const { y, z } = core.camera.position;
+        tweens.add(core.camera.position, 1000, {
+            to: { y: y * 0.5, z: z * 0.5 },
+        });
     }
 }
 

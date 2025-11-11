@@ -1,6 +1,6 @@
 import { Container, Text } from 'pixi.js';
+import { Signal } from '../../helpers/signal';
 import { tweens } from '../../helpers/tweens';
-import { Signal } from '../../core/signal';
 
 export class TextCounter {
     constructor(props) {
@@ -54,9 +54,8 @@ export class TextCounter {
             children: [this.text],
         });
 
-        this.onComplete = new Signal();
-
         this.finalValue = 0;
+        this.onComplete = new Signal();
 
         if (textAlignLeft) {
             this.text.align = 'left';
@@ -99,48 +98,41 @@ export class TextCounter {
         if (this.bounceAnimation) {
             this.text.scale.set(1);
 
-            const tween = tweens.pulse(
-                this.text,
-                this.bounceFactor,
-                this.bounceTime,
-            );
+            const bounceTween = tweens.pulse(this.text, this.bounceTime, {
+                scaleTo: this.bounceFactor,
+            });
 
             if (this.isNewColorOnBounce) {
-                this.changeTextColor(tween);
+                this.changeTextColor(bounceTween);
             }
         }
 
         if (!this.changeAnimation) {
             this.value += amount;
             this.text.text = this.getValue(this.value);
-            return true;
+            return;
         }
 
         const fromValue = this.value;
         const toValue = this.value + amount;
-
+        const dummy = { value: 0 };
         this.finalValue = toValue;
 
-        const dummy = { value: 0 };
-        const tween = tweens.add(dummy, { value: amount }, this.changeTime, {
+        this.tween = tweens.add(dummy, this.changeTime, {
             easing: 'linear',
+            to: { value: amount },
         });
 
-        tween.onUpdate(() => {
+        this.tween.onUpdate(() => {
             this.text.text = this.getValue(fromValue + dummy.value);
             this.value = fromValue + dummy.value;
         });
 
-        tween.onComplete(() => {
+        this.tween.onComplete(() => {
             this.text.text = this.getValue(toValue);
-            // console.log(amount, this.prefix, this.value, toValue, this.suffix);
             this.value = toValue;
             this.onComplete.dispatch();
         });
-
-        this.tween = tween;
-
-        return tween;
     }
 
     changeTextColor(tween) {
@@ -154,13 +146,11 @@ export class TextCounter {
     }
 
     applyZeroPrefix(value) {
-        // add one leading zero if value has only one digit
+        // add one leading zero if the value has only one digit
         return value < 10 ? `0${value}` : value.toString();
     }
 
     stop() {
-        if (this.tween) {
-            this.tween.stop();
-        }
+        this.tween?.stop();
     }
 }

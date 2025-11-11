@@ -36,17 +36,24 @@ export class AISeeker extends Enemy {
             repeatDelay: 500,
             easing: 'sineInOut',
         };
-        const t = tweens.add(el.rotation, { y: -1 }, time * 0.5);
-        const t2 = tweens.add(el.rotation, { y: 1 }, time, {
+        const t = tweens.add(el.rotation, time * 0.5, {
+            to: { y: -1 },
+            onComplete: () => {
+                t2.start();
+                this.tutorialTween = t2;
+            },
+        });
+        const t2 = tweens.add(el.rotation, time, {
             ...props,
             autostart: false,
+            to: { y: 1 },
         });
         this.tutorialTween = t;
 
-        t.onComplete(() => {
-            t2.start();
-            this.tutorialTween = t2;
-        });
+        // t.onComplete(() => {
+        //     t2.start();
+        //     this.tutorialTween = t2;
+        // });
     }
 
     activate() {

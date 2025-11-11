@@ -43,8 +43,9 @@ export class Cage {
 
         this.model.position.y = 1;
 
-        tweens.add(this.model.position, { y: 0.05 }, 400, {
+        tweens.add(this.model.position, 400, {
             easing: 'backOut',
+            to: { y: 0.05 },
             // delay: 50,
         });
     }

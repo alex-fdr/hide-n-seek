@@ -43,6 +43,6 @@ export class Button {
     }
 
     showPressEffect() {
-        this.tween = tweens.pulse(this.group, 0.9, 300);
+        this.tween = tweens.pulse(this.group, 300, { scaleTo: 0.9 });
     }
 }
