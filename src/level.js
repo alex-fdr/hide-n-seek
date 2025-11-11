@@ -7,7 +7,6 @@ import { CameraHelper } from './components/helpers/camera-helper';
 import { OutlineHelper } from './components/helpers/outline-helper';
 import { OverlayHelper } from './components/helpers/overlay-helper';
 import { ShadowsHelper } from './components/helpers/shadows-helper';
-import { sqHelper } from './components/helpers/sq-helper';
 import { LevelLayout } from './components/level-layout';
 import { DragHandler } from './helpers/drag-handler';
 import { tweens } from './helpers/tweens';
@@ -120,13 +119,13 @@ class LevelInstance {
             return;
         }
 
-        const role = config.player.role.value;
+        const playerRole = config.player.role.value;
         const { player, aiSeeker, enemies } = this.characters;
         const frontObjects = [player.getSkinnedMesh()];
 
-        if (role === ROLE_SEEKER) {
+        if (playerRole === ROLE_SEEKER) {
             frontObjects.push(...enemies.getAllSkinnedMeshes());
-        } else if (role === ROLE_HIDER) {
+        } else if (playerRole === ROLE_HIDER) {
             frontObjects.push(aiSeeker.getSkinnedMesh());
         }
 
@@ -135,11 +134,11 @@ class LevelInstance {
 
     setupGameFlow() {
         this.ui.timer.onComplete.addOnce(() => {
-            const role = config.player.role.value;
-            if (role === 'seeker') {
-                sqHelper.levelLose();
-            } else if (role === 'hider') {
-                sqHelper.levelWin();
+            const playerRole = config.player.role.value;
+            if (playerRole === ROLE_SEEKER) {
+                this.handleLose();
+            } else if (playerRole === ROLE_HIDER) {
+                this.handleWin();
             }
         });
 
