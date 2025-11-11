@@ -10,32 +10,30 @@ import { tweens } from '../../helpers/tweens';
 import config from '../../assets/settings/config';
 
 export class OverlayHelper {
-    constructor() {
-        this.frontObjects = [];
+    constructor({ frontObjects = [] }) {
+        this.frontScene = this.createScene(frontObjects);
+        this.mesh = this.createMesh();
 
         this.status = {
             visible: false,
         };
-    }
 
-    init(frontObjects = []) {
-        this.createScene(frontObjects);
-        this.createMesh();
         this.hide();
     }
 
     createScene(frontObjects) {
-        this.frontScene = new Scene();
+        const frontScene = new Scene();
 
         for (const obj of frontObjects) {
             const copy = obj.clone();
-            this.frontObjects.push(copy);
-            this.frontScene.attach(copy);
+            frontScene.attach(copy);
         }
 
         for (const light of core.scene.lights) {
-            this.frontScene.attach(light.clone());
+            frontScene.attach(light.clone());
         }
+
+        return frontScene;
     }
 
     createMesh() {
@@ -48,11 +46,12 @@ export class OverlayHelper {
             side: FrontSide,
         });
 
-        this.mesh = new Mesh(geometry, material);
-        this.mesh.position.set(0, 5, 0);
-        this.mesh.rotation.x = -Math.PI * 0.5;
-        this.mesh.frustumCulled = false;
-        core.scene.add(this.mesh);
+        const mesh = new Mesh(geometry, material);
+        mesh.position.set(0, 5, 0);
+        mesh.rotation.x = -Math.PI * 0.5;
+        mesh.frustumCulled = false;
+        core.scene.add(mesh);
+        return mesh;
     }
 
     show() {
@@ -60,10 +59,7 @@ export class OverlayHelper {
             return;
         }
 
-        core.renderer.autoClear = false;
-        this.status.visible = true;
-        this.mesh.visible = true;
-        this.frontScene.visible = true;
+        this.toggleVisibility(true);
         tweens.fadeIn3(this.mesh, 1000);
     }
 
@@ -72,10 +68,14 @@ export class OverlayHelper {
             return;
         }
 
-        this.status.visible = false;
-        this.mesh.visible = false;
-        this.frontScene.visible = false;
-        core.renderer.autoClear = true;
+        this.toggleVisibility(false);
+    }
+
+    toggleVisibility(value) {
+        this.status.visible = value;
+        this.mesh.visible = value;
+        this.frontScene.visible = value;
+        core.renderer.autoClear = !value;
     }
 
     update() {

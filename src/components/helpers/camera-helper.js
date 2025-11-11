@@ -10,20 +10,15 @@ export class CameraHelper {
         this.offset = new Vector3();
         this.position = new Vector3();
         this.lerpSpeed = 0.5;
-    }
 
-    init() {
-        const { scene, camera } = core;
-
-        camera.lookAt(0, 0, 0);
-        camera.wrapper = this.wrapper;
-        this.wrapper.add(camera);
-        scene.add(this.wrapper);
+        core.camera.lookAt(0, 0, 0);
+        core.camera.wrapper = this.wrapper;
+        this.wrapper.add(core.camera);
+        core.scene.add(this.wrapper);
 
         const preset = config.camera.preset.value;
-        const { offset, position, rotation } = CAMERA_SETTINGS[preset];
-
-        camera.position.copy(position);
+        const { position, offset, rotation } = CAMERA_SETTINGS[preset];
+        core.camera.position.copy(position);
         this.offset.copy(offset);
 
         if (rotation) {
@@ -38,10 +33,8 @@ export class CameraHelper {
         }
 
         const model = characterToFollow.getModel();
-
         this.position.copy(model.position);
         this.position.add(this.offset);
-
         this.wrapper.position.lerp(this.position, this.lerpSpeed);
     }
 
@@ -52,5 +45,3 @@ export class CameraHelper {
         });
     }
 }
-
-export const cameraHelper = new CameraHelper();

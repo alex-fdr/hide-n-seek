@@ -23,12 +23,14 @@ const SEGMENT_LENGTH = TEXTURE_SIZE / LINE_LENGTH / 2;
 const HALF_VIEW_ANGLE = LINE_AMOUNT * ANGLE_STEP * 0.5;
 
 export class SightRange {
-    constructor() {
+    constructor({ parent }) {
         this.plane = null;
         this.texture = null;
         this.ctx = null;
-        this.parent = null;
+
         this.group = new Object3D();
+        this.parent = parent;
+        this.parent.add(this.group);
 
         this.X_AXIS = new Vector3(1, 0, 0);
         this.Y_AXIS = new Vector3(0, 1, 0);
@@ -37,16 +39,9 @@ export class SightRange {
         this.lookDirection = new Vector3();
 
         this.raycaster = new Raycaster();
-        this.raycaster.near = 0;
         this.raycaster.far = LINE_LENGTH;
 
         this.enemyRaycaster = new Raycaster();
-        this.enemyRaycaster.near = 0;
-    }
-
-    init(parent) {
-        this.parent = parent;
-        this.parent.add(this.group);
 
         this.createCanvas();
         this.createGradients();
@@ -81,14 +76,13 @@ export class SightRange {
         });
         material.map.minFilter = LinearFilter;
         material.map.magFilter = LinearFilter;
+        this.texture = material.map;
 
         this.plane = new Mesh(geometry, material);
         this.plane.rotateX(HALF_PI);
         this.plane.position.y = 0.01;
         this.plane.scale.multiplyScalar(LINE_LENGTH * 2);
         this.group.add(this.plane);
-
-        this.texture = material.map;
     }
 
     createGradients() {

@@ -1,4 +1,3 @@
-// import { debug } from '../core/debug/debug';
 import { core } from '@alexfdr/three-game-core';
 import {
     CatmullRomCurve3,
@@ -11,26 +10,17 @@ import {
 } from 'three';
 
 export class PathFollower {
-    constructor() {
-        this.points = [];
-        this.pointsGroup = null;
-        this.pathCurve = null;
-        this.pathMesh = null;
+    constructor({ points = [], speed = 1 }) {
         this.progress = 0;
-        this.speed = 1.8;
-        this.k = 0;
+        this.speed = 1.8 * speed;
         this.direction = 1;
-    }
 
-    init(points = [], { speed }) {
         this.points = points.map(([x, y, z]) => new Vector3(x, y, z));
         this.pathCurve = new CatmullRomCurve3(this.points);
-
         this.k = 1 / this.pathCurve.getLength();
 
-        if (speed) {
-            this.speed *= speed;
-        }
+        this.pathPoints = null;
+        this.pathMesh = null;
     }
 
     renderPoints() {
@@ -38,14 +28,14 @@ export class PathFollower {
         const material = new MeshBasicMaterial({ color: 0xff0000 });
         const mesh = new Mesh(geometry, material);
 
-        this.pointsGroup = new Object3D();
-        this.pointsGroup.name = 'path-points';
-        core.scene.add(this.pointsGroup);
+        this.pathPoints = new Object3D();
+        this.pathPoints.name = 'path-points';
+        core.scene.add(this.pathPoints);
 
         this.points.forEach((pos) => {
             const sphere = mesh.clone();
             sphere.position.copy(pos);
-            this.pointsGroup.add(sphere);
+            this.pathPoints.add(sphere);
         });
     }
 

@@ -14,52 +14,56 @@ const STATES = {
 
 export class Enemy {
     constructor(props) {
-        this.parent = props.parent;
-        this.type = props.type;
+        const {
+            parent,
+            type,
+            index,
+            name,
+            route,
+            speed,
+            spawn,
+            size,
+            color,
+            animationsList,
+        } = props;
 
-        this.group = new Object3D();
-        this.parent.add(this.group);
+        this.parent = parent;
+        this.type = type;
+        this.index = index;
 
         this.animations = {};
         this.routes = {};
-        this.index = 0;
-        this.props = props;
-        this.name = props.name;
+        this.name = name;
         this.role = ROLE_HIDER;
+        this.state = STATES.idle;
 
-        this.skin = this.createSkin(
-            props.size,
-            props.color,
-            props.animationsList,
-        );
-        this.group.position.copy(props.spawn.position);
+        this.group = this.addGroup(spawn.position);
+        this.skin = this.addSkin(size, color, animationsList);
+        this.pathFollower = this.addPathFollower(route, speed, name);
+        this.collider = this.addCollider();
+        this.cage = this.addCage();
 
         this.status = {
+            speed,
             caught: false,
             firstRoute: false,
             progress: 1,
             progressDelta: -1,
-            speed: 1,
         };
-
-        this.state = STATES.idle;
-    }
-
-    init() {
-        const { speed, route, index, name } = this.props;
-        this.addPathFollower(route, speed, name);
-        this.addCollider();
-        this.addCage();
 
         if (this.role === ROLE_HIDER) {
             this.enableShadows();
         }
-
-        this.index = index;
-        this.status.speed = speed;
     }
 
-    createSkin(size, color, animationsList) {
+    addGroup(position) {
+        const group = new Object3D();
+        this.parent.add(group);
+        group.position.copy(position);
+        return group;
+    }
+
+    addSkin(size, color, animationsList) {
         const skinProps = {
             size,
             color,
@@ -107,11 +111,13 @@ export class Enemy {
     }
 
     addPathFollower(route, speed, index) {
-        this.pathFollower = new PathFollower();
-        this.pathFollower.init(route.points, { speed, index });
-
-        // move to the first point
-        this.group.position.copy(this.pathFollower.points[0]);
+        const pathFollower = new PathFollower({
+            points: route.points,
+            speed,
+            index,
+        });
+        this.group.position.copy(pathFollower.points[0]);
+        return pathFollower;
     }
 
     addCollider() {
@@ -124,14 +130,12 @@ export class Enemy {
         collider.name = ENEMY_TAG;
         collider.parentClass = this;
         collider.visible = false;
-        this.collider = collider;
         this.skin.model.add(collider);
+        return collider;
     }
 
     addCage() {
-        const cage = new Cage();
-        cage.init();
-        this.cage = cage;
+        return new Cage();
     }
 
     enableShadows() {

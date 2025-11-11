@@ -77,7 +77,7 @@ export class Game {
 
         this.resize(width, height);
         screens.hide('loading');
-        // this.setupCustomDebugControls();
+        this.setupCustomDebugControls();
 
         core.onUpdate(this.update.bind(this));
         core.onResize(this.resize.bind(this));

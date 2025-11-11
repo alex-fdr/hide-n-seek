@@ -2,14 +2,11 @@ import { assets, core } from '@alexfdr/three-game-core';
 import { materials } from '../helpers/materials';
 import { tweens } from '../helpers/tweens';
 import config from '../assets/settings/config';
+import { ROLE_HIDER } from '../data/game-const';
 
 export class Cage {
     constructor() {
-        this.model = null;
-    }
-
-    init() {
-        this.addModel();
+        this.model = this.addModel();
     }
 
     addModel() {
@@ -19,7 +16,7 @@ export class Cage {
         model.visible = false;
 
         const size =
-            config.player.role.value === 'hider'
+            config.player.role.value === ROLE_HIDER
                 ? config.player.size.value
                 : config.enemies.size.value;
 
@@ -32,8 +29,7 @@ export class Cage {
         });
 
         core.scene.add(model);
-
-        this.model = model;
+        return model;
     }
 
     show({ position }) {

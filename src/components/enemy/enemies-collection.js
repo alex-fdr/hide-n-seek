@@ -1,11 +1,19 @@
 import { Enemy } from './enemy';
+import { Signal } from '../../helpers/signal';
 import config from '../../assets/settings/config';
+import {
+    ROLE_HIDER,
+    ROLE_SEEKER,
+    STATUS_PLAYER_LOSE,
+    STATUS_PLAYER_WIN,
+} from '../../data/game-const';
 import { gameSettings } from '../../data/game-settings';
 
 export class EnemiesCollection {
     constructor({ parent, data }) {
         this.parent = parent;
         this.enemies = this.createEnemies(data);
+        this.onCatchAllEnemies = new Signal();
 
         this.status = {
             caughtEnemies: 0,
@@ -14,13 +22,11 @@ export class EnemiesCollection {
 
     createEnemies(enemiesData) {
         return enemiesData.map((data) => {
-            const enemy = new Enemy({
+            return new Enemy({
                 ...data,
                 parent: this.parent,
                 animationsList: [...gameSettings.skins[data.type].animations],
             });
-            enemy.init();
-            return enemy;
         });
     }
 
@@ -45,13 +51,15 @@ export class EnemiesCollection {
     catchEnemy() {
         this.status.caughtEnemies += 1;
 
-        // const role = config.player.role.value;
+        const playerRole = config.player.role.value;
 
-        // if (this.status.caughtEnemies === this.enemies.length) {
-        //     if (role === 'seeker') {
-        //     } else if (role === 'hider') {
-        //     }
-        // }
+        if (this.status.caughtEnemies === this.enemies.length) {
+            if (playerRole === ROLE_SEEKER) {
+                this.onCatchAllEnemies.dispatch(STATUS_PLAYER_WIN);
+            } else if (playerRole === ROLE_HIDER) {
+                this.onCatchAllEnemies.dispatch(STATUS_PLAYER_LOSE);
+            }
+        }
     }
 
     releaseEnemy() {

@@ -8,17 +8,11 @@ export class AISeeker extends Enemy {
         super(props);
 
         this.role = ROLE_SEEKER;
-    }
-
-    init() {
-        super.init();
-
-        this.addSightRange();
+        this.sightRange = this.addSightRange();
     }
 
     addSightRange() {
-        this.sightRange = new SightRange();
-        this.sightRange.init(this.group);
+        return new SightRange({ parent: this.group });
     }
 
     updateSightRange(walls, enemies, player) {
@@ -28,7 +22,6 @@ export class AISeeker extends Enemy {
     tutorialAnimation() {
         // rotate head around
         const el = this.group.getObjectByName('mixamorig_Spine2');
-        // const el = this.group
         const time = 1000;
         const props = {
             repeat: -1,
@@ -49,18 +42,12 @@ export class AISeeker extends Enemy {
             to: { y: 1 },
         });
         this.tutorialTween = t;
-
-        // t.onComplete(() => {
-        //     t2.start();
-        //     this.tutorialTween = t2;
-        // });
     }
 
     activate() {
         super.activate();
 
         if (this.tutorialTween) {
-            console.log('stop tween');
             this.tutorialTween.stop(true);
             this.tutorialTween = null;
         }

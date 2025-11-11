@@ -18,6 +18,7 @@ import {
     ROLE_HIDER,
     ROLE_SEEKER,
     SKIN_TIGER,
+    STATUS_PLAYER_LOSE,
 } from '../../data/game-const';
 import { StickmanSkin } from '../skins/stickman-skin';
 import { TigerSkin } from '../skins/tiger-skin';
@@ -29,22 +30,36 @@ export class Player {
         this.animationsList = animationsList;
         this.role = config.player.role.value;
 
-        this.group = new Object3D();
-        this.group.position.copy(position);
-        this.parent.add(this.group);
-
-        this.skin = this.createSkin(size, color, animationsList);
+        this.group = this.addGroup(position);
+        this.skin = this.addSkin(size, color, animationsList);
         this.skin.animations.idle.play();
+        this.body = this.addPhysicalBody();
 
-        this.onCatch = new Signal();
+        if (this.role === ROLE_HIDER) {
+            this.cage = this.addCage();
+            this.collider = this.addCollider();
+            this.raycaster = this.addRaycaster();
+            this.enableShadows();
+        } else if (this.role === ROLE_SEEKER) {
+            this.sightRange = this.addSightRange();
+        }
 
+        this.onCatchBySeeker = new Signal();
+        this.lookDirection = new Vector3();
         this.status = {
             moving: false,
             caught: false,
         };
     }
 
-    createSkin(size, color, animationsList) {
+    addGroup(position) {
+        const group = new Object3D();
+        group.position.copy(position);
+        this.parent.add(group);
+        return group;
+    }
+
+    addSkin(size, color, animationsList) {
         const skinProps = {
             size,
             color,
@@ -56,37 +71,23 @@ export class Player {
             : new StickmanSkin(skinProps);
     }
 
-    init() {
-        this.addPhysicalBody();
-
-        if (this.role === ROLE_SEEKER) {
-            this.addSightRange();
-        } else if (this.role === ROLE_HIDER) {
-            this.addCage();
-            this.addCollider();
-            this.addRaycaster();
-            this.enableShadows();
-        }
-    }
-
     addPhysicalBody() {
         const radius = 0.5;
         const shape = new Sphere(radius);
-        this.body = new Body({ mass: 1 });
-        this.body.addShape(shape);
-        this.body.position.copy(this.group.position);
-        this.body.fixedRotation = true;
-        core.physics.world.addBody(this.body);
+        const body = new Body({ mass: 1 });
+        body.addShape(shape);
+        body.position.copy(this.group.position);
+        body.fixedRotation = true;
+        core.physics.world.addBody(body);
+        return body;
     }
 
     addSightRange() {
-        this.sightRange = new SightRange();
-        this.sightRange.init(this.group);
+        return new SightRange({ parent: this.group });
     }
 
     addCage() {
-        this.cage = new Cage();
-        this.cage.init();
+        return new Cage();
     }
 
     addCollider() {
@@ -94,23 +95,24 @@ export class Player {
         const height = 2;
         const geometry = new CylinderGeometry(radius, radius, height);
         const material = new MeshPhongMaterial({ color: 0xffffff });
-        this.collider = new Mesh(geometry, material);
-        this.collider.rotateX(Math.PI * 0.5);
-        this.collider.name = PLAYER_TAG;
-        this.collider.parentClass = this;
-        this.collider.visible = false;
-        this.skin.model.add(this.collider);
+        const collider = new Mesh(geometry, material);
+        collider.rotateX(Math.PI * 0.5);
+        collider.name = PLAYER_TAG;
+        collider.parentClass = this;
+        collider.visible = false;
+        this.skin.model.add(collider);
+        return collider;
     }
 
     addRaycaster() {
-        this.raycaster = new Raycaster();
-        this.raycaster.near = 0;
-        this.raycaster.far = 1;
-        this.lookDirection = new Vector3();
+        const raycaster = new Raycaster();
+        raycaster.near = 0;
+        raycaster.far = 1;
+        return raycaster;
     }
 
     enableShadows() {
-        this.getSkinnedMesh().castShadow = true;
+        this.skin.skinnedMesh.castShadow = true;
     }
 
     getModel() {
@@ -149,7 +151,7 @@ export class Player {
         this.status.caught = true;
 
         this.cage.show(this.group);
-        this.onCatch.dispatch();
+        this.onCatchBySeeker.dispatch(STATUS_PLAYER_LOSE);
         // sqHelper.levelLose();
     }
 

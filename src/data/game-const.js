@@ -24,3 +24,5 @@ export const ENEMY_TAG = 'enemy-collider';
 export const PLAYER_TAG = 'player-collider';
 export const SKIN_TIGER = 'tiger';
 export const SKIN_STICKMAN = 'stickman';
+export const STATUS_PLAYER_WIN = 'playerWin';
+export const STATUS_PLAYER_LOSE = 'playerLose';

@@ -1,35 +1,36 @@
 import config from '../assets/settings/config';
+import { ROLE_HIDER } from '../data/game-const';
 import { gameSettings } from '../data/game-settings';
 import { AISeeker } from './enemy/ai-seeker';
 import { EnemiesCollection } from './enemy/enemies-collection';
 import { Player } from './player/player';
 
 export class Characters {
-    constructor({ parent }) {
+    constructor({ parent, data }) {
         this.parent = parent;
-        this.player = null;
-        this.enemies = null;
-        this.aiSeeker = null;
+        this.player = this.addPlayer(data.player);
+        this.enemies = this.addEnemies(data.enemies);
+        this.aiSeeker =
+            config.player.role.value === ROLE_HIDER
+                ? this.addAISeeker(data.aiSeeker)
+                : null;
 
         this.status = {
             caughtEnemies: 0,
         };
     }
 
-    init(playerData, enemiesData, aiSeekerData) {
-        this.addPlayer(playerData);
-        this.addEnemies(enemiesData);
+    // init(playerData, enemiesData, aiSeekerData) {
+    //     const role = config.player.role.value;
 
-        const role = config.player.role.value;
-
-        if (role === 'seeker') {
-            // do smth here
-        } else if (role === 'hider') {
-            this.addAISeeker(aiSeekerData);
-            // make player catchable
-            // add it to enemies list or smth else
-        }
-    }
+    //     if (role === 'seeker') {
+    //         // do smth here
+    //     } else if (role === 'hider') {
+    //         this.addAISeeker(aiSeekerData);
+    //         // make player catchable
+    //         // add it to enemies list or smth else
+    //     }
+    // }
 
     addPlayer(data) {
         const type = config.player.model.value;
@@ -38,15 +39,14 @@ export class Characters {
         const role = config.player.role.value;
         const { position, positionHider } = data;
 
-        this.player = new Player({
+        return new Player({
             size,
             type,
             color,
             animationsList: gameSettings.skins[type].animations,
-            position: role === 'hider' ? positionHider : position,
+            position: role === ROLE_HIDER ? positionHider : position,
             parent: this.parent,
         });
-        this.player.init();
     }
 
     addEnemies(data) {
@@ -69,7 +69,7 @@ export class Characters {
             }
         }
 
-        this.enemies = new EnemiesCollection({
+        return new EnemiesCollection({
             parent: this.parent,
             data: newEnemiesData,
         });
@@ -81,19 +81,21 @@ export class Characters {
         const color = config.aiSeeker.color.value;
         const newData = { ...data, size, color, type };
 
-        this.aiSeeker = new AISeeker({
+        const aiSeeker = new AISeeker({
             ...newData,
             animationsList: gameSettings.skins[type].animations,
             parent: this.parent,
         });
-        this.aiSeeker.init();
-
         // this.aiSeeker.tutorialAnimation()
         // this.aiSeeker.activate()
+        return aiSeeker;
     }
 
     getPlayerMeshAndBody() {
-        return [this.player.group, this.player.body];
+        return {
+            mesh: this.player.group,
+            body: this.player.body,
+        };
     }
 
     // deactivate() {

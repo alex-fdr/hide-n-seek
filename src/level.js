@@ -13,7 +13,12 @@ import { DragHandler } from './helpers/drag-handler';
 import { tweens } from './helpers/tweens';
 import { pixiUI } from './ui/pixi-ui';
 import config from './assets/settings/config';
-import { ROLE_HIDER, ROLE_SEEKER } from './data/game-const';
+import {
+    ROLE_HIDER,
+    ROLE_SEEKER,
+    STATUS_PLAYER_LOSE,
+    STATUS_PLAYER_WIN,
+} from './data/game-const';
 
 class LevelInstance {
     constructor() {
@@ -21,10 +26,13 @@ class LevelInstance {
             timerStarted: false,
             activateEnemies: false,
             firstInteraction: false,
+            levelComplete: false,
         };
     }
 
     init(data) {
+        this.ui = pixiUI.getScreen('ui');
+
         this.addGroup();
         this.addLayout();
         this.addCharacters(data);
@@ -56,22 +64,26 @@ class LevelInstance {
         const { player, enemies, aiSeeker } = data;
         this.characters = new Characters({
             parent: this.group,
+            data: {
+                player,
+                enemies,
+                aiSeeker,
+            },
         });
-        this.characters.init(player, enemies, aiSeeker);
     }
 
     addCameraHelper() {
         this.cameraHelper = new CameraHelper();
-        this.cameraHelper.init();
     }
 
     addBackground() {
-        this.background = new Background();
-        this.background.init({ image: config.game.background.value });
+        this.background = new Background({
+            image: config.game.background.value,
+        });
     }
 
     addControls() {
-        const [mesh, body] = this.characters.getPlayerMeshAndBody();
+        const { mesh, body } = this.characters.getPlayerMeshAndBody();
         this.controls = new Controls({ mesh, body });
     }
 
@@ -93,10 +105,8 @@ class LevelInstance {
             }
         }
 
-        if (this.characters.aiSeeker) {
-            if (config.aiSeeker.outline.value) {
-                outlinedObjects.push(this.characters.aiSeeker.getSkinnedMesh());
-            }
+        if (this.characters.aiSeeker && config.aiSeeker.outline.value) {
+            outlinedObjects.push(this.characters.aiSeeker.getSkinnedMesh());
         }
 
         const color = config.game.outlineColor.value;
@@ -120,12 +130,11 @@ class LevelInstance {
             frontObjects.push(aiSeeker.getSkinnedMesh());
         }
 
-        this.overlayHelper = new OverlayHelper();
-        this.overlayHelper.init(frontObjects);
+        this.overlayHelper = new OverlayHelper({ frontObjects });
     }
 
     setupGameFlow() {
-        pixiUI.getScreen('ui').timer.onComplete.addOnce(() => {
+        this.ui.timer.onComplete.addOnce(() => {
             const role = config.player.role.value;
             if (role === 'seeker') {
                 sqHelper.levelLose();
@@ -133,36 +142,24 @@ class LevelInstance {
                 sqHelper.levelWin();
             }
         });
-        // sqHelper.onWin.addOnce(() => {
-        //     // screens.ui.timer.stop();
-        //     // screens.ui.hide();
-        //     this.characters.player.finalDance();
-        //     this.characters.enemies.deactivate();
-        //     this.characters.aiSeeker?.deactivate();
-        //     this.cameraHelper.focusOnPlayer(this.characters.player);
-        //     this.overlayHelper?.hide();
-        // });
-        // sqHelper.onLose.addOnce(() => {
-        //     // screens.ui.hide();
-        //     // screens.ui.timer.stop();
-        //     this.characters.player.finalLose();
-        //     this.characters.enemies.deactivate();
-        //     this.characters.aiSeeker?.deactivate();
-        //     this.cameraHelper.focusOnPlayer(this.characters.player);
-        //     this.overlayHelper?.hide();
-        // });
 
-        this.characters.player.onCatch.addOnce(() => {
-            // handle lose
+        this.characters.enemies.onCatchAllEnemies.addOnce((status) => {
+            if (status === STATUS_PLAYER_WIN) {
+                this.handleWin();
+            } else if (status === STATUS_PLAYER_LOSE) {
+                this.handleLose();
+            }
         });
 
-        console.log(config.timer.startFrom);
+        this.characters.player.onCatchBySeeker.addOnce(() => {
+            this.handleLose();
+        });
 
         if (config.timer.startFrom.value === 'game') {
             this.startTimer();
         }
         if (config.timer.appear.value === 'game') {
-            pixiUI.showScreen('ui');
+            this.ui.show();
         }
     }
 
@@ -184,23 +181,17 @@ class LevelInstance {
     }
 
     handleOnDown() {
-        // GM.trigger.interactionStart();
-
         if (!this.status.firstInteraction) {
             this.status.firstInteraction = true;
-            // screens.tutorial.hide();
+            this.characters.aiSeeker?.activate();
+            pixiUI.hideScreen('tutorial')?.hide();
 
-            if (this.characters.aiSeeker) {
-                this.characters.aiSeeker.activate();
+            if (config.timer.startFrom.value === 'interaction') {
+                this.startTimer();
             }
         }
 
-        if (config.timer.startFrom.value === 'interaction') {
-            this.startTimer();
-        }
-
         this.overlayHelper?.hide();
-
         this.characters.player.startMoving();
     }
 
@@ -210,19 +201,41 @@ class LevelInstance {
 
     handleOnUp() {
         this.characters.player.stopMoving();
-        // GM.trigger.interactionComplete();
     }
 
     startTimer() {
-        console.log('start timer', this.status);
         if (this.status.timerStarted) {
             return;
         }
 
+        console.log('start timer', this.status);
+
         this.status.timerStarted = true;
-        tweens.wait(500).then(() => {
-            pixiUI.getScreen('ui').timer.start();
-        });
+        tweens.wait(500).then(() => this.ui.timer.start());
+    }
+
+    handleWin() {
+        core.input.enabled = false;
+        this.status.levelComplete = true;
+        this.ui.timer.stop();
+        this.ui.hide();
+        this.characters.player.finalDance();
+        this.characters.enemies.deactivate();
+        this.characters.aiSeeker?.deactivate();
+        this.cameraHelper.focusOnPlayer(this.characters.player);
+        this.overlayHelper?.hide();
+    }
+
+    handleLose() {
+        core.input.enabled = false;
+        this.status.levelComplete = true;
+        this.ui.timer.stop();
+        this.ui.hide();
+        this.characters.player.finalLose();
+        this.characters.enemies.deactivate();
+        this.characters.aiSeeker?.deactivate();
+        this.cameraHelper.focusOnPlayer(this.characters.player);
+        this.overlayHelper?.hide();
     }
 
     render() {
@@ -230,10 +243,10 @@ class LevelInstance {
     }
 
     update(dt) {
-        // if (sqHelper.levelComplete) {
-        //     this.outlineHelper.update();
-        //     return;
-        // }
+        if (this.status.levelComplete) {
+            // this.outlineHelper.update();
+            return;
+        }
 
         if (!this.characters.player.status.caught) {
             this.controls.update();
