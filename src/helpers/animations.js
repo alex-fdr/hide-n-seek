@@ -7,11 +7,8 @@ class AnimationManager {
         this.mixers = [];
         this.animationsList = [];
         this.targetsUuid = [];
-        // this.currentAnimation = null;
-        this.isActive = true;
+        this.enabled = true;
     }
-
-    init() {}
 
     add(targetMesh, animationSource, loop = false, timeScale = 1) {
         const mixer = this.addMixer(targetMesh);
@@ -25,37 +22,15 @@ class AnimationManager {
     }
 
     addMixer(target) {
-        let mixer;
-        if (this.targetsUuid.indexOf(target.uuid) === -1) {
+        if (!this.targetsUuid.includes(target.uuid)) {
             this.targetsUuid.push(target.uuid);
-            mixer = new AnimationMixer(target);
-            this.mixers[target.uuid] = mixer;
-        } else {
-            mixer = this.mixers[target.uuid];
+            this.mixers[target.uuid] = new AnimationMixer(target);
         }
-        return mixer;
+
+        return this.mixers[target.uuid];
     }
 
-    play(anim) {
-        if (anim) {
-            anim.getMixer().stopAllAction();
-            anim.play();
-        }
-    }
-
-    playWithCrossFade(nextAnim, prevAnim, durationInSeconds = 0.2) {
-        prevAnim.crossFadeTo(nextAnim, durationInSeconds);
-        nextAnim.play();
-    }
-
-    stop(anim) {
-        if (anim) {
-            anim.stop();
-            // anim.getMixer().stopAllAction();
-        }
-    }
-
-    onComplete(anim, callback, once = true) {
+    onAnimationComplete(anim, callback, once = true) {
         const mixer = anim.getMixer();
 
         const handler = () => {
@@ -63,27 +38,20 @@ class AnimationManager {
                 mixer.removeEventListener('finished', handler);
             }
 
-            if (callback) {
-                callback();
-            }
+            callback?.();
         };
 
         mixer.addEventListener('finished', handler);
     }
 
-    disable() {
-        this.isActive = false;
-    }
-
     update(dt) {
-        if (!this.isActive) {
+        if (!this.enabled) {
             return;
         }
 
         for (const uuid of this.targetsUuid) {
             this.mixers[uuid].update(dt);
         }
-        // this.targetsUuid.forEach((uuid) => this.mixers[uuid].update(dt));
     }
 
     parse(animationsMap) {
@@ -94,34 +62,33 @@ class AnimationManager {
             keys: [],
         };
 
-        animationsMap.forEach(({ key }) => {
+        for (const { key } of animationsMap) {
             const base = assets.models.get(key);
-            const isFbx = base.type === 'Group';
-            const model = isFbx ? base : base.scene.children[0];
-            const typeToCheck = isFbx ? 'SkinnedMesh' : 'Bone';
+            const hasRootGroup = base.type === 'Group';
+            const model = hasRootGroup ? base : base.scene.children[0];
+            const typeToCheck = hasRootGroup ? 'SkinnedMesh' : 'Bone';
 
             if (model.getObjectByProperty('type', typeToCheck)) {
                 result.mesh = SkeletonUtils.clone(model);
             }
-        });
+        }
 
-        animationsMap.forEach(
-            ({ key, name = key, loop = false, timeScale = 1, clipId = 0 }) => {
-                const anims = assets.models.getAnimations(key);
+        for (const props of animationsMap) {
+            const { key, name = key, loop, timeScale, clipId = 0 } = props;
+            const anims = assets.models.getAnimations(key);
 
-                if (anims.length) {
-                    const anim = this.add(
-                        result.mesh,
-                        anims[clipId],
-                        loop,
-                        timeScale,
-                    );
-                    result.animationsMap[name] = anim;
-                    result.animationsList.push(anim);
-                    result.keys.push(name);
-                }
-            },
-        );
+            if (anims.length) {
+                const anim = this.add(
+                    result.mesh,
+                    anims[clipId],
+                    loop,
+                    timeScale,
+                );
+                result.animationsMap[name] = anim;
+                result.animationsList.push(anim);
+                result.keys.push(name);
+            }
+        }
 
         return result;
     }
