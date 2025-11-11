@@ -25,7 +25,9 @@ export class EnemiesCollection {
             return new Enemy({
                 ...data,
                 parent: this.parent,
-                animationsList: [...gameSettings.skins[data.type].animations],
+                animationsList: [
+                    ...gameSettings.skins[data.skinType].animations,
+                ],
             });
         });
     }

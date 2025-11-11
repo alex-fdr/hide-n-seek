@@ -1,5 +1,5 @@
 import config from '../assets/settings/config';
-import { ROLE_HIDER } from '../data/game-const';
+import { ROLE_HIDER, SKIN_STICKMAN } from '../data/game-const';
 import { gameSettings } from '../data/game-settings';
 import { AISeeker } from './enemy/ai-seeker';
 import { EnemiesCollection } from './enemy/enemies-collection';
@@ -33,7 +33,7 @@ export class Characters {
     // }
 
     addPlayer(data) {
-        const type = config.player.model.value;
+        const skinType = config.player.model.value;
         const size = config.player.size.value;
         const color = config.player.color.value;
         const role = config.player.role.value;
@@ -41,9 +41,9 @@ export class Characters {
 
         return new Player({
             size,
-            type,
             color,
-            animationsList: gameSettings.skins[type].animations,
+            skinType,
+            animationsList: gameSettings.skins[skinType].animations,
             position: role === ROLE_HIDER ? positionHider : position,
             parent: this.parent,
         });
@@ -64,7 +64,7 @@ export class Characters {
                     index: i,
                     color: newColor,
                     size: enemySize,
-                    type: 'stickman',
+                    skinType: SKIN_STICKMAN,
                 });
             }
         }
@@ -98,22 +98,10 @@ export class Characters {
         };
     }
 
-    // deactivate() {
-
-    // }
-
     update(walls, dt, hasPlayerInteracted) {
-        if (this.player) {
-            this.player.update(dt);
-        }
-
-        if (this.enemies) {
-            this.enemies.update(dt);
-        }
-
-        if (this.aiSeeker) {
-            this.aiSeeker.update(dt);
-        }
+        this.player?.update(dt);
+        this.enemies?.update(dt);
+        this.aiSeeker?.update(dt);
 
         if (this.player && this.enemies) {
             this.player.updateSightRange(walls, this.enemies);

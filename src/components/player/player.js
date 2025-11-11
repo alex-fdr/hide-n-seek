@@ -24,9 +24,9 @@ import { StickmanSkin } from '../skins/stickman-skin';
 import { TigerSkin } from '../skins/tiger-skin';
 
 export class Player {
-    constructor({ size, type, color, animationsList, parent, position }) {
+    constructor({ size, skinType, color, animationsList, parent, position }) {
         this.parent = parent;
-        this.type = type;
+        this.skinType = skinType;
         this.animationsList = animationsList;
         this.role = config.player.role.value;
 
@@ -66,7 +66,7 @@ export class Player {
             animationsList,
             parent: this.group,
         };
-        return this.type === SKIN_TIGER
+        return this.skinType === SKIN_TIGER
             ? new TigerSkin(skinProps)
             : new StickmanSkin(skinProps);
     }
@@ -129,7 +129,6 @@ export class Player {
 
     startMoving() {
         this.status.moving = true;
-
         this.skin.animations.idle.crossFadeTo(this.skin.animations.run, 0.2);
         this.skin.animations.run.reset();
         this.skin.animations.run.play();
@@ -137,7 +136,6 @@ export class Player {
 
     stopMoving() {
         this.status.moving = false;
-
         this.skin.animations.run.crossFadeTo(this.skin.animations.idle, 0.2);
         this.skin.animations.idle.reset();
         this.skin.animations.idle.play();
@@ -152,7 +150,6 @@ export class Player {
 
         this.cage.show(this.group);
         this.onCatchBySeeker.dispatch(STATUS_PLAYER_LOSE);
-        // sqHelper.levelLose();
     }
 
     finalDance() {
@@ -171,6 +168,8 @@ export class Player {
     finalLose() {
         this.skin.animations.idle.stop();
         this.skin.animations.run.stop();
+
+        this.skin.animations.sad.fadeIn(0.4);
         this.skin.animations.sad.play();
 
         if (this.sightRange) {

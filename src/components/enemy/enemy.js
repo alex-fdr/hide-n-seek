@@ -16,7 +16,7 @@ export class Enemy {
     constructor(props) {
         const {
             parent,
-            type,
+            skinType,
             index,
             name,
             route,
@@ -28,7 +28,7 @@ export class Enemy {
         } = props;
 
         this.parent = parent;
-        this.type = type;
+        this.skinType = skinType;
         this.index = index;
 
         this.animations = {};
@@ -70,7 +70,7 @@ export class Enemy {
             animationsList,
             parent: this.group,
         };
-        return this.type === SKIN_TIGER
+        return this.skinType === SKIN_TIGER
             ? new TigerSkin(skinProps)
             : new StickmanSkin(skinProps);
     }
