@@ -3,7 +3,7 @@ import { Assets as PixiAssets } from 'pixi.js';
 import { level } from './level';
 import { animations } from './helpers/animations';
 import { debug } from './helpers/debug/debug';
-import { screens } from './helpers/screens';
+import { htmlScreens } from './helpers/html-screens';
 import { tweens } from './helpers/tweens';
 import { pixiUI } from './ui/pixi-ui';
 import { HintScreen } from './ui/screens/hint';
@@ -34,10 +34,10 @@ import timerBg from './assets/images/timer-bg.png';
 export class Game {
     constructor() {
         this.running = true;
-        screens.add('loading');
+        htmlScreens.add('loading');
     }
 
-    async start({ width = 960, height = 960 }) {
+    async start({ width, height }) {
         core.init(width, height, gameSettings);
 
         // load three.js assets
@@ -66,18 +66,19 @@ export class Game {
             { alias: 'gamefont', src: gamefont },
         ]);
 
-        pixiUI.addScreen('tutorial', new TutorialScreen(false));
-        pixiUI.addScreen('hint', new HintScreen(false));
-        pixiUI.addScreen('lose', new LoseScreen(false));
-        pixiUI.addScreen('win', new WinScreen(false));
-        pixiUI.addScreen('ui', new UIScreen(false));
+        const screenProps = { parent: pixiUI.stage, visible: false };
+        pixiUI.screens.set('tutorial', new TutorialScreen(screenProps));
+        pixiUI.screens.set('hint', new HintScreen(screenProps));
+        pixiUI.screens.set('lose', new LoseScreen(screenProps));
+        pixiUI.screens.set('win', new WinScreen(screenProps));
+        pixiUI.screens.set('ui', new UIScreen(screenProps));
 
         level.init(level1Data);
         debug.init(core, { orbit: false, scene: false, physics: false });
 
         this.resize(width, height);
-        screens.hide('loading');
         this.setupCustomDebugControls();
+        htmlScreens.hide('loading');
 
         core.onUpdate(this.update.bind(this));
         core.onResize(this.resize.bind(this));

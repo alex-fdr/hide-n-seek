@@ -25,14 +25,11 @@ export class Timer {
 
     start() {
         this.text.updateValue(-this.text.value);
-
-        this.text.onComplete.addOnce(() => {
-            console.log('timer compete');
-        });
     }
 
     stop() {
         this.text.stop();
+        this.onComplete.remove();
     }
 
     setPosition(x, y) {

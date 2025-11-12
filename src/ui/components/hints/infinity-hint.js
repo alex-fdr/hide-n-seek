@@ -74,6 +74,11 @@ export class InfinityHint {
         this.animateRightFrom9to12();
     }
 
+    stopAnimations() {
+        this.tweenX.remove();
+        this.tweenY.remove();
+    }
+
     animateRightFrom9to12() {
         this.tweenX = tweens.add(this.pointerGroup, this.timeHalf, {
             easing: 'sineOut',

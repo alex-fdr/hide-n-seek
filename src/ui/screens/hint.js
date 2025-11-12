@@ -3,7 +3,7 @@ import { InfinityHint } from '../components/hints/infinity-hint';
 import { tweens } from '../../helpers/tweens';
 
 export class HintScreen {
-    constructor(visible) {
+    constructor({ parent, visible }) {
         this.infinityHint = new InfinityHint({
             time: 2000,
             baseKey: 'infinity-sign',
@@ -16,17 +16,31 @@ export class HintScreen {
 
         this.status = {
             animated: false,
+            enabled: true,
         };
 
         this.group = new Container({
+            parent,
             visible,
             label: 'hint-screen',
             children: [this.infinityHint.group],
         });
+
+        // this.showTimestamp = 0;
+        this.showInterval = 3000;
+        this.timeoutId = 0;
     }
 
     show() {
+        if (!this.status.enabled) {
+            return;
+        }
+
         this.group.visible = true;
+
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+        }
 
         if (!this.status.animated) {
             this.status.animated = true;
@@ -34,8 +48,23 @@ export class HintScreen {
         }
     }
 
-    hide() {
+    hide(turnOff = false) {
         this.group.visible = false;
+
+        if (turnOff) {
+            this.status.enabled = false;
+            this.infinityHint.stopAnimations();
+        }
+    }
+
+    sheduleNextShow() {
+        if (!this.status.enabled) {
+            return;
+        }
+
+        this.timeoutId = setTimeout(() => {
+            this.show();
+        }, this.showInterval);
     }
 
     animate() {
@@ -44,10 +73,12 @@ export class HintScreen {
     }
 
     handlePortrait(cx, cy) {
-        this.infinityHint.setPosition(0, cy - 180);
+        this.group.scale.set(1);
+        this.infinityHint.setPosition(0, 225);
     }
 
     handleLandscape(cx, cy, factor) {
-        this.infinityHint.setPosition(0, cy - 100);
+        this.group.scale.set(factor);
+        this.infinityHint.setPosition(0, 225);
     }
 }

@@ -1,15 +1,14 @@
 import { Assets, Container, TilingSprite } from 'pixi.js';
-import { pixiUI } from '../pixi-ui';
 import { Button } from '../components/button';
 import { tweens } from '../../helpers/tweens';
 
 export class LoseScreen {
-    constructor(visible) {
+    constructor({ parent, visible }) {
         this.overlay = new TilingSprite({
             texture: Assets.get('dummy-white'),
             label: 'lose-overlay',
-            width: 960,
-            height: 960,
+            width: 1024,
+            height: 1024,
             tint: 0x000000,
             alpha: 0.6,
             anchor: 0.5,
@@ -26,6 +25,7 @@ export class LoseScreen {
         });
 
         this.group = new Container({
+            parent,
             visible,
             label: 'win',
             children: [this.overlay, this.btn.group],
@@ -46,12 +46,14 @@ export class LoseScreen {
     }
 
     handlePortrait(cx, cy) {
-        this.overlay.setSize(cx * 2, cy * 2);
-        this.btn.group.position.set(0, cy - 100);
+        this.group.scale.set(1);
+        this.overlay.scale.set(1);
+        this.btn.group.position.set(0, 360);
     }
 
-    handleLandscape(cx, cy) {
-        this.overlay.setSize(cx * 2, cy * 2);
-        this.btn.group.position.set(0, cy - 60);
+    handleLandscape(cx, cy, factor) {
+        this.group.scale.set(factor);
+        this.overlay.scale.set(1 / this.group.scale.x);
+        this.btn.group.position.set(0, 360);
     }
 }

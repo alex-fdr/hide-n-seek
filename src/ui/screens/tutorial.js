@@ -5,7 +5,7 @@ import { ROLE_HIDER } from '../../data/game-const';
 import { locale } from '../../data/locale';
 
 export class TutorialScreen {
-    constructor(visible) {
+    constructor({ parent, visible }) {
         const role = config.player.role.value;
         const key = role === ROLE_HIDER ? 'tutorialHide' : 'tutorialSeek';
         const { text, fontSize } = locale[key];
@@ -26,6 +26,7 @@ export class TutorialScreen {
         });
 
         this.group = new Container({
+            parent,
             visible,
             label: 'tutorial',
             children: [this.text],
@@ -47,13 +48,11 @@ export class TutorialScreen {
 
     handlePortrait(cx, cy) {
         this.group.scale.set(1);
-        this.group.position.set(cx, cy);
         this.text.position.set(0, 380);
     }
 
     handleLandscape(cx, cy, factor) {
-        this.group.scale.set(0.465 * factor);
-        this.group.position.set(cx, cy);
+        this.group.scale.set(factor);
         this.text.position.set(0, 380);
     }
 }

@@ -4,8 +4,9 @@ import { tweens } from '../../helpers/tweens';
 import config from '../../assets/settings/config';
 
 export class UIScreen {
-    constructor(visible) {
+    constructor({ parent, visible }) {
         this.group = new Container({
+            parent,
             visible,
             label: 'ui',
             children: [],
@@ -34,10 +35,12 @@ export class UIScreen {
     }
 
     handlePortrait(cx, cy) {
-        this.timer.setPosition(0, -cy + 100);
+        this.group.scale.set(1);
+        this.timer.setPosition(0, -380);
     }
 
-    handleLandscape(cx, cy) {
-        this.timer.setPosition(0, -cy + 70);
+    handleLandscape(cx, cy, factor) {
+        this.group.scale.set(factor);
+        this.timer.setPosition(0, -380);
     }
 }

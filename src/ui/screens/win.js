@@ -3,7 +3,7 @@ import { Button } from '../components/button';
 import { tweens } from '../../helpers/tweens';
 
 export class WinScreen {
-    constructor(visible) {
+    constructor({ parent, visible }) {
         this.btn = new Button('button', 'winBtn', {
             fill: '#ffffff',
             dropShadow: {
@@ -15,6 +15,7 @@ export class WinScreen {
         });
 
         this.group = new Container({
+            parent,
             visible,
             label: 'win',
             children: [this.btn.group],
@@ -33,13 +34,11 @@ export class WinScreen {
 
     handlePortrait(cx, cy) {
         this.group.scale.set(1);
-        this.group.position.set(cx, cy);
         this.btn.group.position.set(0, 360);
     }
 
     handleLandscape(cx, cy, factor) {
-        this.group.scale.set(0.465 * factor);
-        this.group.position.set(cx, cy);
+        this.group.scale.set(factor);
         this.btn.group.position.set(0, 360);
     }
 }
