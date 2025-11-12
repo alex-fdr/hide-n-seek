@@ -229,7 +229,8 @@ class LevelInstance {
         core.input.enabled = false;
         this.status.levelComplete = true;
         this.ui.timer.stop();
-        this.ui.hide(true);
+        this.ui.hide();
+        this.hint.hide(true);
         this.characters.player.finalDance();
         this.characters.enemies.deactivate();
         this.characters.aiSeeker?.deactivate();
@@ -242,7 +243,8 @@ class LevelInstance {
         core.input.enabled = false;
         this.status.levelComplete = true;
         this.ui.timer.stop();
-        this.ui.hide(true);
+        this.ui.hide();
+        this.hint.hide(true);
         this.characters.player.finalLose();
         this.characters.enemies.deactivate();
         this.characters.aiSeeker?.deactivate();

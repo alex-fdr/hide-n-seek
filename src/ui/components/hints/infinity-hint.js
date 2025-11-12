@@ -75,8 +75,8 @@ export class InfinityHint {
     }
 
     stopAnimations() {
-        this.tweenX.remove();
-        this.tweenY.remove();
+        tweens.remove(this.tweenX);
+        tweens.remove(this.tweenY);
     }
 
     animateRightFrom9to12() {
