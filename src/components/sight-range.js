@@ -11,7 +11,7 @@ import {
 } from 'three';
 import { ENEMY_TAG, PLAYER_TAG } from '../data/game-const';
 
-const LINE_AMOUNT = 120;
+const LINE_AMOUNT = 110;
 const LINE_LENGTH = 3;
 const ANGLE_STEP = 0.01;
 const LINE_STEP = 2;
@@ -52,10 +52,6 @@ export class SightRange {
 
     hide() {
         this.group.visible = false;
-    }
-
-    update(walls, enemies, player) {
-        this.updateRange(walls, enemies, player);
     }
 
     createCanvas() {
@@ -158,7 +154,7 @@ export class SightRange {
         this.texture.needsUpdate = true;
     }
 
-    updateRange(walls, enemies, player) {
+    update(walls, enemies, player) {
         const { x, y, z } = this.group.position;
         const { position } = this.parent;
         const origin = new Vector3(
@@ -222,17 +218,10 @@ export class SightRange {
             targets.push(player.getCollider());
         }
 
-        const intersections = this.enemyRaycaster.intersectObjects(
-            targets,
-            false,
-        );
+        // biome-ignore format : ''
+        const intersections = this.enemyRaycaster.intersectObjects(targets, false);
 
-        if (intersections.length === 0) {
-            return;
-        }
-
-        for (const intersection of intersections) {
-            const { object } = intersection;
+        for (const { object } of intersections) {
             const { name, parentClass } = object;
 
             if (name === ENEMY_TAG && !parentClass.status.caught) {

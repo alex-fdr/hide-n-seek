@@ -76,18 +76,17 @@ export class Characters {
     }
 
     addAISeeker(data) {
-        const type = config.aiSeeker.model.value;
+        const skinType = config.aiSeeker.model.value;
         const size = config.aiSeeker.size.value;
         const color = config.aiSeeker.color.value;
-        const newData = { ...data, size, color, type };
+        const newData = { ...data, size, color, skinType };
 
         const aiSeeker = new AISeeker({
             ...newData,
-            animationsList: gameSettings.skins[type].animations,
+            animationsList: gameSettings.skins[skinType].animations,
             parent: this.parent,
         });
-        // this.aiSeeker.tutorialAnimation()
-        // this.aiSeeker.activate()
+        aiSeeker.tutorialAnimation();
         return aiSeeker;
     }
 
@@ -99,16 +98,16 @@ export class Characters {
     }
 
     update(walls, dt, hasPlayerInteracted) {
-        this.player?.update(dt);
+        this.player?.update(dt, walls, this.enemies);
         this.enemies?.update(dt);
         this.aiSeeker?.update(dt);
 
         if (this.player && this.enemies) {
-            this.player.updateSightRange(walls, this.enemies);
+            this.player.sightRange?.update(walls, this.enemies);
         }
 
         if (this.aiSeeker && this.player && this.enemies) {
-            this.aiSeeker.updateSightRange(
+            this.aiSeeker.sightRange?.update(
                 walls,
                 this.enemies,
                 hasPlayerInteracted ? this.player : null,

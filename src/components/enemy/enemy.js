@@ -121,8 +121,8 @@ export class Enemy {
     }
 
     addCollider() {
-        const radius = 0.4;
-        const height = 2;
+        const radius = 0.25;
+        const height = 3;
         const geometry = new CylinderGeometry(radius, radius, height);
         const material = new MeshPhongMaterial({ color: 0xffffff });
         const collider = new Mesh(geometry, material);

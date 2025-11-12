@@ -78,10 +78,14 @@ export class OverlayHelper {
         core.renderer.autoClear = !value;
     }
 
-    update() {
-        if (this.status.visible) {
-            core.renderer.clearDepth();
-            core.renderer.render(this.frontScene, core.camera);
+    render() {
+        if (!this.status.visible) {
+            return;
         }
+
+        core.renderer.clearDepth();
+        core.renderer.render(this.frontScene, core.camera);
     }
+
+    update() { }
 }

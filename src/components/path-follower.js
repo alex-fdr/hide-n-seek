@@ -32,11 +32,11 @@ export class PathFollower {
         this.pathPoints.name = 'path-points';
         core.scene.add(this.pathPoints);
 
-        this.points.forEach((pos) => {
+        for (const p of this.points) {
             const sphere = mesh.clone();
-            sphere.position.copy(pos);
+            sphere.position.copy(p);
             this.pathPoints.add(sphere);
-        });
+        }
     }
 
     renderPath() {

@@ -1,4 +1,4 @@
-class Screens {
+class HtmlScreens {
     constructor() {
         this.domElements = {};
     }
@@ -41,4 +41,4 @@ class Screens {
     }
 }
 
-export const screens = new Screens();
+export const htmlScreens = new HtmlScreens();

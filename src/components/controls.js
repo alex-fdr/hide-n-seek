@@ -5,7 +5,6 @@ const PLAYER_SPEED = 3.5;
 
 export class Controls {
     constructor({ mesh, body }) {
-        console.log(mesh, body);
         this.targetMesh = mesh;
         this.targetBody = body;
 

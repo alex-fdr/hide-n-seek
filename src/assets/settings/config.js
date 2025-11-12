@@ -113,7 +113,7 @@ export default {
         duration: {
             title: 'Timer duration',
             type: 'int',
-            value: 30,
+            value: 10,
             min: 5,
             max: 20,
             step: 1,
@@ -246,7 +246,7 @@ export default {
         size: {
             title: 'Size',
             type: 'int',
-            value: 1,
+            value: 2,
             min: 0.5,
             max: 3,
             step: 0.1,

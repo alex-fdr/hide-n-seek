@@ -89,15 +89,15 @@ class TweensFactory {
     }
 
     pause() {
-        this.tweens.forEach((tween) => {
+        for (const tween of this.tweens) {
             tween.pause();
-        });
+        }
     }
 
     resume() {
-        this.tweens.forEach((tween) => {
+        for (const tween of this.tweens) {
             tween.resume();
-        });
+        }
     }
 
     update(time) {
@@ -107,13 +107,13 @@ class TweensFactory {
     wait(time) {
         const from = { k: 0 };
         const to = { k: 1 };
-        const t = this.add(from, time, {
+        const tween = this.add(from, time, {
             easing: 'linear',
             autostart: true,
             to,
         });
         return new Promise((resolve) => {
-            t.onComplete(() => resolve());
+            tween.onComplete(() => resolve());
         });
     }
 

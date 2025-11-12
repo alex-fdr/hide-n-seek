@@ -160,9 +160,7 @@ export class Player {
         // reset rotation
         this.group.quaternion.set(0, 0, 0, 1);
 
-        if (this.sightRange) {
-            this.sightRange.hide();
-        }
+        this.sightRange?.hide();
     }
 
     finalLose() {
@@ -172,9 +170,7 @@ export class Player {
         this.skin.animations.sad.fadeIn(0.4);
         this.skin.animations.sad.play();
 
-        if (this.sightRange) {
-            this.sightRange.hide();
-        }
+        this.sightRange?.hide();
     }
 
     update(dt) {
@@ -185,30 +181,20 @@ export class Player {
         }
     }
 
-    updateSightRange(walls, enemies) {
-        this.sightRange?.update(walls, enemies);
-    }
-
     tryReleaseEnemy(enemies) {
         this.group.getWorldDirection(this.lookDirection);
-
         this.raycaster.set(this.group.position, this.lookDirection);
 
-        const intersections = this.raycaster.intersectObjects(
-            enemies.getColliders(),
-        );
+        const targets = enemies.getColliders();
+        const intersections = this.raycaster.intersectObjects(targets);
 
-        if (intersections.length > 0) {
-            intersections.forEach((data) => {
-                const {
-                    object: { name, parentClass },
-                } = data;
+        for (const { object } of intersections) {
+            const { name, parentClass } = object;
 
-                if (name === ENEMY_TAG && parentClass.status.caught) {
-                    parentClass.release();
-                    enemies.releaseEnemy();
-                }
-            });
+            if (name === ENEMY_TAG && parentClass.status.caught) {
+                parentClass.release();
+                enemies.releaseEnemy();
+            }
         }
     }
 }

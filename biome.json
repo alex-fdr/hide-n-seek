@@ -15,8 +15,6 @@
         "lineWidth": 80,
         "includes": [
             "**",
-            "!**/tiger-player.js",
-            "!**/tiger-ai.js",
             "!**/libs/**"
         ]
     },

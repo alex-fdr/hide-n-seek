@@ -11,17 +11,16 @@ export class Cage {
 
     addModel() {
         const model = assets.models.get('cage');
-        model.scale.multiplyScalar(0.75);
-        model.scale.y *= 1.5;
+        model.scale.y *= 1.4;
         model.visible = false;
+        model.children[0].castShadow = true;
 
         const size =
             config.player.role.value === ROLE_HIDER
                 ? config.player.size.value
                 : config.enemies.size.value;
 
-        model.scale.multiplyScalar(size);
-        model.children[0].castShadow = true;
+        model.scale.multiplyScalar(size * 0.75);
 
         materials.replace(model, 'phong', {
             color: '#496176',
@@ -33,11 +32,10 @@ export class Cage {
     }
 
     show({ position }) {
-        this.model.position.copy(position);
-        this.model.rotation.y = 0.4;
         this.model.visible = true;
-
+        this.model.position.copy(position);
         this.model.position.y = 1;
+        this.model.rotation.y = 0.4;
 
         tweens.add(this.model.position, 400, {
             easing: 'backOut',
