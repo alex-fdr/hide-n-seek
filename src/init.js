@@ -1,10 +1,16 @@
+import { core } from '@alexfdr/three-game-core';
+import { getScreenSize } from '@alexfdr/three-game-utils';
 import { Game } from './game';
 
 const game = new Game();
 
 window.addEventListener('load', () => {
-    game.start({
-        width: window.innerWidth,
-        height: window.innerHeight,
-    });
+    const { width, height } = getScreenSize();
+    game.start({ width, height });
+});
+
+window.addEventListener('resize', () => {
+    const { width, height } = getScreenSize();
+    core.resize(width, height);
+    game.resize(width, height);
 });

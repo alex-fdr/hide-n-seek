@@ -21,6 +21,11 @@ body {
     min-height: 100dvh;
 }
 
+#game>canvas {
+    width: 100vw;
+    height: 100vh;
+}
+
 .abs {
     position: absolute;
     top: 0;
