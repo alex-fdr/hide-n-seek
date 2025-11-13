@@ -1,12 +1,12 @@
 import { Container, Text } from 'pixi.js';
 import { tweens } from '../../helpers/tweens';
-import config from '../../assets/settings/config';
+import { config } from '../../data/config';
 import { ROLE_HIDER } from '../../data/game-const';
 import { locale } from '../../data/locale';
 
 export class TutorialScreen {
     constructor({ parent, visible }) {
-        const role = config.player.role.value;
+        const role = config.playerRole;
         const key = role === ROLE_HIDER ? 'tutorialHide' : 'tutorialSeek';
         const { text, fontSize } = locale[key];
 

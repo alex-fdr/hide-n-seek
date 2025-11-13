@@ -7,7 +7,7 @@ import {
     Scene,
 } from 'three';
 import { tweens } from '../../helpers/tweens';
-import config from '../../assets/settings/config';
+import { config } from '../../data/config';
 
 export class OverlayHelper {
     constructor({ frontObjects = [] }) {
@@ -42,7 +42,7 @@ export class OverlayHelper {
         const material = new MeshLambertMaterial({
             color: 0x000000,
             transparent: true,
-            opacity: config.overlay.opacity.value,
+            opacity: config.overlayOpacity,
             side: FrontSide,
         });
 
@@ -87,5 +87,5 @@ export class OverlayHelper {
         core.renderer.render(this.frontScene, core.camera);
     }
 
-    update() { }
+    update() {}
 }

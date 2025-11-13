@@ -1,7 +1,7 @@
 import { Container } from 'pixi.js';
 import { Timer } from '../components/timer';
 import { tweens } from '../../helpers/tweens';
-import config from '../../assets/settings/config';
+import { config } from '../../data/config';
 
 export class UIScreen {
     constructor({ parent, visible }) {
@@ -16,7 +16,7 @@ export class UIScreen {
     }
 
     addTimer() {
-        const value = config.timer.duration.value || 10;
+        const value = config.timerDuration || 10;
         this.timer = new Timer(value);
         this.group.addChild(this.timer.group);
     }

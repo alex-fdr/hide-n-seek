@@ -12,7 +12,7 @@ import { DragHandler } from './helpers/drag-handler';
 import { Signal } from './helpers/signal';
 import { tweens } from './helpers/tweens';
 import { pixiUI } from './ui/pixi-ui';
-import config from './assets/settings/config';
+import { config } from './data/config';
 import {
     ROLE_HIDER,
     ROLE_SEEKER,
@@ -82,7 +82,7 @@ class LevelInstance {
 
     addBackground() {
         this.background = new Background({
-            image: config.game.background.value,
+            image: config.background,
         });
     }
 
@@ -94,14 +94,14 @@ class LevelInstance {
     addOutlineHelper(data) {
         const outlinedObjects = [];
 
-        if (config.player.outline.value) {
+        if (config.playerOutline) {
             outlinedObjects.push(this.characters.player.getSkinnedMesh());
         }
 
         for (let i = 0; i < data.enemies.length; i++) {
             const key = `enemy${i + 1}`;
-            const enabledChar = config[key].enabled.value;
-            const enabledOutline = config[key].outline.value;
+            const enabledChar = config[`${key}Enabled`];
+            const enabledOutline = config[`${key}Outline`];
 
             if (enabledChar && enabledOutline) {
                 const enemy = this.characters.enemies.getEnemyByIndex(i);
@@ -109,28 +109,25 @@ class LevelInstance {
             }
         }
 
-        if (this.characters.aiSeeker && config.aiSeeker.outline.value) {
+        if (this.characters.aiSeeker && config.aiSeekerOutline) {
             outlinedObjects.push(this.characters.aiSeeker.getSkinnedMesh());
         }
 
-        const color = config.game.outlineColor.value;
-
-        this.outlineHelper = new OutlineHelper({ color });
+        this.outlineHelper = new OutlineHelper({ color: config.outlineColor });
         this.outlineHelper.setOutlinedObjects(outlinedObjects);
     }
 
     addOverlayHelper() {
-        if (!config.overlay.enabled.value) {
+        if (!config.overlayEnabled) {
             return;
         }
 
-        const playerRole = config.player.role.value;
         const { player, aiSeeker, enemies } = this.characters;
         const frontObjects = [player.getSkinnedMesh()];
 
-        if (playerRole === ROLE_SEEKER) {
+        if (config.playerRole === ROLE_SEEKER) {
             frontObjects.push(...enemies.getAllSkinnedMeshes());
-        } else if (playerRole === ROLE_HIDER) {
+        } else if (config.playerRole === ROLE_HIDER) {
             frontObjects.push(aiSeeker.getSkinnedMesh());
         }
 
@@ -143,16 +140,19 @@ class LevelInstance {
             this.tutorial.hide();
             this.overlayHelper?.hide();
 
-            if (config.timer.startFrom.value === 'interaction') {
+            if (config.timerStartAfterInteraction) {
                 this.startTimer();
+            }
+
+            if (config.timerAppearAfterInteraction) {
+                this.ui.show();
             }
         });
 
         this.ui.timer.onComplete.addOnce(() => {
-            const playerRole = config.player.role.value;
-            if (playerRole === ROLE_SEEKER) {
+            if (config.playerRole === ROLE_SEEKER) {
                 this.handleLose();
-            } else if (playerRole === ROLE_HIDER) {
+            } else if (config.playerRole === ROLE_HIDER) {
                 this.handleWin();
             }
         });
@@ -189,10 +189,10 @@ class LevelInstance {
         this.tutorial.show();
         this.hint.show();
 
-        if (config.timer.startFrom.value === 'game') {
+        if (!config.timerStartAfterInteraction) {
             this.startTimer();
         }
-        if (config.timer.appear.value === 'game') {
+        if (!config.timerAppearAfterInteraction) {
             this.ui.show();
         }
     }

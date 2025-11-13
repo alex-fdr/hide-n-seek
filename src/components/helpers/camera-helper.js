@@ -1,7 +1,7 @@
 import { core } from '@alexfdr/three-game-core';
 import { Object3D, Vector3 } from 'three';
 import { tweens } from '../../helpers/tweens';
-import config from '../../assets/settings/config';
+import { config } from '../../data/config';
 import { CAMERA_SETTINGS } from '../../data/game-const';
 
 export class CameraHelper {
@@ -16,7 +16,7 @@ export class CameraHelper {
         this.wrapper.add(core.camera);
         core.scene.add(this.wrapper);
 
-        const preset = config.camera.preset.value;
+        const preset = config.cameraPreset;
         const { position, offset, rotation } = CAMERA_SETTINGS[preset];
         core.camera.position.copy(position);
         this.offset.copy(offset);

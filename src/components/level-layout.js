@@ -3,7 +3,7 @@ import { getObjectSize } from '@alexfdr/three-game-utils';
 import { Body, Box, Vec3 } from 'cannon-es';
 import { Quaternion, Vector3 } from 'three';
 import { materials } from '../helpers/materials';
-import config from '../assets/settings/config';
+import { config } from '../data/config';
 
 function makeCannonBox(mesh) {
     const { x, y, z } = getObjectSize(mesh).multiplyScalar(0.5);
@@ -35,7 +35,7 @@ export class LevelLayout {
         core.physics.world.addBody(body);
 
         materials.replace(this.ground, 'phong', {
-            color: config.game.groundColor.value,
+            color: config.groundColor,
         });
     }
 
@@ -72,7 +72,7 @@ export class LevelLayout {
         }
 
         materials.replace(this.walls, 'lambert', {
-            color: config.game.wallsColor.value,
+            color: config.wallsColor,
         });
     }
 

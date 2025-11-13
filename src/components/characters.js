@@ -1,4 +1,4 @@
-import config from '../assets/settings/config';
+import { config } from '../data/config';
 import { ROLE_HIDER, SKIN_STICKMAN } from '../data/game-const';
 import { gameSettings } from '../data/game-settings';
 import { AISeeker } from './enemy/ai-seeker';
@@ -11,7 +11,7 @@ export class Characters {
         this.player = this.addPlayer(data.player);
         this.enemies = this.addEnemies(data.enemies);
         this.aiSeeker =
-            config.player.role.value === ROLE_HIDER
+            config.playerRole === ROLE_HIDER
                 ? this.addAISeeker(data.aiSeeker)
                 : null;
 
@@ -20,50 +20,32 @@ export class Characters {
         };
     }
 
-    // init(playerData, enemiesData, aiSeekerData) {
-    //     const role = config.player.role.value;
-
-    //     if (role === 'seeker') {
-    //         // do smth here
-    //     } else if (role === 'hider') {
-    //         this.addAISeeker(aiSeekerData);
-    //         // make player catchable
-    //         // add it to enemies list or smth else
-    //     }
-    // }
-
     addPlayer(data) {
-        const skinType = config.player.model.value;
-        const size = config.player.size.value;
-        const color = config.player.color.value;
-        const role = config.player.role.value;
-        const { position, positionHider } = data;
-
+        const skinType = config.playerModel;
+        const role = config.playerRole;
         return new Player({
-            size,
-            color,
             skinType,
+            size: config.playerSize,
+            color: config.playerColor,
             animationsList: gameSettings.skins[skinType].animations,
-            position: role === ROLE_HIDER ? positionHider : position,
+            position: role === ROLE_HIDER ? data.positionHider : data.position,
             parent: this.parent,
         });
     }
 
     addEnemies(data) {
         const newEnemiesData = [];
-        const enemySize = config.enemies.size.value;
 
         for (let i = 0; i < data.length; i++) {
             const key = `enemy${i + 1}`;
-            const newColor = config[key].color.value;
-            const isEnabled = config[key].enabled.value;
-
+            const newColor = config[`${key}Color`];
+            const isEnabled = config[`${key}Enabled`];
             if (isEnabled) {
                 newEnemiesData.push({
                     ...data[i],
                     index: i,
                     color: newColor,
-                    size: enemySize,
+                    size: config.enemiesSize,
                     skinType: SKIN_STICKMAN,
                 });
             }
@@ -76,13 +58,12 @@ export class Characters {
     }
 
     addAISeeker(data) {
-        const skinType = config.aiSeeker.model.value;
-        const size = config.aiSeeker.size.value;
-        const color = config.aiSeeker.color.value;
-        const newData = { ...data, size, color, skinType };
-
+        const skinType = config.aiSeekerModel;
         const aiSeeker = new AISeeker({
-            ...newData,
+            ...data,
+            size: config.aiSeekerSize,
+            color: config.aiSeekerColor,
+            skinType,
             animationsList: gameSettings.skins[skinType].animations,
             parent: this.parent,
         });

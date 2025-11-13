@@ -1,6 +1,6 @@
 import { Enemy } from './enemy';
 import { Signal } from '../../helpers/signal';
-import config from '../../assets/settings/config';
+import { config } from '../../data/config';
 import {
     ROLE_HIDER,
     ROLE_SEEKER,
@@ -53,12 +53,10 @@ export class EnemiesCollection {
     catchEnemy() {
         this.status.caughtEnemies += 1;
 
-        const playerRole = config.player.role.value;
-
         if (this.status.caughtEnemies === this.enemies.length) {
-            if (playerRole === ROLE_SEEKER) {
+            if (config.playerRole === ROLE_SEEKER) {
                 this.onCatchAllEnemies.dispatch(STATUS_PLAYER_WIN);
-            } else if (playerRole === ROLE_HIDER) {
+            } else if (config.playerRole === ROLE_HIDER) {
                 this.onCatchAllEnemies.dispatch(STATUS_PLAYER_LOSE);
             }
         }

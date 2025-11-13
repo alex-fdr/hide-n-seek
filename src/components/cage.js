@@ -1,7 +1,7 @@
 import { assets, core } from '@alexfdr/three-game-core';
 import { materials } from '../helpers/materials';
 import { tweens } from '../helpers/tweens';
-import config from '../assets/settings/config';
+import { config } from '../data/config';
 import { ROLE_HIDER } from '../data/game-const';
 
 export class Cage {
@@ -16,9 +16,9 @@ export class Cage {
         model.children[0].castShadow = true;
 
         const size =
-            config.player.role.value === ROLE_HIDER
-                ? config.player.size.value
-                : config.enemies.size.value;
+            config.playerRole === ROLE_HIDER
+                ? config.playerSize
+                : config.enemiesSize;
 
         model.scale.multiplyScalar(size * 0.75);
 

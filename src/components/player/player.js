@@ -11,7 +11,7 @@ import {
 import { Cage } from '../cage';
 import { SightRange } from '../sight-range';
 import { Signal } from '../../helpers/signal';
-import config from '../../assets/settings/config';
+import { config } from '../../data/config';
 import {
     ENEMY_TAG,
     PLAYER_TAG,
@@ -28,7 +28,7 @@ export class Player {
         this.parent = parent;
         this.skinType = skinType;
         this.animationsList = animationsList;
-        this.role = config.player.role.value;
+        this.role = config.playerRole;
 
         this.group = this.addGroup(position);
         this.skin = this.addSkin(size, color, animationsList);
