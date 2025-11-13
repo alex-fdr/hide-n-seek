@@ -8,28 +8,15 @@ export class DebugTransformControls {
         this.onActionComplete = onActionComplete;
     }
 
-    action(context) {
-        this.controls = new TransformControls(context.camera, context.renderer.domElement);
+    action({ camera, renderer, scene, controls: { orbit } }) {
+        this.controls = new TransformControls(camera, renderer.domElement);
         this.controls.name = 'transform-controls';
-
-        this.controls.addEventListener('mouseUp', () => {
-            if (this.onActionComplete) {
-                this.onActionComplete(this.controls.object);
-            }
-        });
-
-        this.controls.addEventListener('dragging-changed', (event) => {
-            if (context.controls.orbit?.controls) {
-                context.controls.orbit.controls.enabled = !event.value;
-            }
-        });
-
-        context.scene.add(this.controls.getHelper());
+        scene.add(this.controls.getHelper());
 
         this.actions = this.initActionsList(this.controls);
         this.keymap = this.initKeymap(this.actions);
 
-        this.bindEvents();
+        this.bindEvents(orbit);
     }
 
     initActionsList(ctrl) {
@@ -67,9 +54,6 @@ export class DebugTransformControls {
             worldLocalSpace: () => {
                 ctrl.setSpace((ctrl.space === 'local') ? 'world' : 'local');
             },
-            toggle: () => {
-                ctrl.enabled = !ctrl.enabled;
-            },
             reset: () => {
                 ctrl.detach();
                 ctrl.showX = ctrl.showY = ctrl.showZ = true;
@@ -93,7 +77,6 @@ export class DebugTransformControls {
             r: () => actions.rotate(),
             s: () => actions.scale(),
             q: () => actions.worldLocalSpace(),
-            // spacebar: () => actions.toggle(),
             shift: (s) => actions.selectMode(s),
             control: () => actions.snap(),
             escape: () => actions.reset(),
@@ -104,15 +87,22 @@ export class DebugTransformControls {
         };
     }
 
-    bindEvents() {
-        window.addEventListener('keydown', (event) => {
-            let key = event.key.toLowerCase();
-            const isShiftKey = key === 'shift';
-
-            if (key === ' ') {
-                key = 'spacebar';
+    bindEvents(orbit) {
+        this.controls.addEventListener('mouseUp', () => {
+            if (this.onActionComplete) {
+                this.onActionComplete(this.controls.object);
             }
+        });
 
+        this.controls.addEventListener('dragging-changed', (event) => {
+            if (orbit?.controls) {
+                orbit.controls.enabled = !event.value;
+            }
+        });
+
+        window.addEventListener('keydown', (event) => {
+            const key = event.key.toLowerCase();
+            const isShiftKey = key === 'shift';
             this.keymap[key]?.(isShiftKey);
         });
 
