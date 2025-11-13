@@ -1,7 +1,3 @@
-/* eslint-disable quote-props */
-/* eslint-disable no-multi-assign */
-/* eslint-disable max-len */
-
 import { TransformControls } from 'three/addons/controls/TransformControls';
 
 export class DebugTransformControls {
@@ -12,57 +8,83 @@ export class DebugTransformControls {
         this.onActionComplete = onActionComplete;
     }
 
-    initActionsList() {
-        this.actions = {
-            translate: () => this.controls.setMode('translate'),
-            rotate: () => this.controls.setMode('rotate'),
-            scale: () => this.controls.setMode('scale'),
+    action(context) {
+        this.controls = new TransformControls(context.camera, context.renderer.domElement);
+        this.controls.name = 'transform-controls';
+
+        this.controls.addEventListener('mouseUp', () => {
+            if (this.onActionComplete) {
+                this.onActionComplete(this.controls.object);
+            }
+        });
+
+        this.controls.addEventListener('dragging-changed', (event) => {
+            if (context.controls.orbit?.controls) {
+                context.controls.orbit.controls.enabled = !event.value;
+            }
+        });
+
+        context.scene.add(this.controls.getHelper());
+
+        this.actions = this.initActionsList(this.controls);
+        this.keymap = this.initKeymap(this.actions);
+
+        this.bindEvents();
+    }
+
+    initActionsList(ctrl) {
+        return {
+            translate: () => ctrl.setMode('translate'),
+            rotate: () => ctrl.setMode('rotate'),
+            scale: () => ctrl.setMode('scale'),
             xAxis: () => {
-                this.controls.showX = true;
-                this.controls.showY = this.controls.showZ = (this.controls.showY ^ this.controls.showZ) ? false : !this.controls.showZ;
+                ctrl.showX = true;
+                ctrl.showY = (ctrl.showY === ctrl.showZ) ? !ctrl.showY : false;
+                ctrl.showZ = ctrl.showY;
             },
             yAxis: () => {
-                this.controls.showY = true;
-                this.controls.showX = this.controls.showZ = (this.controls.showX ^ this.controls.showZ) ? false : !this.controls.showZ;
+                ctrl.showX = (ctrl.showX === ctrl.showZ) ? !ctrl.showX : false;
+                ctrl.showY = true;
+                ctrl.showZ = ctrl.showX;
             },
             zAxis: () => {
-                this.controls.showZ = true;
-                this.controls.showX = this.controls.showY = (this.controls.showX ^ this.controls.showY) ? false : !this.controls.showY;
+                ctrl.showX = (ctrl.showX === ctrl.showY) ? !ctrl.showX : false;
+                ctrl.showY = ctrl.showX;
+                ctrl.showZ = true;
             },
             selectMode: (status = true) => {
-                this.controls.isShiftPressed = status;
+                ctrl.isShiftPressed = status;
             },
             snap: () => {
-                if (!this.controls.translationSnap) {
-                    this.controls.setTranslationSnap(1);
-                    this.controls.setRotationSnap(15 * (Math.PI / 180));
+                if (!ctrl.translationSnap) {
+                    ctrl.setTranslationSnap(1);
+                    ctrl.setRotationSnap(15 * (Math.PI / 180));
                 } else {
-                    this.controls.setTranslationSnap(null);
-                    this.controls.setRotationSnap(null);
+                    ctrl.setTranslationSnap(null);
+                    ctrl.setRotationSnap(null);
                 }
             },
             worldLocalSpace: () => {
-                this.controls.setSpace(this.controls.space === 'local' ? 'world' : 'local');
+                ctrl.setSpace((ctrl.space === 'local') ? 'world' : 'local');
             },
             toggle: () => {
-                this.controls.enabled = !this.controls.enabled;
+                ctrl.enabled = !ctrl.enabled;
             },
             reset: () => {
-                this.controls.detach();
-                this.controls.showX = this.controls.showY = this.controls.showZ = true;
+                ctrl.detach();
+                ctrl.showX = ctrl.showY = ctrl.showZ = true;
             },
             controlsSizeBigger: () => {
-                this.controls.setSize(this.controls.size + 0.1);
+                ctrl.setSize(ctrl.size + 0.1);
             },
             controlsSizeSmaller: () => {
-                this.controls.setSize(Math.max(this.controls.size - 0.1, 0.1));
+                ctrl.setSize(Math.max(ctrl.size - 0.1, 0.1));
             },
         };
     }
 
-    initKeymap() {
-        const { actions } = this;
-        this.keymap = {
+    initKeymap(actions) {
+        return {
             x: () => actions.xAxis(),
             y: () => actions.yAxis(),
             z: () => actions.zAxis(),
@@ -71,7 +93,7 @@ export class DebugTransformControls {
             r: () => actions.rotate(),
             s: () => actions.scale(),
             q: () => actions.worldLocalSpace(),
-            spacebar: () => actions.toggle(),
+            // spacebar: () => actions.toggle(),
             shift: (s) => actions.selectMode(s),
             control: () => actions.snap(),
             escape: () => actions.reset(),
@@ -82,56 +104,32 @@ export class DebugTransformControls {
         };
     }
 
-    action(context) {
-        this.controls = new TransformControls(context.camera, context.renderer.domElement);
-        this.controls.name = 'transform-controls';
-        // context.scene.add(this.controls);
+    bindEvents() {
+        window.addEventListener('keydown', (event) => {
+            let key = event.key.toLowerCase();
+            const isShiftKey = key === 'shift';
 
-        this.controls.domElement.addEventListener('mouseUp', () => {
-            if (this.onActionComplete) {
-                this.onActionComplete(this.controls.object);
+            if (key === ' ') {
+                key = 'spacebar';
             }
+
+            this.keymap[key]?.(isShiftKey);
         });
 
-        this.controls.domElement.addEventListener('dragging-changed', (event) => {
-            if (context.controls.orbit && context.controls.orbit.controls) {
-                context.controls.orbit.controls.enabled = !event.value;
+        window.addEventListener('keyup', (event) => {
+            const key = event.key.toLowerCase();
+            if (key === 'shift') {
+                this.keymap[key](false);
             }
         });
-
-        context.scene.add(this.controls.getHelper());
-
-        this.initActionsList();
-        this.initKeymap();
-        this.bindEvents();
     }
 
     toggle(status, context) {
         if (!this.controls) {
             this.action(context);
         }
-    }
 
-    bindEvents() {
-        window.addEventListener('keydown', (event) => {
-            let key = event.key.toLowerCase();
-            const param = key === 'shift';
-
-            if (key === ' ') {
-                key = 'spacebar';
-            }
-
-            if (this.keymap[key]) {
-                this.keymap[key](param);
-            }
-        });
-
-        window.addEventListener('keyup', (event) => {
-            const key = event.key.toLowerCase();
-
-            if (this.keymap[key] === 'shift') {
-                this.keymap[key](false);
-            }
-        });
+        this.controls.enabled = status;
+        this.controls.detach();
     }
 }

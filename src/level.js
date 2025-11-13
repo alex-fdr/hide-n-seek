@@ -54,7 +54,7 @@ class LevelInstance {
 
     addGroup() {
         this.group = new Object3D();
-        this.group.name = 'level';
+        this.group.name = 'level-root';
         core.scene.add(this.group);
     }
 

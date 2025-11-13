@@ -15,7 +15,8 @@
         "lineWidth": 80,
         "includes": [
             "**",
-            "!**/libs/**"
+            "!**/libs/**",
+            "!**/debug/**"
         ]
     },
     "linter": {
@@ -28,7 +29,6 @@
         },
         "includes": [
             "**",
-            "!**/tiger-player.js",
             "!**/libs/**"
         ]
     },
@@ -41,7 +41,6 @@
         "enabled": true,
         "includes": [
             "**",
-            "!**/tiger-player.js",
             "!**/libs/**"
         ],
         "actions": {

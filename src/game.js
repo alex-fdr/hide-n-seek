@@ -85,30 +85,38 @@ export class Game {
     }
 
     setupCustomDebugControls() {
-        debug.gui.addCustomToggle('user input', core.input.enabled, (value) => {
-            core.input.enabled = value;
-        });
+        debug.debugPanel.addCustomToggle(
+            'user input',
+            core.input.enabled,
+            (value) => {
+                core.input.enabled = value;
+            },
+        );
 
-        debug.gui.addCustomToggle('game loop', this.running, (value) => {
+        debug.debugPanel.addCustomToggle('game loop', this.running, (value) => {
             this.running = value;
         });
 
         for (const enemy of level.characters.enemies.getAll()) {
             const { pathFollower } = enemy;
 
-            debug.gui.addCustomToggle(`path-${enemy.name}`, false, (status) => {
-                if (pathFollower.pathMesh) {
-                    pathFollower.pathMesh.visible = status;
-                } else {
-                    pathFollower.renderPath();
-                }
+            debug.debugPanel.addCustomToggle(
+                `path-${enemy.name}`,
+                false,
+                (status) => {
+                    if (pathFollower.pathMesh) {
+                        pathFollower.pathMesh.visible = status;
+                    } else {
+                        pathFollower.renderPath();
+                    }
 
-                if (pathFollower.pointsGroup) {
-                    pathFollower.pointsGroup.visible = status;
-                } else {
-                    pathFollower.renderPoints();
-                }
-            });
+                    if (pathFollower.pointsGroup) {
+                        pathFollower.pointsGroup.visible = status;
+                    } else {
+                        pathFollower.renderPoints();
+                    }
+                },
+            );
         }
     }
 

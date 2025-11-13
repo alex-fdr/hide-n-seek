@@ -15,6 +15,7 @@ export class CameraHelper {
         core.camera.wrapper = this.wrapper;
         this.wrapper.add(core.camera);
         core.scene.add(this.wrapper);
+        this.wrapper.name = 'camera-wrapper';
 
         const preset = config.cameraPreset;
         const { position, offset, rotation } = CAMERA_SETTINGS[preset];

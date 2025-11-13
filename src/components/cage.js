@@ -11,6 +11,7 @@ export class Cage {
 
     addModel() {
         const model = assets.models.get('cage');
+        model.name = 'cage-group';
         model.scale.y *= 1.4;
         model.visible = false;
         model.children[0].castShadow = true;

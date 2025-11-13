@@ -9,33 +9,23 @@ import { DebugTransformControls } from './debug.transform-controls.js';
 
 class Debug {
     constructor() {
-        this.defaultOptions = {
+        this.guiOptions = {
             select: true,
             transform: true,
-            objectProps: false,
-            scene: false,
-            orbit: false,
-        };
-
-        this.guiOptions = {
+            objectProps: true,
             scene: false,
             orbit: false,
             physics: false,
         };
-
-        this.scene = null;
-        this.renderer = null;
-        this.camera = null;
-        this.physics = null;
     }
 
     init({ scene, renderer, camera, physics }, props = {}) {
         // TODO implement re-init
-        if (this.gui) {
+        if (this.debugPanel) {
             return;
         }
 
-        // Do nothing if no debug options are provided
+        // Do nothing if no debug options were provided
         if (!props || Object.keys(props).length === 0) {
             return;
         }
@@ -45,81 +35,79 @@ class Debug {
         this.camera = camera;
         this.physics = physics;
 
-        this.panel = this.createRightSidePanel();
-        this.controls = this.getControls();
-        this.gui = new DebugGUI(this.getGuiOptions(props), this.controls, this);
+        const options = { ...this.guiOptions, ...props };
+        const optionKeys = Object.keys(options);
 
-        const options = { ...this.defaultOptions, ...props };
-        const keys = Object.keys(options);
+        this.scenePanel = this.createScenePanel();
+        this.controls = {
+            scene: new DebugScene(this.scenePanel, (t) => this.onAction('scene', t)),
+            orbit: new DebugOrbitControls(),
+            physics: new DebugPhysics(),
+            transform: new DebugTransformControls((t) => this.onAction('transform', t)),
+            select: new DebugSelectObject((t) => this.onAction('select', t)),
+            objectProps: new DebugShowSceneObjectProps(this.scenePanel),
+        };
+        this.debugPanel = new DebugGUI(options, this.controls, this);
 
-        keys.filter(
-            (key) => options[key] && this.controls[key]?.action,
-        ).forEach((key) => {
-            this.controls[key].action(this);
-        });
+        for (const key of optionKeys) {
+            if (options[key] === true) {
+                this.controls[key]?.action(this);
+            }
+        }
 
         // hide the scene tree if user dont want it to be shown
         if (!props.scene) {
             this.controls.scene.toggle(false, this);
         }
 
-        if (keys.length) {
-            this.gui.init(options);
+        if (optionKeys.length) {
+            this.debugPanel.init(options);
         }
     }
 
-    createRightSidePanel() {
+    createScenePanel() {
         const panel = new GUI({
-            name: 'panel',
-            closeOnTop: true,
+            title: 'Scene Controls',
             width: 200,
         });
         const el = panel.domElement;
-        el.parentElement.style.zIndex = 99;
-        el.style.zIndex = 10;
-        el.style.marginRight = 0;
+        el.style.right = 0;
         return panel;
     }
 
-    getControls() {
-        return {
-            scene: new DebugScene(this.panel, (t) => this.onAction('scene', t)),
-            orbit: new DebugOrbitControls(),
-            physics: new DebugPhysics(),
-            transform: new DebugTransformControls((t) =>
-                this.onAction('transform', t),
-            ),
-            select: new DebugSelectObject((t) => this.onAction('select', t)),
-            objectProps: new DebugShowSceneObjectProps(this.panel),
-        };
-    }
+    // getControls() {
+    //     return {
+    //         scene: new DebugScene(this.scenePanel, (t) => this.onAction('scene', t)),
+    //         orbit: new DebugOrbitControls(),
+    //         physics: new DebugPhysics(),
+    //         transform: new DebugTransformControls((t) => this.onAction('transform', t)),
+    //         select: new DebugSelectObject((t) => this.onAction('select', t)),
+    //         objectProps: new DebugShowSceneObjectProps(this.scenePanel),
+    //     };
+    // }
 
-    getGuiOptions(props) {
-        const guiOptions = {};
-        Object.keys(this.guiOptions).forEach((key) => {
-            if (props[key] === true || props[key] === false) {
-                guiOptions[key] = props[key];
-            } else {
-                guiOptions[key] = this.guiOptions[key];
-            }
-        });
-        return guiOptions;
-    }
+    // getGuiOptions(props) {
+    //     const guiOptions = {};
+    //     Object.keys(this.guiOptions).forEach((key) => {
+    //         if (props[key] === true || props[key] === false) {
+    //             guiOptions[key] = props[key];
+    //         } else {
+    //             guiOptions[key] = this.guiOptions[key];
+    //         }
+    //     });
+    //     return guiOptions;
+    // }
 
     onAction(type, target) {
         const { transform, objectProps } = this.controls;
 
         if (type !== 'transform') {
-            if (transform?.controls) {
+            if (transform?.controls?.enabled) {
                 if (type === 'scene') {
                     transform.controls.attach(target);
                 }
 
-                if (
-                    type === 'select' &&
-                    target &&
-                    transform.controls.isShiftPressed
-                ) {
+                if (type === 'select' && target && transform.controls.isShiftPressed) {
                     transform.controls.attach(target);
                 }
             }

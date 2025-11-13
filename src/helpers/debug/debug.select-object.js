@@ -37,17 +37,12 @@ export class DebugSelectObject {
     }
 
     bindEvents() {
-        const isTouch =
+        const isTouch = 
             'ontouchstart' in document.documentElement ||
-            (window.navigator.maxTouchPoints &&
-                window.navigator.maxTouchPoints >= 1);
+            (window.navigator.maxTouchPoints && window.navigator.maxTouchPoints >= 1);
 
         if (isTouch) {
-            window.addEventListener(
-                'touchstart',
-                (e) => this.click(e.changedTouches[0]),
-                false,
-            );
+            window.addEventListener('touchstart', (e) => this.click(e.changedTouches[0]), false);
         } else {
             window.addEventListener('mousedown', (e) => this.click(e), false);
         }
@@ -81,10 +76,7 @@ export class DebugSelectObject {
         this.pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera(this.pointer, this.camera);
 
-        const [firstIntersect] = this.raycaster.intersectObjects(
-            this.selectable,
-            true,
-        );
+        const [firstIntersect] = this.raycaster.intersectObjects(this.selectable, true);
 
         if (firstIntersect && firstIntersect.object !== this.intersected) {
             this.intersected = firstIntersect.object;

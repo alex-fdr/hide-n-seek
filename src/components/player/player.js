@@ -55,6 +55,7 @@ export class Player {
     addGroup(position) {
         const group = new Object3D();
         group.position.copy(position);
+        group.name = 'player';
         this.parent.add(group);
         return group;
     }

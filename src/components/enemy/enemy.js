@@ -59,6 +59,7 @@ export class Enemy {
     addGroup(position) {
         const group = new Object3D();
         this.parent.add(group);
+        group.name = `enemy-${this.name}`;
         group.position.copy(position);
         return group;
     }

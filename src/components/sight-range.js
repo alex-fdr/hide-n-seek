@@ -29,6 +29,7 @@ export class SightRange {
         this.ctx = null;
 
         this.group = new Object3D();
+        this.group.name = 'sight-range';
         this.parent = parent;
         this.parent.add(this.group);
 

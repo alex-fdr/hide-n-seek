@@ -9,8 +9,6 @@ export class DebugGUI {
 
     init() {
         this.gui = new GUI({
-            name: 'scene tree',
-            closeOnTop: true,
             width: 100,
             title: 'Debug',
         });
@@ -22,20 +20,11 @@ export class DebugGUI {
         el.style.left = 0;
         el.style.float = 'left';
 
-        // const displayStatus = el.style.display;
-        // el.style.display = 'none';
-
         setTimeout(() => {
             el.querySelectorAll('.lil-name').forEach((p) => {
                 p.style.width = '80%';
             });
         }, 0);
-
-        // const root = this.gui.addFolder('Debug');
-        // const { root } = this.gui;
-        // root.title('Debug');
-
-        // root.open();
 
         Object.keys(this.props).forEach((key) => {
             const ctrl = this.gui.add(this.props, key);
