@@ -75,29 +75,6 @@ class Debug {
         return panel;
     }
 
-    // getControls() {
-    //     return {
-    //         scene: new DebugScene(this.scenePanel, (t) => this.onAction('scene', t)),
-    //         orbit: new DebugOrbitControls(),
-    //         physics: new DebugPhysics(),
-    //         transform: new DebugTransformControls((t) => this.onAction('transform', t)),
-    //         select: new DebugSelectObject((t) => this.onAction('select', t)),
-    //         objectProps: new DebugShowSceneObjectProps(this.scenePanel),
-    //     };
-    // }
-
-    // getGuiOptions(props) {
-    //     const guiOptions = {};
-    //     Object.keys(this.guiOptions).forEach((key) => {
-    //         if (props[key] === true || props[key] === false) {
-    //             guiOptions[key] = props[key];
-    //         } else {
-    //             guiOptions[key] = this.guiOptions[key];
-    //         }
-    //     });
-    //     return guiOptions;
-    // }
-
     onAction(type, target) {
         const { transform, objectProps } = this.controls;
 

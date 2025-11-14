@@ -16,10 +16,9 @@ export class DebugSelectObject {
         this.onActionComplete = onActionComplete;
     }
 
-    action(context) {
-        this.scene = context.scene;
-        this.camera = context.camera;
-        this.selectable = this.scene.children
+    action({ scene, camera }) {
+        this.camera = camera;
+        this.selectable = scene.children
             .filter(({ type }) => !this.excludeTypes.includes(type))
             .filter(({ children }) => children.every((c) => c.type !== 'Line'))
             .filter(({ name }) => name !== 'transform-controls');
@@ -29,7 +28,7 @@ export class DebugSelectObject {
     }
 
     toggle(status, context) {
-        if (this.objectSelectionEnabled === undefined) {
+        if (!this.selectable.length) {
             this.action(context);
         }
 
@@ -37,38 +36,30 @@ export class DebugSelectObject {
     }
 
     bindEvents() {
-        const isTouch = 
-            'ontouchstart' in document.documentElement ||
-            (window.navigator.maxTouchPoints && window.navigator.maxTouchPoints >= 1);
+        const hasTouchEvent = 'ontouchstart' in document.documentElement;
+        const hasTouchPoints = window.navigator.maxTouchPoints >= 1;
+        const isTouch = hasTouchEvent || hasTouchPoints;
+        const eventName = isTouch ? 'touchstart' : 'mousedown';
+        
+        window.addEventListener(eventName, (e) => {
+            this.handleClick(isTouch ? e.changedTouches[0] : e);
+        }, false);
 
-        if (isTouch) {
-            window.addEventListener('touchstart', (e) => this.click(e.changedTouches[0]), false);
-        } else {
-            window.addEventListener('mousedown', (e) => this.click(e), false);
-        }
+        window.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'shift') {
+                this.isShiftPressed = true;
+            }
+        });
 
-        window.addEventListener('keydown', (e) => this.onKeyDown(e));
-        window.addEventListener('keyup', (e) => this.onKeyUp(e));
+        window.addEventListener('keyup', (e) => {
+            if (e.key.toLowerCase() === 'shift') {
+                this.isShiftPressed = false;
+            }
+        });
     }
 
-    onKeyDown(e) {
-        if (e.key.toLowerCase() === 'shift') {
-            this.isShiftPressed = true;
-        }
-    }
-
-    onKeyUp(e) {
-        if (e.key.toLowerCase() === 'shift') {
-            this.isShiftPressed = false;
-        }
-    }
-
-    click(e) {
-        if (!this.objectSelectionEnabled) {
-            return;
-        }
-
-        if (!this.isShiftPressed) {
+    handleClick(e) {
+        if (!this.objectSelectionEnabled || !this.isShiftPressed) {
             return;
         }
 

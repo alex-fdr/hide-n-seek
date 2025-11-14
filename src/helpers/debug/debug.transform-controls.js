@@ -89,9 +89,7 @@ export class DebugTransformControls {
 
     bindEvents(orbit) {
         this.controls.addEventListener('mouseUp', () => {
-            if (this.onActionComplete) {
-                this.onActionComplete(this.controls.object);
-            }
+            this.onActionComplete?.(this.controls.object);
         });
 
         this.controls.addEventListener('dragging-changed', (event) => {
