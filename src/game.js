@@ -110,8 +110,8 @@ export class Game {
                         pathFollower.renderPath();
                     }
 
-                    if (pathFollower.pointsGroup) {
-                        pathFollower.pointsGroup.visible = status;
+                    if (pathFollower.pathPoints) {
+                        pathFollower.pathPoints.visible = status;
                     } else {
                         pathFollower.renderPoints();
                     }
