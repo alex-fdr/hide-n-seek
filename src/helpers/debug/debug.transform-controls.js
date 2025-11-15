@@ -1,3 +1,4 @@
+import { Raycaster, Vector2 } from 'three';
 import { TransformControls } from 'three/addons/controls/TransformControls';
 
 export class DebugTransformControls {
@@ -6,15 +7,31 @@ export class DebugTransformControls {
         this.actions = {};
         this.keymap = {};
         this.onActionComplete = onActionComplete;
+
+        this.excludeTypes = [
+            'LineSegments',
+            'DirectionalLight',
+            'HemisphereLight',
+            'Line',
+        ];
+        this.selectable = [];
+        // this.isShiftPressed = false;
+        this.intersected = null;
+        this.raycaster = new Raycaster();
+        this.pointer = new Vector2();
     }
 
     action({ camera, renderer, scene, controls: { orbit } }) {
+        this.camera = camera;
+
         this.controls = new TransformControls(camera, renderer.domElement);
-        this.controls.name = 'transform-controls';
-        scene.add(this.controls.getHelper());
+        const helper = this.controls.getHelper();
+        helper.name = 'transform-controls';
+        scene.add(helper);
 
         this.actions = this.initActionsList(this.controls);
         this.keymap = this.initKeymap(this.actions);
+        this.selectable = this.filterSelectableObjects(scene);
 
         this.bindEvents(orbit);
     }
@@ -26,16 +43,16 @@ export class DebugTransformControls {
             scale: () => ctrl.setMode('scale'),
             xAxis: () => {
                 ctrl.showX = true;
-                ctrl.showY = (ctrl.showY === ctrl.showZ) ? !ctrl.showY : false;
+                ctrl.showY = ctrl.showY === ctrl.showZ ? !ctrl.showY : false;
                 ctrl.showZ = ctrl.showY;
             },
             yAxis: () => {
-                ctrl.showX = (ctrl.showX === ctrl.showZ) ? !ctrl.showX : false;
+                ctrl.showX = ctrl.showX === ctrl.showZ ? !ctrl.showX : false;
                 ctrl.showY = true;
                 ctrl.showZ = ctrl.showX;
             },
             zAxis: () => {
-                ctrl.showX = (ctrl.showX === ctrl.showY) ? !ctrl.showX : false;
+                ctrl.showX = ctrl.showX === ctrl.showY ? !ctrl.showX : false;
                 ctrl.showY = ctrl.showX;
                 ctrl.showZ = true;
             },
@@ -52,7 +69,7 @@ export class DebugTransformControls {
                 }
             },
             worldLocalSpace: () => {
-                ctrl.setSpace((ctrl.space === 'local') ? 'world' : 'local');
+                ctrl.setSpace(ctrl.space === 'local' ? 'world' : 'local');
             },
             reset: () => {
                 ctrl.detach();
@@ -83,7 +100,7 @@ export class DebugTransformControls {
             '+': () => actions.controlsSizeBigger(),
             '=': () => actions.controlsSizeBigger(),
             '-': () => actions.controlsSizeSmaller(),
-            '_': () => actions.controlsSizeSmaller(),
+            _: () => actions.controlsSizeSmaller(),
         };
     }
 
@@ -110,6 +127,54 @@ export class DebugTransformControls {
                 this.keymap[key](false);
             }
         });
+
+        const hasTouchEvent = 'ontouchstart' in document.documentElement;
+        const hasTouchPoints = window.navigator.maxTouchPoints >= 1;
+        const isTouch = hasTouchEvent || hasTouchPoints;
+        const eventName = isTouch ? 'touchstart' : 'mousedown';
+
+        window.addEventListener(
+            eventName,
+            (e) => {
+                this.handleClick(isTouch ? e.changedTouches[0] : e);
+            },
+            false,
+        );
+    }
+
+    filterSelectableObjects(scene) {
+        return scene.children
+            .filter(({ type }) => !this.excludeTypes.includes(type))
+            .filter(({ children }) => children.every((c) => c.type !== 'Line'))
+            .filter(({ name }) => name !== 'transform-controls');
+    }
+
+    handleClick(e) {
+        if (!this.controls.enabled || !this.controls.isShiftPressed) {
+            return;
+        }
+
+        this.pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+        this.pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        this.raycaster.setFromCamera(this.pointer, this.camera);
+
+        const [firstIntersect] = this.raycaster.intersectObjects(
+            this.selectable,
+            true,
+        );
+
+        if (firstIntersect && firstIntersect.object !== this.intersected) {
+            this.intersected = firstIntersect.object;
+        }
+
+        this.controls.attach(this.intersected);
+        this.onActionComplete?.(this.intersected);
+    }
+
+    attach(target) {
+        if (this.controls?.enabled) {
+            this.controls.attach(target);
+        }
     }
 
     toggle(status, context) {
