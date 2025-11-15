@@ -1,112 +1,76 @@
+import GUI from 'lil-gui';
+
 export class DebugScene {
-    constructor(gui, onActionComplete) {
-        this.gui = gui;
-        this.counter = 0;
+    constructor(onActionComplete) {
         this.onActionComplete = onActionComplete;
-        this.lights = [
-            'DirectionalLight',
-            'AmbientLight',
-            'HemisphereLight',
-            'SpotLight',
-            'PerspectiveCamera',
-        ];
-        this.skipNames = ['transform-controls'];
-        this.skipTypes = ['TransformControlsGizmo'];
-        this.closeNames = ['mixamorig_Hips'];
+        this.exclude = ['transform-controls', 'TransformControlsGizmo'];
+        this.keepClosed = ['mixamorig_Hips'];
     }
 
     action(context) {
-        if (this.root) {
-            return;
-        }
+        this.panel = new GUI({ title: 'Scene Tree', width: 200 });
+        this.panel.domElement.style.right = '0px';
 
-        this.root = this.gui.addFolder('Scene tree');
-        // this.root.open();
+        this.lightsFolder = this.panel.addFolder('Lights');
+
+        this.tweakPanelStyles();
 
         for (const child of context.scene.children) {
-            this.traverseScene(child, this.root);
-        }
-
-        // context.scene.children.forEach((child) => this.traverseScene(child, root));
-    }
-
-    toggle(status, context) {
-        console.log('scene toggle');
-        if (!this.root) {
-            this.action(context);
-        }
-
-        if (status) {
-            this.gui.show();
-        } else {
-            this.gui.hide();
+            this.traverseScene(child, this.panel);
         }
     }
 
-    traverseScene(child, parentFolder) {
-        if (!child.children) {
-            console.log('child without children:', child.name, child.type);
-            return;
-        }
-
-        if (this.skipNames.includes(child.name)) {
-            console.log('skip name:', child.name);
-            return;
-        }
-
-        if (this.skipTypes.includes(child.type)) {
-            console.log('skip type:', child.type);
-            return;
-        }
-
-        let name = child.name !== '' ? child.name : child.type;
-        const onClick = this.click.bind(this, child, name);
-
-        if (child.isMesh) {
-            parentFolder.add({ click: onClick }, 'click').name(name);
-
-            if (child.children.length === 0) {
-                return;
+    tweakPanelStyles() {
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            .lil-gui {
+                --folder-indent: 8px;
             }
-        }
-
-        if (this.lights.includes(name)) {
-            parentFolder.add({ click: onClick }, 'click').name(name);
-
-            if (child.children.length === 0) {
-                return;
+            .lil-title:has(+ .lil-children:empty)::before {
+                content: '';
             }
+            .lil-title ~ .lil-children:empty {
+                display: none;
+            }
+            .lil-gui .lil-title:before {
+                display: inline;
+            }
+        `;
+        document.head.appendChild(styleElement);
+    }
+
+    traverseScene(object, parentFolder) {
+        const name = object.name !== '' ? object.name : object.type;
+
+        if (this.exclude.includes(name)) {
+            return;
         }
 
-        let folder;
+        const parent = object.isLight ? this.lightsFolder : parentFolder;
+        const folder = parent.addFolder(name);
 
-        try {
-            folder = parentFolder.addFolder(name);
-        } catch (error) {
-            this.counter++;
-            name = `${name}_${this.counter}`;
-            folder = parentFolder.addFolder(name);
-        }
+        folder.domElement
+            .querySelector('.lil-title')
+            .addEventListener('click', () => {
+                this.onActionComplete?.(object, name);
+            });
 
-        if (this.closeNames.includes(name)) {
+        if (this.keepClosed.includes(name) || object.isLight || object.isMesh) {
             folder.close();
         }
 
-        // handle click on folder
-        folder.domElement
-            .querySelector('.lil-title')
-            .addEventListener('click', onClick);
-
-        for (const c of child.children) {
-            this.traverseScene(c, folder);
+        // recursively traverse children of the current node
+        for (const child of object.children) {
+            this.traverseScene(child, folder);
         }
     }
 
-    isLightsObject(el) {}
-
-    click(target) {
-        if (this.onActionComplete) {
-            this.onActionComplete(target);
+    toggle(status, context) {
+        if (!this.panel) {
+            this.action(context);
         }
+
+        this.panel.show(status);
+        context.controls?.props.adjustPlacement(status);
     }
 }
