@@ -1,22 +1,20 @@
-import GUI from 'lil-gui';
 import { DebugGUI } from './debug.gui.js';
 import { DebugOrbitControls } from './debug.orbit-controls.js';
 import { DebugPhysics } from './debug.physics.js';
 import { DebugScene } from './debug.scene.js';
-import { DebugSelectObject } from './debug.select-object.js';
 import { DebugShowSceneObjectProps } from './debug.show-scene-object-props.js';
 import { DebugTransformControls } from './debug.transform-controls.js';
 
 class Debug {
     constructor() {
-        this.guiOptions = {
-            select: true,
-            transform: true,
-            objectProps: true,
+        this.defaultOptions = {
             scene: false,
+            props: false,
+            transform: false,
             orbit: false,
             physics: false,
         };
+        this.controls = {};
     }
 
     init({ scene, renderer, camera, physics }, props = {}) {
@@ -25,7 +23,7 @@ class Debug {
             return;
         }
 
-        // Do nothing if no debug options were provided
+        // Do nothing if no debug options provided
         if (!props || Object.keys(props).length === 0) {
             return;
         }
@@ -35,23 +33,29 @@ class Debug {
         this.camera = camera;
         this.physics = physics;
 
-        const options = { ...this.guiOptions, ...props };
-        const optionKeys = Object.keys(options);
+        const guiOptions = { ...this.defaultOptions, ...props };
+        const guiOptionKeys = Object.keys(guiOptions);
 
-        this.scenePanel = this.createScenePanel();
         this.controls = {
-            scene: new DebugScene(this.scenePanel, (t) => this.onAction('scene', t)),
+            props: new DebugShowSceneObjectProps(),
             orbit: new DebugOrbitControls(),
             physics: new DebugPhysics(),
-            transform: new DebugTransformControls((t) => this.onAction('transform', t)),
-            select: new DebugSelectObject((t) => this.onAction('select', t)),
-            objectProps: new DebugShowSceneObjectProps(this.scenePanel),
+            scene: new DebugScene((target) => {
+                this.controls.objectProps.action(this, target);
+                this.controls.transform?.attach(target);
+                this.logObject(target);
+            }),
+            transform: new DebugTransformControls((target) => {
+                this.controls.objectProps.action(this, target);
+                this.logObject(target);
+            }),
         };
-        this.debugPanel = new DebugGUI(options, this.controls, this);
 
-        for (const key of optionKeys) {
-            if (options[key] === true) {
-                this.controls[key]?.action(this);
+        this.debugPanel = new DebugGUI(guiOptions, this.controls, this);
+
+        for (const key of guiOptionKeys) {
+            if (guiOptions[key] === true) {
+                this.controls[key].action(this);
             }
         }
 
@@ -60,42 +64,12 @@ class Debug {
             this.controls.scene.toggle(false, this);
         }
 
-        if (optionKeys.length) {
-            this.debugPanel.init(options);
+        if (guiOptionKeys.length) {
+            this.debugPanel.init(guiOptions);
         }
     }
 
-    createScenePanel() {
-        const panel = new GUI({
-            title: 'Scene Controls',
-            width: 200,
-        });
-        const el = panel.domElement;
-        el.style.right = 0;
-        return panel;
-    }
-
-    onAction(type, target) {
-        const { transform, objectProps } = this.controls;
-
-        if (type !== 'transform') {
-            if (transform?.controls?.enabled) {
-                if (type === 'scene') {
-                    transform.controls.attach(target);
-                }
-
-                if (type === 'select' && target && transform.controls.isShiftPressed) {
-                    transform.controls.attach(target);
-                }
-            }
-
-            objectProps.action(this, target);
-        }
-
-        this.log(target);
-    }
-
-    log(target) {
+    logObject(target) {
         if (!target) return;
 
         console.log('\n');
