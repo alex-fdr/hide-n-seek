@@ -81,6 +81,7 @@ class Debug {
     }
 
     update(dt) {
+        this.controls.orbit.update();
         this.controls.physics.update(dt);
     }
 }

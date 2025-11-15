@@ -17,4 +17,8 @@ export class DebugOrbitControls {
 
         this.controls.enabled = status;
     }
+
+    update() {
+        this.controls?.update();
+    }
 }
