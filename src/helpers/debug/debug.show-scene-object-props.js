@@ -1,4 +1,5 @@
 import { Body } from 'cannon-es';
+import GUI from 'lil-gui';
 import {
     BackSide,
     ClampToEdgeWrapping,
@@ -9,12 +10,10 @@ import {
 } from 'three';
 
 export class DebugShowSceneObjectProps {
-    constructor(gui) {
-        this.gui = gui;
-        this.root = null;
-        this.visible = false;
-        this.targetObjectPropsUuid = 0;
-        this.items = [];
+    constructor(onActionComplete) {
+        this.onActionComplete = onActionComplete;
+        this.title = 'Object Props';
+        this.activeObjectUuid = 0;
         this.lightTypes = [
             'DirectionalLight',
             'AmbientLight',
@@ -23,87 +22,89 @@ export class DebugShowSceneObjectProps {
         ];
     }
 
-    create() {
-        this.root = this.gui.addFolder('Object props');
-        this.root.close();
-        this.root.show();
-        this.visible = true;
+    createPanel() {
+        return new GUI({ title: this.title, width: 200 });
+    }
+
+    adjustPlacement(visible) {
+        if (!this.panel) {
+            this.panel = this.createPanel();
+            this.panel.hide();
+        }
+
+        this.panel.domElement.style.right = visible ? '200px' : '0px';
     }
 
     action(context, target) {
+        if (!this.panel) {
+            this.panel = this.createPanel();
+            this.panel.close();
+            this.adjustPlacement(false);
+        }
+
         if (!target) {
-            this.create();
+            console.log('no target was provided');
             return;
         }
 
-        if (!this.visible) {
+        // check if we already shown props for this object
+        if (this.activeObjectUuid === target.uuid) {
+            this.panel.open();
             return;
         }
 
-        if (this.root) {
-            // check if we already show props for this object
-            if (this.targetObjectPropsUuid === target.uuid) {
-                return;
-            }
-            this.targetObjectPropsUuid = target.uuid;
-            this.clearRootFolder();
-        } else {
-            this.root = this.gui.addFolder('Object props');
-        }
+        this.activeObjectUuid = target.uuid;
+        this.clearPanel();
 
-        // set folder name based on what is the target object
-        this.root.name = target.name || target.type || 'Object';
-        this.root.name += ' props';
+        // set folder's name based on what the target object is
+        const name = target.name || target.type || 'Object';
+        this.panel.title(`${name} props`);
+        this.panel.open();
 
-        const parsers = {
-            light: (obj) => this.showLightProps(obj),
-            material: (obj) => {
-                if (obj.material.length) {
-                    obj.material.forEach((m, i) => {
-                        this.showMaterialProps(obj, m, i);
-                    });
-                } else {
-                    this.showMaterialProps(obj, obj.material);
-                }
-            },
-            body: (obj) => this.showPhysicsBodyProps(obj),
-            group: (obj) => this.showGroupProps(obj),
-        };
-
-        // apply props parser
         if (this.lightTypes.includes(target.type)) {
-            parsers.light(target);
-        } else if (target.material) {
-            parsers.material(target);
-        } else if (target.isGroup || target.isObject3D) {
-            parsers.group(target);
+            this.showLightProps(target);
         }
 
-        if (target.body) {
-            parsers.body(target);
+        if (target.material) {
+            const { material } = target;
+            const materials = Array.isArray(material) ? material : [material];
+
+            for (const [i, mat] of materials.entries()) {
+                this.showMaterialProps(target, mat, i);
+            }
         }
 
-        this.root.open();
+        if (target.children.length) {
+            this.showGroupProps(target);
+        }
+
+        this.onActionComplete?.(target);
     }
 
-    clearRootFolder() {
-        const folders = this.root.folders;
-        const controllers = this.root.controllers;
-        Object.keys(folders).forEach((key) => folders[key].destroy());
-        controllers.forEach((ctrl) => ctrl.destroy());
+    clearPanel() {
+        for (const child of this.panel.children) {
+            child.destroy();
+        }
+
+        for (const folder of this.panel.folders) {
+            folder.destroy();
+        }
+
+        for (const ctrl of this.panel.controllers) {
+            ctrl.destroy();
+        }
     }
 
     showLightProps(target) {
-        const folder = this.root.addFolder('Light');
-        this.handleColor(folder, target, 'color');
-        this.handleColor(folder, target, 'groundColor');
-        folder.add(target, 'intensity', 0, 2, 0.01);
+        // const folder = this.panel.addFolder('Light');
+        this.handleColor(this.panel, target, 'color');
+        this.handleColor(this.panel, target, 'groundColor');
+        this.panel.add(target, 'intensity', 0, 3, 0.1);
     }
 
-    showMaterialProps(target, material, materialIndex) {
-        const name =
-            materialIndex >= 0 ? `Material${materialIndex}` : 'Material';
-        const folder = this.root.addFolder(name);
+    showMaterialProps(target, material, materialId) {
+        const name = materialId > 0 ? `Material${materialId}` : 'Material';
+        const folder = this.panel.addFolder(name);
         folder.add(material, 'type');
         folder.add(target, 'visible');
 
@@ -114,14 +115,12 @@ export class DebugShowSceneObjectProps {
         folder.add(material, 'transparent');
         folder.add(material, 'opacity', 0, 1);
         folder
-            .add(material, 'side', {
-                FrontSide: FrontSide,
-                BackSide: BackSide,
-                DoubleSide: DoubleSide,
-            })
-            .onChange((val) => (material.side = +val));
+            .add(material, 'side', { FrontSide, BackSide, DoubleSide })
+            .onChange((val) => {
+                material.side = +val;
+            });
 
-        if (material.wireframe) {
+        if (Object.hasOwn(material, 'wireframe')) {
             folder.add(material, 'wireframe');
         }
 
@@ -166,9 +165,9 @@ export class DebugShowSceneObjectProps {
 
         folder
             .add(texture, 'wrapS', {
-                ClampToEdgeWrapping: ClampToEdgeWrapping,
-                RepeatWrapping: RepeatWrapping,
-                MirroredRepeatWrapping: MirroredRepeatWrapping,
+                ClampToEdgeWrapping,
+                RepeatWrapping,
+                MirroredRepeatWrapping,
             })
             .onChange((val) => {
                 texture.wrapS = +val;
@@ -176,24 +175,11 @@ export class DebugShowSceneObjectProps {
                 texture.needsUpdate = true;
             })
             .name('wrap');
-
-        // folder
-        //     .add(texture, 'encoding', {
-        //         LinearEncoding: THREE.LinearEncoding,
-        //         sRGBEncoding: THREE.sRGBEncoding,
-        //         GammaEncoding: THREE.GammaEncoding,
-        //     })
-        //     .onChange((val) => {
-        //         texture.encoding = +val;
-        //         material.needsUpdate = true;
-        //     });
-
-        folder.open();
     }
 
     showPhysicsBodyProps(target) {
         const { body } = target;
-        const folder = this.root.addFolder('Body');
+        const folder = this.panel.addFolder('Physical Body');
 
         folder.add(body, 'type', {
             dynamic: Body.DYNAMIC,
@@ -209,22 +195,23 @@ export class DebugShowSceneObjectProps {
         // this.handleVector3(folder, body, 'velocity');
         // this.handleVector3(folder, body, 'inertia');
         // this.handleVector3(folder, body, 'force');
-
-        folder.open();
     }
 
     showGroupProps(target) {
-        this.root.add(target, 'visible');
+        this.panel.add(target, 'visible');
+        // const pos = this.panel.addFolder('position');
+        // pos.add(target.position, 'x');
+        // pos.add(target.position, 'y');
+        // pos.add(target.position, 'z');
     }
 
-    handleVector3(parentFolder, target, key) {
-        const vec3 = target[key];
-        const subFolder = parentFolder.addFolder(key);
-        subFolder.add(vec3, 'x');
-        subFolder.add(vec3, 'y');
-        subFolder.add(vec3, 'z');
-        subFolder.open();
-    }
+    // handleVector3(parentFolder, target, key) {
+    //     const vec3 = target[key];
+    //     const subFolder = parentFolder.addFolder(key);
+    //     subFolder.add(vec3, 'x');
+    //     subFolder.add(vec3, 'y');
+    //     subFolder.add(vec3, 'z');
+    // }
 
     handleColor(parentFolder, target, key) {
         const props = {};
@@ -236,26 +223,16 @@ export class DebugShowSceneObjectProps {
         }
     }
 
-    handleFunction(parentFolder, key, callback) {
-        const obj = {
-            add: () => callback(),
-        };
-        parentFolder.add(obj, 'add').name(key);
+    handleFunction(parentFolder, label, callback) {
+        const obj = { fn: () => callback() };
+        parentFolder.add(obj, 'fn').name(label);
     }
 
     toggle(status) {
-        if (!this.root) {
-            this.visible = true;
+        if (!this.panel) {
             this.action();
-            return;
         }
 
-        if (status) {
-            this.root.show();
-        } else {
-            this.root.hide();
-        }
-
-        this.visible = status;
+        this.panel.show(status);
     }
 }
