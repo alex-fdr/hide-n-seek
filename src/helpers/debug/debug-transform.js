@@ -1,7 +1,7 @@
 import { Raycaster, Vector2 } from 'three';
 import { TransformControls } from 'three/addons/controls/TransformControls';
 
-export class DebugTransformControls {
+export class DebugTransform {
     constructor(onActionComplete) {
         this.controls = null;
         this.actions = {};

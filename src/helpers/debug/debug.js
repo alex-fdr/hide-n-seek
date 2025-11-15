@@ -1,9 +1,9 @@
-import { DebugGUI } from './debug.gui.js';
-import { DebugOrbitControls } from './debug.orbit-controls.js';
-import { DebugPhysics } from './debug.physics.js';
-import { DebugScene } from './debug.scene.js';
-import { DebugShowSceneObjectProps } from './debug.show-scene-object-props.js';
-import { DebugTransformControls } from './debug.transform-controls.js';
+import { DebugGUI } from './debug-gui.js';
+import { DebugObjectProps } from './debug-object-props.js';
+import { DebugOrbitControls } from './debug-orbit-controls.js';
+import { DebugPhysics } from './debug-physics.js';
+import { DebugSceneTree } from './debug-scene-tree.js';
+import { DebugTransform } from './debug-transform.js';
 
 class Debug {
     constructor() {
@@ -37,15 +37,16 @@ class Debug {
         const guiOptionKeys = Object.keys(guiOptions);
 
         this.controls = {
-            props: new DebugShowSceneObjectProps(),
+            props: new DebugObjectProps(),
             orbit: new DebugOrbitControls(),
             physics: new DebugPhysics(),
-            scene: new DebugScene((target) => {
+            scene: new DebugSceneTree((target) => {
                 this.controls.props.action(this, target);
                 this.controls.transform?.attach(target);
                 this.logObject(target);
             }),
-            transform: new DebugTransformControls((target) => {
+            transform: new DebugTransform((target) => {
+                // show props panel for the selected object
                 this.controls.props.action(this, target);
                 this.logObject(target);
             }),

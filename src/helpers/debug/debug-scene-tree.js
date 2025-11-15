@@ -1,6 +1,6 @@
 import GUI from 'lil-gui';
 
-export class DebugScene {
+export class DebugSceneTree {
     constructor(onActionComplete) {
         this.onActionComplete = onActionComplete;
         this.exclude = ['transform-controls', 'TransformControlsGizmo'];

@@ -9,9 +9,8 @@ import {
     RepeatWrapping,
 } from 'three';
 
-export class DebugShowSceneObjectProps {
-    constructor(onActionComplete) {
-        this.onActionComplete = onActionComplete;
+export class DebugObjectProps {
+    constructor() {
         this.title = 'Object Props';
         this.activeObjectUuid = 0;
         this.lightTypes = [
@@ -35,6 +34,7 @@ export class DebugShowSceneObjectProps {
         this.panel.domElement.style.right = visible ? '200px' : '0px';
     }
 
+    /* biome-ignore lint : keep unused 'context' parameter */
     action(context, target) {
         if (!this.panel) {
             this.panel = this.createPanel();
@@ -77,8 +77,6 @@ export class DebugShowSceneObjectProps {
         if (target.children.length) {
             this.showGroupProps(target);
         }
-
-        this.onActionComplete?.(target);
     }
 
     clearPanel() {
