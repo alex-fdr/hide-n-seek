@@ -41,12 +41,12 @@ class Debug {
             orbit: new DebugOrbitControls(),
             physics: new DebugPhysics(),
             scene: new DebugScene((target) => {
-                this.controls.objectProps.action(this, target);
+                this.controls.props.action(this, target);
                 this.controls.transform?.attach(target);
                 this.logObject(target);
             }),
             transform: new DebugTransformControls((target) => {
-                this.controls.objectProps.action(this, target);
+                this.controls.props.action(this, target);
                 this.logObject(target);
             }),
         };
