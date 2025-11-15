@@ -15,8 +15,7 @@
         "lineWidth": 80,
         "includes": [
             "**",
-            "!**/libs/**",
-            "!**/debug/**"
+            "!**/libs/**"
         ]
     },
     "linter": {
