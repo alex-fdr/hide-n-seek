@@ -1,4 +1,4 @@
-import { DebugGUI } from './debug-gui.js';
+import GUI from 'lil-gui';
 import { DebugObjectProps } from './debug-object-props.js';
 import { DebugOrbitControls } from './debug-orbit-controls.js';
 import { DebugPhysics } from './debug-physics.js';
@@ -7,24 +7,18 @@ import { DebugTransform } from './debug-transform.js';
 
 class Debug {
     constructor() {
-        this.defaultOptions = {
+        this.options = {
             scene: false,
             props: false,
             transform: false,
             orbit: false,
             physics: false,
         };
-        this.controls = {};
+        this.components = {};
     }
 
     init({ scene, renderer, camera, physics }, props = {}) {
-        // TODO implement re-init
-        if (this.debugPanel) {
-            return;
-        }
-
-        // Do nothing if no debug options provided
-        if (!props || Object.keys(props).length === 0) {
+        if (this.panel) {
             return;
         }
 
@@ -32,42 +26,76 @@ class Debug {
         this.renderer = renderer;
         this.camera = camera;
         this.physics = physics;
+        this.options = { ...this.options, ...props };
 
-        const guiOptions = { ...this.defaultOptions, ...props };
-        const guiOptionKeys = Object.keys(guiOptions);
+        this.panel = new GUI({ width: 100, title: 'Debug' });
+        this.panel.domElement.setAttribute('id', 'debug-panel');
 
-        this.controls = {
+        this.components = {
             props: new DebugObjectProps(),
             orbit: new DebugOrbitControls(),
             physics: new DebugPhysics(),
-            scene: new DebugSceneTree((target) => {
-                this.controls.props.action(this, target);
-                this.controls.transform?.attach(target);
-                this.logObject(target);
-            }),
-            transform: new DebugTransform((target) => {
-                // show props panel for the selected object
-                this.controls.props.action(this, target);
-                this.logObject(target);
-            }),
+            scene: new DebugSceneTree(this.onSceneAction.bind(this)),
+            transform: new DebugTransform(this.onTransformAction.bind(this)),
         };
 
-        this.debugPanel = new DebugGUI(guiOptions, this.controls, this);
+        for (const label of Object.keys(this.options)) {
+            this.createToggle(label);
 
-        for (const key of guiOptionKeys) {
-            if (guiOptions[key] === true) {
-                this.controls[key].action(this);
+            // perform control's action if this option is enabled by default
+            if (this.options[label]) {
+                this.components[label]?.action(this);
             }
         }
 
-        // hide the scene tree if user dont want it to be shown
-        if (!props.scene) {
-            this.controls.scene.toggle(false, this);
+        this.tweakPanelStyle();
+    }
+
+    tweakPanelStyle() {
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            #debug-panel {
+                top: 0;
+                left: 0;
+            }
+            #debug-panel .lil-controller > .lil-name {
+                width: 80%;
+            }
+        `;
+        document.head.appendChild(styleElement);
+    }
+
+    createToggle(label) {
+        this.panel.add(this.options, label).onChange((value) => {
+            this.options[label] = value;
+            this.components[label]?.toggle(value, this);
+        });
+    }
+
+    addCustomToggle(label, initialValue = false, customHandler = () => {}) {
+        if (Object.hasOwn(this.options, label)) {
+            console.error(`a toggle with the name '${label}' already exists`);
+            return;
         }
 
-        if (guiOptionKeys.length) {
-            this.debugPanel.init(guiOptions);
-        }
+        this.options[label] = initialValue;
+        this.components[label] = {
+            toggle: (status) => customHandler(status),
+        };
+
+        this.createToggle(label);
+    }
+
+    onSceneAction(target) {
+        this.components.props.action(this, target);
+        this.components.transform.controls?.attach(target);
+        this.logObject(target);
+    }
+
+    onTransformAction(target) {
+        // show props panel for the selected object
+        this.components.props.action(this, target);
+        this.logObject(target);
     }
 
     logObject(target) {
@@ -81,8 +109,8 @@ class Debug {
     }
 
     update(dt) {
-        this.controls.orbit.update();
-        this.controls.physics.update(dt);
+        this.components.orbit.update();
+        this.components.physics.update(dt);
     }
 }
 
