@@ -11,18 +11,11 @@ import {
 
 export class DebugObjectProps {
     constructor() {
-        this.title = 'Object Props';
         this.activeObjectUuid = 0;
-        this.lightTypes = [
-            'DirectionalLight',
-            'AmbientLight',
-            'HemisphereLight',
-            'SpotLight',
-        ];
     }
 
     createPanel() {
-        return new GUI({ title: this.title, width: 200 });
+        return new GUI({ title: 'Object Props', width: 200 });
     }
 
     adjustPlacement(visible) {
@@ -34,16 +27,18 @@ export class DebugObjectProps {
         this.panel.domElement.style.right = visible ? '200px' : '0px';
     }
 
-    /* biome-ignore lint : keep unused 'context' parameter */
     action(context, target) {
+        if (!context.options.props) {
+            return;
+        }
+
         if (!this.panel) {
             this.panel = this.createPanel();
             this.panel.close();
-            this.adjustPlacement(false);
+            this.adjustPlacement(context.options.scene === true);
         }
 
         if (!target) {
-            console.log('no target was provided');
             return;
         }
 
@@ -61,7 +56,25 @@ export class DebugObjectProps {
         this.panel.title(`${name} props`);
         this.panel.open();
 
-        if (this.lightTypes.includes(target.type)) {
+        this.parseObject(target);
+    }
+
+    clearPanel() {
+        for (const child of this.panel.children) {
+            child.destroy();
+        }
+
+        for (const folder of this.panel.folders) {
+            folder.destroy();
+        }
+
+        for (const ctrl of this.panel.controllers) {
+            ctrl.destroy();
+        }
+    }
+
+    parseObject(target) {
+        if (target.isLight) {
             this.showLightProps(target);
         }
 
@@ -76,20 +89,6 @@ export class DebugObjectProps {
 
         if (target.children.length) {
             this.showGroupProps(target);
-        }
-    }
-
-    clearPanel() {
-        for (const child of this.panel.children) {
-            child.destroy();
-        }
-
-        for (const folder of this.panel.folders) {
-            folder.destroy();
-        }
-
-        for (const ctrl of this.panel.controllers) {
-            ctrl.destroy();
         }
     }
 
@@ -226,9 +225,9 @@ export class DebugObjectProps {
         parentFolder.add(obj, 'fn').name(label);
     }
 
-    toggle(status) {
+    toggle(status, context) {
         if (!this.panel) {
-            this.action();
+            this.action(context);
         }
 
         this.panel.show(status);

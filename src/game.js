@@ -74,7 +74,7 @@ export class Game {
         pixiUI.screens.set('ui', new UIScreen(screenProps));
 
         level.init(level1Data);
-        debug.init(core, { orbit: false, scene: false, physics: false });
+        debug.init(core, { scene: true });
 
         this.resize(width, height);
         this.setupCustomDebugControls();
@@ -85,38 +85,30 @@ export class Game {
     }
 
     setupCustomDebugControls() {
-        debug.debugPanel.addCustomToggle(
-            'user input',
-            core.input.enabled,
-            (value) => {
-                core.input.enabled = value;
-            },
-        );
+        debug.addCustomToggle('user input', core.input.enabled, (value) => {
+            core.input.enabled = value;
+        });
 
-        debug.debugPanel.addCustomToggle('game loop', this.running, (value) => {
+        debug.addCustomToggle('game loop', this.running, (value) => {
             this.running = value;
         });
 
         for (const enemy of level.characters.enemies.getAll()) {
             const { pathFollower } = enemy;
 
-            debug.debugPanel.addCustomToggle(
-                `path-${enemy.name}`,
-                false,
-                (status) => {
-                    if (pathFollower.pathMesh) {
-                        pathFollower.pathMesh.visible = status;
-                    } else {
-                        pathFollower.renderPath();
-                    }
+            debug.addCustomToggle(`path-${enemy.name}`, false, (status) => {
+                if (pathFollower.pathMesh) {
+                    pathFollower.pathMesh.visible = status;
+                } else {
+                    pathFollower.renderPath();
+                }
 
-                    if (pathFollower.pathPoints) {
-                        pathFollower.pathPoints.visible = status;
-                    } else {
-                        pathFollower.renderPoints();
-                    }
-                },
-            );
+                if (pathFollower.pathPoints) {
+                    pathFollower.pathPoints.visible = status;
+                } else {
+                    pathFollower.renderPoints();
+                }
+            });
         }
     }
 

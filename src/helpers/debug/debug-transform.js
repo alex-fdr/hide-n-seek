@@ -3,10 +3,10 @@ import { TransformControls } from 'three/addons/controls/TransformControls';
 
 export class DebugTransform {
     constructor(onActionComplete) {
+        this.onActionComplete = onActionComplete;
         this.controls = null;
         this.actions = {};
         this.keymap = {};
-        this.onActionComplete = onActionComplete;
 
         this.excludeTypes = [
             'LineSegments',
@@ -15,13 +15,12 @@ export class DebugTransform {
             'Line',
         ];
         this.selectable = [];
-        // this.isShiftPressed = false;
         this.intersected = null;
         this.raycaster = new Raycaster();
         this.pointer = new Vector2();
     }
 
-    action({ camera, renderer, scene, controls: { orbit } }) {
+    action({ camera, renderer, scene, components: { orbit } }) {
         this.camera = camera;
 
         this.controls = new TransformControls(camera, renderer.domElement);
@@ -31,16 +30,26 @@ export class DebugTransform {
 
         this.actions = this.initActionsList(this.controls);
         this.keymap = this.initKeymap(this.actions);
-        this.selectable = this.filterSelectableObjects(scene);
+
+        this.selectable = scene.children
+            .filter(({ type }) => !this.excludeTypes.includes(type))
+            .filter(({ children }) => children.every((c) => c.type !== 'Line'))
+            .filter(({ name }) => name !== 'transform-controls');
 
         this.bindEvents(orbit);
     }
 
     initActionsList(ctrl) {
         return {
-            translate: () => ctrl.setMode('translate'),
-            rotate: () => ctrl.setMode('rotate'),
-            scale: () => ctrl.setMode('scale'),
+            translate: () => {
+                ctrl.setMode('translate');
+            },
+            rotate: () => {
+                ctrl.setMode('rotate');
+            },
+            scale: () => {
+                ctrl.setMode('scale');
+            },
             xAxis: () => {
                 ctrl.showX = true;
                 ctrl.showY = ctrl.showY === ctrl.showZ ? !ctrl.showY : false;
@@ -56,7 +65,7 @@ export class DebugTransform {
                 ctrl.showY = ctrl.showX;
                 ctrl.showZ = true;
             },
-            selectMode: (status = true) => {
+            pick: (status = true) => {
                 ctrl.isShiftPressed = status;
             },
             snap: () => {
@@ -94,7 +103,7 @@ export class DebugTransform {
             r: () => actions.rotate(),
             s: () => actions.scale(),
             q: () => actions.worldLocalSpace(),
-            shift: (s) => actions.selectMode(s),
+            shift: (s) => actions.pick(s),
             control: () => actions.snap(),
             escape: () => actions.reset(),
             '+': () => actions.controlsSizeBigger(),
@@ -133,20 +142,9 @@ export class DebugTransform {
         const isTouch = hasTouchEvent || hasTouchPoints;
         const eventName = isTouch ? 'touchstart' : 'mousedown';
 
-        window.addEventListener(
-            eventName,
-            (e) => {
-                this.handleClick(isTouch ? e.changedTouches[0] : e);
-            },
-            false,
-        );
-    }
-
-    filterSelectableObjects(scene) {
-        return scene.children
-            .filter(({ type }) => !this.excludeTypes.includes(type))
-            .filter(({ children }) => children.every((c) => c.type !== 'Line'))
-            .filter(({ name }) => name !== 'transform-controls');
+        window.addEventListener(eventName, (e) => {
+            this.handleClick(isTouch ? e.changedTouches[0] : e);
+        });
     }
 
     handleClick(e) {
@@ -169,12 +167,6 @@ export class DebugTransform {
 
         this.controls.attach(this.intersected);
         this.onActionComplete?.(this.intersected);
-    }
-
-    attach(target) {
-        if (this.controls?.enabled) {
-            this.controls.attach(target);
-        }
     }
 
     toggle(status, context) {

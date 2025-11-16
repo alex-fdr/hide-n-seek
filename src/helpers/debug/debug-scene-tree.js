@@ -13,14 +13,14 @@ export class DebugSceneTree {
 
         this.lightsFolder = this.panel.addFolder('Lights');
 
-        this.tweakPanelStyles();
+        this.tweakPanelStyle();
 
         for (const child of context.scene.children) {
             this.traverseScene(child, this.panel);
         }
     }
 
-    tweakPanelStyles() {
+    tweakPanelStyle() {
         const styleElement = document.createElement('style');
         styleElement.textContent = `
             .lil-gui {
@@ -71,6 +71,6 @@ export class DebugSceneTree {
         }
 
         this.panel.show(status);
-        context.controls?.props.adjustPlacement(status);
+        context.components?.props.adjustPlacement(status);
     }
 }
