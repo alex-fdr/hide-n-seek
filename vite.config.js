@@ -1,17 +1,12 @@
 import { defineConfig } from 'vite';
-// import { viteSingleFile } from 'vite-plugin-singlefile';
+import { viteSingleFile } from 'vite-plugin-singlefile';
 
 export default defineConfig({
     build: {
         assetsInlineLimit: 40960000,
-        outDir: './build'
+        outDir: './build',
     },
-    assetsInclude: [
-        '**/*.glb',
-        '**/*.gltf',
-    ],
+    assetsInclude: ['**/*.glb', '**/*.gltf'],
 
-    plugins: [
-        // viteSingleFile(),
-    ]
+    plugins: [viteSingleFile()],
 });
