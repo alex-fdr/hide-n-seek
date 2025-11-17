@@ -72,7 +72,7 @@ class Debug {
         });
     }
 
-    addCustomToggle(label, initialValue = false, customHandler = () => {}) {
+    addCustomToggle({ label, initialValue, handler }) {
         if (Object.hasOwn(this.options, label)) {
             console.error(`a toggle with the name '${label}' already exists`);
             return;
@@ -80,7 +80,7 @@ class Debug {
 
         this.options[label] = initialValue;
         this.components[label] = {
-            toggle: (status) => customHandler(status),
+            toggle: (status) => handler(status),
         };
 
         this.createToggle(label);
