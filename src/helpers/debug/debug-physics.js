@@ -1,12 +1,15 @@
-import CannonDebugger from '../../libs/cannon-es-debugger';
+import CannonDebugger from 'cannon-es-debugger';
 
 export class DebugPhysics {
     constructor() {
         this.debugger = null;
+        this.meshes = [];
     }
 
     action({ scene, physics }) {
-        this.debugger = new CannonDebugger(scene, physics.world);
+        this.debugger = new CannonDebugger(scene, physics.world, {
+            onInit: (_, mesh) => this.meshes.push(mesh),
+        });
     }
 
     toggle(status, context) {
@@ -14,7 +17,7 @@ export class DebugPhysics {
             this.action(context);
         }
 
-        for (const mesh of this.debugger.meshes) {
+        for (const mesh of this.meshes) {
             mesh.visible = status;
         }
     }
