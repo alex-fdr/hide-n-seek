@@ -1,8 +1,10 @@
+import { debug } from '@alexfdr/three-debug-gui';
 import { assets, core } from '@alexfdr/three-game-core';
 import { Assets as PixiAssets } from 'pixi.js';
 import { level } from './level';
 import { animations } from './helpers/animations';
-import { debug } from './helpers/debug/debug';
+import { DebugPhysics } from './helpers/debug/debug-physics';
+// import { debug } from './helpers/debug/debug';
 import { htmlScreens } from './helpers/html-screens';
 import { tweens } from './helpers/tweens';
 import { pixiUI } from './ui/pixi-ui';
@@ -74,7 +76,13 @@ export class Game {
         pixiUI.screens.set('ui', new UIScreen(screenProps));
 
         level.init(level1Data);
+
         debug.init(core, { scene: true });
+        debug.registerComponent({
+            label: 'physics',
+            initialValue: false,
+            instance: new DebugPhysics(core.physics.world),
+        });
 
         this.resize(width, height);
         this.setupCustomDebugControls();
