@@ -1,21 +1,22 @@
 import CannonDebugger from 'cannon-es-debugger';
 
 export class DebugPhysics {
-    constructor(world) {
+    constructor({ scene, world }) {
+        this.scene = scene;
+        this.world = world;
         this.debugger = null;
         this.meshes = [];
-        this.world = world;
     }
 
-    action({ scene }) {
-        this.debugger = new CannonDebugger(scene, this.world, {
+    action() {
+        this.debugger = new CannonDebugger(this.scene, this.world, {
             onInit: (_, mesh) => this.meshes.push(mesh),
         });
     }
 
-    toggle(status, context) {
+    toggle(status) {
         if (!this.debugger) {
-            this.action(context);
+            this.action();
         }
 
         for (const mesh of this.meshes) {

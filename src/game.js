@@ -77,11 +77,11 @@ export class Game {
 
         level.init(level1Data);
 
-        debug.init(core, { scene: true });
-        debug.registerComponent({
-            label: 'physics',
-            initialValue: false,
-            instance: new DebugPhysics(core.physics.world),
+        debug.init({
+            scene: core.scene,
+            canvas: core.renderer.domElement,
+            camera: core.camera,
+            props: { scene: true },
         });
 
         this.resize(width, height);
@@ -93,39 +93,54 @@ export class Game {
     }
 
     setupCustomDebugControls() {
-        debug.addCustomToggle({
+        debug.registerComponent({
+            label: 'physics',
+            initialValue: false,
+            instance: new DebugPhysics({
+                scene: core.scene,
+                world: core.physics.world,
+            }),
+        });
+
+        debug.registerComponent({
             label: 'user input',
             initialValue: core.input.enabled,
-            handler: (value) => {
-                core.input.enabled = value;
+            instance: {
+                toggle: (value) => {
+                    core.input.enabled = value;
+                },
             },
         });
 
-        debug.addCustomToggle({
+        debug.registerComponent({
             label: 'game loop',
             initialValue: this.running,
-            handler: (value) => {
-                this.running = value;
+            instance: {
+                toggle: (value) => {
+                    this.running = value;
+                },
             },
         });
 
         for (const enemy of level.characters.enemies.getAll()) {
             const { name, pathFollower } = enemy;
 
-            debug.addCustomToggle({
+            debug.registerComponent({
                 label: `path-${name}`,
                 initialValue: false,
-                handler: (status) => {
-                    if (!pathFollower.pathMesh) {
-                        pathFollower.renderPath();
-                    }
+                instance: {
+                    toggle: (status) => {
+                        if (!pathFollower.pathMesh) {
+                            pathFollower.renderPath();
+                        }
 
-                    if (!pathFollower.pathPoints) {
-                        pathFollower.renderPoints();
-                    }
+                        if (!pathFollower.pathPoints) {
+                            pathFollower.renderPoints();
+                        }
 
-                    pathFollower.pathMesh.visible = status;
-                    pathFollower.pathPoints.visible = status;
+                        pathFollower.pathMesh.visible = status;
+                        pathFollower.pathPoints.visible = status;
+                    },
                 },
             });
         }
