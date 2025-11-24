@@ -1,11 +1,5 @@
 import { core } from '@alexfdr/three-game-core';
-import {
-    FrontSide,
-    Mesh,
-    MeshLambertMaterial,
-    PlaneGeometry,
-    Scene,
-} from 'three';
+import { FrontSide, Mesh, MeshLambertMaterial, PlaneGeometry, Scene } from 'three';
 import { config } from '../../data/config';
 import { tweens } from '../../systems/tweens';
 

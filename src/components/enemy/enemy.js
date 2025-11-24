@@ -14,18 +14,8 @@ const STATES = {
 
 export class Enemy {
     constructor(props) {
-        const {
-            parent,
-            skinType,
-            index,
-            name,
-            route,
-            speed,
-            spawn,
-            size,
-            color,
-            animationsList,
-        } = props;
+        // biome-ignore format: keep it in one line
+        const { parent, skinType, index, name, route, speed, spawn, size, color, animationsList } = props;
 
         this.parent = parent;
         this.skinType = skinType;
@@ -113,9 +103,9 @@ export class Enemy {
 
     addPathFollower(route, speed, index) {
         const pathFollower = new PathFollower({
-            points: route.points,
-            speed,
             index,
+            speed,
+            points: route.points,
         });
         this.group.position.copy(pathFollower.points[0]);
         return pathFollower;
@@ -127,7 +117,6 @@ export class Enemy {
         const geometry = new CylinderGeometry(radius, radius, height);
         const material = new MeshPhongMaterial({ color: 0xffffff });
         const collider = new Mesh(geometry, material);
-        // collider.rotateX(Math.PI * 0.5);
         collider.name = ENEMY_TAG;
         collider.parentClass = this;
         collider.visible = false;

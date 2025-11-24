@@ -78,12 +78,7 @@ class AnimationManager {
             const anims = assets.models.getAnimations(key);
 
             if (anims.length) {
-                const anim = this.add(
-                    result.mesh,
-                    anims[clipId],
-                    loop,
-                    timeScale,
-                );
+                const anim = this.add(result.mesh, anims[clipId], loop, timeScale);
                 result.animationsMap[name] = anim;
                 result.animationsList.push(anim);
                 result.keys.push(name);

@@ -39,10 +39,13 @@ export class CameraHelper {
         this.wrapper.position.lerp(this.position, this.lerpSpeed);
     }
 
-    focusOnPlayer(player) {
+    focusOnLevelCenter() {
         const { y, z } = core.camera.position;
         tweens.add(core.camera.position, 1000, {
-            to: { y: y * 0.5, z: z * 0.5 },
+            to: {
+                y: y * 0.5,
+                z: z * 0.5,
+            },
         });
     }
 }

@@ -1,12 +1,11 @@
 import { Vec3 } from 'cannon-es';
 import { Quaternion, Vector3 } from 'three';
 
-const PLAYER_SPEED = 3.5;
-
 export class Controls {
     constructor({ mesh, body }) {
         this.targetMesh = mesh;
         this.targetBody = body;
+        this.baseSpeed = 3.5;
 
         this.direction = new Vector3();
         this.destination = new Vector3();
@@ -28,7 +27,7 @@ export class Controls {
         this.destination.copy(this.direction);
         this.destination.add(this.targetBody.position);
 
-        this.moveTowardsObject(this.destination, PLAYER_SPEED);
+        this.moveTowardsObject(this.destination, this.baseSpeed);
     }
 
     moveTowardsObject(newPosition, speed) {
@@ -41,11 +40,9 @@ export class Controls {
 
         this.quaternion.setFromUnitVectors(this.forward, this.deltaPosition);
         this.targetMesh.quaternion.slerp(this.quaternion, 0.5);
-        // this.targetMesh.quaternion.copy(this.quaternion)
 
         this.targetBody.velocity.x = this.deltaPosition.x * speed;
         this.targetBody.velocity.z = this.deltaPosition.z * speed;
-        // this.targetBody.velocity.y -= 1
     }
 
     update() {

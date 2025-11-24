@@ -12,10 +12,7 @@ export class StickmanSkin {
         this.model.scale.multiplyScalar(this.size);
         this.parent.add(this.model);
 
-        this.skinnedMesh = this.model.getObjectByProperty(
-            'type',
-            'SkinnedMesh',
-        );
+        this.skinnedMesh = this.model.getObjectByProperty('type', 'SkinnedMesh');
 
         this.setupMaterials(color);
     }

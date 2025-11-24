@@ -50,16 +50,12 @@ export const gameSettings = {
         needResetState: true,
     },
     camera: {
-        // orthographic: false,
         fov: {
             landscape: 30,
             portrait: 45,
         },
         near: 0.1,
         far: 2000,
-        // shake: {
-        //     span: 1,
-        // },
         position: { x: 0, y: 15, z: 10 },
         // following: {
         //     enabled: true,

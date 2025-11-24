@@ -36,19 +36,15 @@ export class SightRange {
         this.X_AXIS = new Vector3(1, 0, 0);
         this.Y_AXIS = new Vector3(0, 1, 0);
         this.Z_AXIS = new Vector3(0, 0, 1);
+
         this.direction = new Vector3();
         this.lookDirection = new Vector3();
-
         this.raycaster = new Raycaster();
         this.raycaster.far = LINE_LENGTH;
-
         this.enemyRaycaster = new Raycaster();
 
         this.createCanvas();
         this.createGradients();
-
-        // this.drawRange()
-        // this.drawCircle()
     }
 
     hide() {
@@ -98,17 +94,6 @@ export class SightRange {
         this.radialGradient.addColorStop(1.0, 'rgba(180, 15, 15, 0)');
     }
 
-    // drawRange() {
-    //     this.prepareDrawing();
-
-    //     for (let i = 0; i < LINE_AMOUNT; i += LINE_STEP) {
-    //         const currentAngle = this.halfAngle - ANGLE_STEP * i - HALF_PI;
-    //         this.drawSegment(currentAngle, LINE_LENGTH);
-    //     }
-
-    //     this.completeDrawing();
-    // }
-
     drawSegment(angle, distance) {
         const x = Math.cos(angle) * distance * SEGMENT_LENGTH;
         const y = Math.sin(angle) * distance * SEGMENT_LENGTH;
@@ -131,10 +116,9 @@ export class SightRange {
     prepareDrawing() {
         this.ctx.clearRect(0, 0, TEXTURE_SIZE, TEXTURE_SIZE);
 
-        // move drawing center to the canvas center
+        // start drawing from the center of the canvas
         this.ctx.translate(TEXTURE_SIZE * 0.5, TEXTURE_SIZE * 0.5);
 
-        // line style
         this.ctx.lineWidth = 10;
         this.ctx.lineCap = 'round';
 
@@ -144,25 +128,18 @@ export class SightRange {
     completeDrawing() {
         this.ctx.closePath();
 
-        // visualize shape
         this.ctx.strokeStyle = this.linearGradient;
         this.ctx.stroke();
 
-        // reset transform
         this.ctx.translate(-TEXTURE_SIZE * 0.5, -TEXTURE_SIZE * 0.5);
 
-        // update texture to see changes
         this.texture.needsUpdate = true;
     }
 
     update(walls, enemies, player) {
         const { x, y, z } = this.group.position;
         const { position } = this.parent;
-        const origin = new Vector3(
-            position.x + x,
-            position.y + y,
-            position.z + z,
-        );
+        const origin = new Vector3(position.x + x, position.y + y, position.z + z);
         this.parent.getWorldDirection(this.lookDirection);
 
         this.prepareDrawing();
@@ -174,10 +151,7 @@ export class SightRange {
             this.direction.applyAxisAngle(this.Y_AXIS, currentAngle + HALF_PI);
             this.raycaster.set(origin, this.direction);
 
-            const intersections = this.raycaster.intersectObjects(
-                walls.children,
-                true,
-            );
+            const intersections = this.raycaster.intersectObjects(walls.children, true);
 
             let drawn = false;
             let currentLength = LINE_LENGTH;
@@ -219,7 +193,6 @@ export class SightRange {
             targets.push(player.getCollider());
         }
 
-        // biome-ignore format : ''
         const intersections = this.enemyRaycaster.intersectObjects(targets, false);
 
         for (const { object } of intersections) {

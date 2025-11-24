@@ -12,7 +12,7 @@
         "enabled": true,
         "indentStyle": "space",
         "indentWidth": 4,
-        "lineWidth": 80,
+        "lineWidth": 100,
         "includes": [
             "**",
             "!**/libs/**"

@@ -10,10 +10,7 @@ export class Characters {
         this.parent = parent;
         this.player = this.addPlayer(data.player);
         this.enemies = this.addEnemies(data.enemies);
-        this.aiSeeker =
-            config.playerRole === ROLE_HIDER
-                ? this.addAISeeker(data.aiSeeker)
-                : null;
+        this.aiSeeker = config.playerRole === ROLE_HIDER ? this.addAISeeker(data.aiSeeker) : null;
 
         this.status = {
             caughtEnemies: 0,

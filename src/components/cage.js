@@ -16,11 +16,7 @@ export class Cage {
         model.visible = false;
         model.children[0].castShadow = true;
 
-        const size =
-            config.playerRole === ROLE_HIDER
-                ? config.playerSize
-                : config.enemiesSize;
-
+        const size = config.playerRole === ROLE_HIDER ? config.playerSize : config.enemiesSize;
         model.scale.multiplyScalar(size * 0.75);
 
         materials.replace(model, 'phong', {

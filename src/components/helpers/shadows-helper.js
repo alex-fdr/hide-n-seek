@@ -1,12 +1,5 @@
 import { applyTransform } from '@alexfdr/three-game-utils';
-import {
-    CameraHelper,
-    FrontSide,
-    Mesh,
-    PCFShadowMap,
-    PlaneGeometry,
-    ShadowMaterial,
-} from 'three';
+import { CameraHelper, FrontSide, Mesh, PCFShadowMap, PlaneGeometry, ShadowMaterial } from 'three';
 
 export class ShadowsHelper {
     constructor(renderer, scene, props = {}) {
@@ -14,9 +7,7 @@ export class ShadowsHelper {
         this.scene = scene;
         this.light = scene.getObjectByProperty('type', 'DirectionalLight');
 
-        this.shadowPlane = props.shadowPlane
-            ? this.createShadowPlane(props.shadowPlane)
-            : null;
+        this.shadowPlane = props.shadowPlane ? this.createShadowPlane(props.shadowPlane) : null;
 
         this.setupRenderer();
         this.setupDirectionalLight(props.mapSize, props.shadowCamera);

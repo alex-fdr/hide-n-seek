@@ -12,12 +12,7 @@ import { LevelLayout } from './components/level-layout';
 import { Signal } from './helpers/signal';
 import { pixiUI } from './ui/pixi-ui';
 import { config } from './data/config';
-import {
-    ROLE_HIDER,
-    ROLE_SEEKER,
-    STATUS_PLAYER_LOSE,
-    STATUS_PLAYER_WIN,
-} from './data/game-const';
+import { ROLE_HIDER, ROLE_SEEKER, STATUS_PLAYER_LOSE, STATUS_PLAYER_WIN } from './data/game-const';
 import { tweens } from './systems/tweens';
 
 class LevelInstance {
@@ -234,7 +229,7 @@ class LevelInstance {
         this.characters.player.finalDance();
         this.characters.enemies.deactivate();
         this.characters.aiSeeker?.deactivate();
-        this.cameraHelper.focusOnPlayer(this.characters.player);
+        this.cameraHelper.focusOnLevelCenter();
         this.overlayHelper?.hide();
         pixiUI.screens.get('win').show();
     }
@@ -248,7 +243,7 @@ class LevelInstance {
         this.characters.player.finalLose();
         this.characters.enemies.deactivate();
         this.characters.aiSeeker?.deactivate();
-        this.cameraHelper.focusOnPlayer(this.characters.player);
+        this.cameraHelper.focusOnLevelCenter();
         this.overlayHelper?.hide();
         pixiUI.screens.get('lose').show();
     }
@@ -269,11 +264,7 @@ class LevelInstance {
         }
 
         this.cameraHelper.update(this.characters.player);
-        this.characters.update(
-            this.layout.walls,
-            dt,
-            this.status.firstInteraction,
-        );
+        this.characters.update(this.layout.walls, dt, this.status.firstInteraction);
     }
 
     remove() {}

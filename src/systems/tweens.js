@@ -170,114 +170,6 @@ class TweensFactory {
         });
     }
 
-    // scale(target, scaleTo, time, props) {
-    //     const to = { x: scaleTo, y: scaleTo };
-    //     return this.add(target.scale, to, time, props);
-    // }
-
-    // timeout(time = 1000, callback = () => { }) {
-    //     const dummy = { value: 0 };
-    //     const tween = this.add(dummy, { value: 1 }, time, { easing: 'linear' });
-    //     if (callback && typeof callback === 'function') {
-    //         tween.onComplete(() => callback());
-    //     }
-    //     return tween;
-    // }
-
-    // float(target, data, time = 300, props = {}) {
-    //     const from = {
-    //         x: target.x,
-    //         y: target.y,
-    //     };
-    //     const to = {
-    //         x: target.x + data.x || 0,
-    //         y: target.y + data.y || 0,
-    //     };
-    //     const tween = this.add(target, to, time, props).yoyo(true);
-    //     const tweenBack = this.add(target, from, 200, { ...props, autostart: false });
-    //     tween.onComplete(() => {
-    //         tweenBack.start();
-    //     });
-    //     return tween;
-    // }
-
-    // moveSideToSide(target, data = {}, time = 300, props = {}) {
-    //     const {
-    //         x: dx = 0,
-    //         y: dy = 0,
-    //         left = 0,
-    //         right = 0,
-    //     } = data;
-    //     const from = {
-    //         x: right || target.x - dx,
-    //         y: target.y - dy,
-    //     };
-    //     const to = {
-    //         x: left || target.x + dx,
-    //         y: target.y + dy,
-    //     };
-    //     let tween = this.add(target, from, time * 0.5)
-    //         .onComplete(() => {
-    //             tween = this.add(target, to, time, props).yoyo(true).repeat(Infinity);
-    //         });
-    //     return tween;
-    // }
-
-    // moveCircle(target, data, time = 300, props = {}) {
-    //     let {
-    //         startAngle = 0,
-    //         endAngle = 360,
-    //         radius = 1,
-    //     } = data;
-
-    //     startAngle *= Math.PI / 180;
-    //     endAngle *= Math.PI / 180;
-
-    //     const startX = target.x;
-    //     const startY = target.y;
-    //     const range = endAngle - startAngle;
-
-    //     const moveTarget = (angle) => {
-    //         target.x = startX + Math.cos(angle) * radius - radius * Math.cos(startAngle);
-    //         target.y = startY - Math.sin(angle) * radius + radius * Math.sin(startAngle);
-    //     };
-
-    //     const dummy = { value: 0 };
-    //     const tween = this.add(dummy, { value: 1 }, time, { easing: 'sineInOut', ...props });
-    //     tween.onStart(() => moveTarget(startAngle));
-    //     tween.onUpdate(() => moveTarget(startAngle + range * dummy.value));
-    //     tween.onComplete(() => moveTarget(endAngle));
-    //     return tween;
-    // }
-
-    // shake(target, data, time = 300, props = {}) {
-    //     if (target.isShaking) {
-    //         return false;
-    //     }
-
-    //     // Its a dirty hack. Maybe there is a better solution
-    //     target.isShaking = true;
-
-    //     const { x, y, angle } = target;
-    //     const obj = { x, y, angle };
-
-    //     if (data.x) obj.x += data.x;
-    //     if (data.y) obj.y += data.y;
-    //     if (data.angle) obj.angle += data.angle;
-
-    //     // eslint-disable-next-line no-use-before-define
-    //     props.easing = (k) => wiggle(k, 1, 1);
-
-    //     const tween = this.add(target, obj, time, props);
-    //     tween.onComplete(() => {
-    //         target.position.set(x, y);
-    //         target.angle = angle;
-    //         target.isShaking = false;
-    //     });
-
-    //     return tween;
-    // }
-
     fadeIn3(target, time, props = {}) {
         if (!target.material) {
             let tween;
@@ -346,7 +238,6 @@ class TweensFactory {
         });
 
         return dummyTween;
-        // return this.add(target.material, { color }, time, props)
     }
 }
 
@@ -359,11 +250,5 @@ function traverseObject3D(target, handler) {
     });
     return tween;
 }
-
-// function wiggle(aProgress, aPeriod1, aPeriod2) {
-//     const current1 = aProgress * Math.PI * 2 * aPeriod1;
-//     const current2 = aProgress * (Math.PI * 2 * aPeriod2 + Math.PI / 2);
-//     return Math.sin(current1) * Math.cos(current2);
-// }
 
 export const tweens = new TweensFactory();

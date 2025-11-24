@@ -50,11 +50,7 @@ class MaterialManager {
         const handler = (material) => {
             if (!this.cache[material.uuid]) {
                 material = clone ? material.clone() : material;
-                const newMaterial = this.copyProperties(
-                    material,
-                    this.add(type),
-                    props,
-                );
+                const newMaterial = this.copyProperties(material, this.add(type), props);
                 this.cache[material.uuid] = newMaterial;
             }
 
@@ -87,9 +83,7 @@ class MaterialManager {
                 let result = [];
 
                 if (child.material.length) {
-                    result = child.material.map((material) =>
-                        callback(material, child),
-                    );
+                    result = child.material.map((material) => callback(material, child));
                 } else {
                     result = callback(child.material, child);
                 }
@@ -108,9 +102,7 @@ class MaterialManager {
     copyProperties(materialOld, materialNew, extraProps) {
         const applyProp = (material, key) => {
             let value =
-                extraProps[key] || extraProps[key] >= 0
-                    ? extraProps[key]
-                    : materialOld[key];
+                extraProps[key] || extraProps[key] >= 0 ? extraProps[key] : materialOld[key];
 
             if (key === 'map' && extraProps.map === null) {
                 value = extraProps.map;

@@ -1,13 +1,6 @@
 import { core } from '@alexfdr/three-game-core';
 import { Body, Sphere } from 'cannon-es';
-import {
-    CylinderGeometry,
-    Mesh,
-    MeshPhongMaterial,
-    Object3D,
-    Raycaster,
-    Vector3,
-} from 'three';
+import { CylinderGeometry, Mesh, MeshPhongMaterial, Object3D, Raycaster, Vector3 } from 'three';
 import { Cage } from '../cage';
 import { SightRange } from '../sight-range';
 import { Signal } from '../../helpers/signal';
