@@ -27,7 +27,7 @@ class PixiUI {
         this.stage.position.set(cx, cy);
 
         for (const [, screen] of this.screens) {
-            screen[method](cx, cy, scaleFactor);
+            screen[method](scaleFactor);
         }
 
         this.renderer.resize(width, height);

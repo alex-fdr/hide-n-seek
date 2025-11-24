@@ -72,12 +72,12 @@ export class HintScreen {
         this.infinityHint.animate();
     }
 
-    handlePortrait(cx, cy) {
+    handlePortrait() {
         this.group.scale.set(1);
         this.infinityHint.setPosition(0, 225);
     }
 
-    handleLandscape(cx, cy, factor) {
+    handleLandscape(factor) {
         this.group.scale.set(factor);
         this.infinityHint.setPosition(0, 225);
     }

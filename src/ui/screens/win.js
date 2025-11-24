@@ -32,12 +32,12 @@ export class WinScreen {
         this.group.visible = false;
     }
 
-    handlePortrait(cx, cy) {
+    handlePortrait() {
         this.group.scale.set(1);
         this.btn.group.position.set(0, 360);
     }
 
-    handleLandscape(cx, cy, factor) {
+    handleLandscape(factor) {
         this.group.scale.set(factor);
         this.btn.group.position.set(0, 360);
     }
