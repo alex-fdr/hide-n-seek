@@ -40,7 +40,8 @@
         "enabled": true,
         "includes": [
             "**",
-            "!**/libs/**"
+            "!**/libs/**",
+            "!**/src/game.js"
         ],
         "actions": {
             "source": {
