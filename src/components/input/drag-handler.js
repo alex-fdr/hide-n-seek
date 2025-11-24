@@ -30,7 +30,7 @@ export class DragHandler {
         this.status.deltaY = this.status.currY - this.status.prevY;
     }
 
-    up(e) {
+    up() {
         this.pressed = false;
         this.status.deltaX = this.status.currX - this.status.prevX;
         this.status.deltaY = this.status.currY - this.status.prevY;

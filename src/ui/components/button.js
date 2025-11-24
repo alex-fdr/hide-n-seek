@@ -1,6 +1,6 @@
 import { Assets, Container, Sprite, Text } from 'pixi.js';
-import { tweens } from '../../helpers/tweens';
 import { locale } from '../../data/locale';
+import { tweens } from '../../systems/tweens';
 
 export class Button {
     constructor(spriteKey, textKey, textStyle) {

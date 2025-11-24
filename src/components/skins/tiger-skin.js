@@ -1,5 +1,5 @@
 import { StickmanSkin } from './stickman-skin';
-import { materials } from '../../helpers/materials';
+import { materials } from '../../systems/materials';
 
 export class TigerSkin extends StickmanSkin {
     setupMaterials() {

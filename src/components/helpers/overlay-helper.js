@@ -6,8 +6,8 @@ import {
     PlaneGeometry,
     Scene,
 } from 'three';
-import { tweens } from '../../helpers/tweens';
 import { config } from '../../data/config';
+import { tweens } from '../../systems/tweens';
 
 export class OverlayHelper {
     constructor({ frontObjects = [] }) {

@@ -1,5 +1,5 @@
-import { animations } from '../../helpers/animations';
-import { materials } from '../../helpers/materials';
+import { animations } from '../../systems/animations';
+import { materials } from '../../systems/materials';
 
 export class StickmanSkin {
     constructor({ parent, animationsList, size, color }) {

@@ -1,6 +1,6 @@
 import { Container } from 'pixi.js';
 import { InfinityHint } from '../components/hints/infinity-hint';
-import { tweens } from '../../helpers/tweens';
+import { tweens } from '../../systems/tweens';
 
 export class HintScreen {
     constructor({ parent, visible }) {

@@ -2,11 +2,7 @@ import { debug } from '@alexfdr/three-debug-gui';
 import { assets, core } from '@alexfdr/three-game-core';
 import { Assets as PixiAssets } from 'pixi.js';
 import { level } from './level';
-import { animations } from './helpers/animations';
-import { DebugPhysics } from './helpers/debug/debug-physics';
-// import { debug } from './helpers/debug/debug';
-import { htmlScreens } from './helpers/html-screens';
-import { tweens } from './helpers/tweens';
+import { DebugPhysics } from './helpers/debug-physics';
 import { pixiUI } from './ui/pixi-ui';
 import { HintScreen } from './ui/screens/hint';
 import { LoseScreen } from './ui/screens/lose';
@@ -15,6 +11,10 @@ import { UIScreen } from './ui/screens/ui';
 import { WinScreen } from './ui/screens/win';
 import { gameSettings } from './data/game-settings';
 import { level1 as level1Data } from './data/levels/level1';
+import { animations } from './systems/animations';
+// import { debug } from './helpers/debug/debug';
+import { htmlScreens } from './systems/html-screens';
+import { tweens } from './systems/tweens';
 
 // 3d models and textures
 import modelAnimationDance from './assets/models/animation-dance.glb';

@@ -1,5 +1,5 @@
 import { Assets, Container, Sprite } from 'pixi.js';
-import { tweens } from '../../../helpers/tweens';
+import { tweens } from '../../../systems/tweens';
 
 export class InfinityHint {
     constructor(props) {

@@ -2,8 +2,8 @@ import { assets, core } from '@alexfdr/three-game-core';
 import { getObjectSize } from '@alexfdr/three-game-utils';
 import { Body, Box, Vec3 } from 'cannon-es';
 import { Quaternion, Vector3 } from 'three';
-import { materials } from '../helpers/materials';
 import { config } from '../data/config';
+import { materials } from '../systems/materials';
 
 function makeCannonBox(mesh) {
     const { x, y, z } = getObjectSize(mesh).multiplyScalar(0.5);

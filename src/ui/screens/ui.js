@@ -1,7 +1,7 @@
 import { Container } from 'pixi.js';
 import { Timer } from '../components/timer';
-import { tweens } from '../../helpers/tweens';
 import { config } from '../../data/config';
+import { tweens } from '../../systems/tweens';
 
 export class UIScreen {
     constructor({ parent, visible }) {

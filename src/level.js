@@ -7,10 +7,9 @@ import { CameraHelper } from './components/helpers/camera-helper';
 import { OutlineHelper } from './components/helpers/outline-helper';
 import { OverlayHelper } from './components/helpers/overlay-helper';
 import { ShadowsHelper } from './components/helpers/shadows-helper';
+import { DragHandler } from './components/input/drag-handler';
 import { LevelLayout } from './components/level-layout';
-import { DragHandler } from './helpers/drag-handler';
 import { Signal } from './helpers/signal';
-import { tweens } from './helpers/tweens';
 import { pixiUI } from './ui/pixi-ui';
 import { config } from './data/config';
 import {
@@ -19,6 +18,7 @@ import {
     STATUS_PLAYER_LOSE,
     STATUS_PLAYER_WIN,
 } from './data/game-const';
+import { tweens } from './systems/tweens';
 
 class LevelInstance {
     constructor() {

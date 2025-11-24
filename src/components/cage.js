@@ -1,8 +1,8 @@
 import { assets, core } from '@alexfdr/three-game-core';
-import { materials } from '../helpers/materials';
-import { tweens } from '../helpers/tweens';
 import { config } from '../data/config';
 import { ROLE_HIDER } from '../data/game-const';
+import { materials } from '../systems/materials';
+import { tweens } from '../systems/tweens';
 
 export class Cage {
     constructor() {
