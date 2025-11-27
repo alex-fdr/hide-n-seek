@@ -1,4 +1,5 @@
 import { core } from '@alexfdr/three-game-core';
+import { pixiUI } from '@alexfdr/three-pixi-ui';
 import { Object3D } from 'three';
 import { Background } from './components/background';
 import { Characters } from './components/characters';
@@ -10,7 +11,6 @@ import { ShadowsHelper } from './components/helpers/shadows-helper';
 import { DragHandler } from './components/input/drag-handler';
 import { LevelLayout } from './components/level-layout';
 import { Signal } from './helpers/signal';
-import { pixiUI } from './ui/pixi-ui';
 import { config } from './data/config';
 import { ROLE_HIDER, ROLE_SEEKER, STATUS_PLAYER_LOSE, STATUS_PLAYER_WIN } from './data/game-const';
 import { tweens } from './systems/tweens';

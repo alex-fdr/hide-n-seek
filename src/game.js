@@ -1,5 +1,6 @@
 import { debug } from '@alexfdr/three-debug-gui';
 import { assets, core } from '@alexfdr/three-game-core';
+import { pixiUI } from '@alexfdr/three-pixi-ui';
 import { animations } from './systems/animations';
 import { tweens } from './systems/tweens';
 import { htmlScreens } from './systems/html-screens';
@@ -10,7 +11,6 @@ import { gameSettings } from './data/game-settings';
 import { level1 as level1Data } from './data/levels/level1';
 
 import { Assets as PixiAssets } from 'pixi.js';
-import { pixiUI } from './ui/pixi-ui';
 import { HintScreen } from './ui/screens/hint';
 import { LoseScreen } from './ui/screens/lose';
 import { TutorialScreen } from './ui/screens/tutorial';
