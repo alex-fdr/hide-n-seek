@@ -36,6 +36,11 @@
             "quoteStyle": "single"
         }
     },
+    "css": {
+        "formatter": {
+            "quoteStyle": "single"
+        }
+    },
     "assist": {
         "enabled": true,
         "includes": [
