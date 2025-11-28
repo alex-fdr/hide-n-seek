@@ -78,19 +78,22 @@ export class Game {
 
         level.init(level1Data);
 
-        debug.init({
-            scene: core.scene,
-            canvas: core.renderer.domElement,
-            camera: core.camera,
-            props: { scene: true },
-        });
-
         this.resize(width, height);
-        this.setupCustomDebugControls();
         htmlScreens.hide('loading');
 
         core.onUpdate(this.update.bind(this));
         core.onResize(this.resize.bind(this));
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('debug')) {
+            debug.init({
+                scene: core.scene,
+                canvas: core.renderer.domElement,
+                camera: core.camera,
+                props: { scene: true },
+            });
+            this.setupCustomDebugControls();
+        }
     }
 
     setupCustomDebugControls() {
