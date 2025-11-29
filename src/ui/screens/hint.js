@@ -36,6 +36,8 @@ export class HintScreen {
             return;
         }
 
+        console.log('hint show');
+
         this.group.visible = true;
 
         if (this.timeoutId) {
@@ -49,7 +51,12 @@ export class HintScreen {
     }
 
     hide(turnOff = false) {
+        console.log('hint hide');
         this.group.visible = false;
+
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+        }
 
         if (turnOff) {
             this.status.enabled = false;
@@ -61,6 +68,8 @@ export class HintScreen {
         if (!this.status.enabled) {
             return;
         }
+
+        console.log('hint schedule');
 
         this.timeoutId = setTimeout(() => {
             this.show();
