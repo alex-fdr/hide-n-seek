@@ -1,4 +1,4 @@
-import { applyTransform } from '@alexfdr/three-game-utils';
+import { utils } from '@alexfdr/three-game-core';
 import { CameraHelper, FrontSide, Mesh, PCFShadowMap, PlaneGeometry, ShadowMaterial } from 'three';
 
 export class ShadowsHelper {
@@ -70,7 +70,7 @@ export class ShadowsHelper {
 
         console.log('shadow plane', plane);
 
-        applyTransform(plane, props);
+        utils.applyTransform(plane, props);
 
         return plane;
     }
