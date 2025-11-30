@@ -81,8 +81,8 @@ export class Game {
         this.resize(width, height);
         htmlScreens.hide('loading');
 
-        core.onUpdate(this.update.bind(this));
-        core.onResize(this.resize.bind(this));
+        core.onUpdate.add(this.update, this);
+        core.onResize.add(this.resize, this);
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('debug')) {
