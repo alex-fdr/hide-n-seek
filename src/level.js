@@ -167,9 +167,9 @@ class LevelInstance {
 
     setupInput() {
         core.input.setHandler(new DragHandler());
-        core.input.onDown((data) => this.handleOnDown(data));
-        core.input.onMove((data) => this.handleOnMove(data));
-        core.input.onUp((data) => this.handleOnUp(data));
+        core.input.onDown.add((data) => this.handleOnDown(data));
+        core.input.onMove.add((data) => this.handleOnMove(data));
+        core.input.onUp.add((data) => this.handleOnUp(data));
     }
 
     enableShadows() {
