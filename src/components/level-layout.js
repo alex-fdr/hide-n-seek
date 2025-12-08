@@ -1,8 +1,7 @@
 import { assets, core, utils } from '@alexfdr/three-game-core';
 import { Body, Box, Vec3 } from 'cannon-es';
-import { Quaternion, Vector3 } from 'three';
+import { MeshLambertMaterial, MeshPhongMaterial, Quaternion, Vector3 } from 'three';
 import { config } from '../data/config';
-import { materials } from '../systems/materials';
 
 function makeCannonBox(mesh) {
     const { x, y, z } = utils.getObjectSize(mesh).multiplyScalar(0.5);
@@ -33,7 +32,7 @@ export class LevelLayout {
         body.position.copy(this.ground.position);
         core.physics.world.addBody(body);
 
-        materials.replace(this.ground, 'phong', {
+        this.ground.material = new MeshPhongMaterial({
             color: config.groundColor,
         });
     }
@@ -43,6 +42,10 @@ export class LevelLayout {
 
         const worldPosition = new Vector3();
         const worldQuaternion = new Quaternion();
+
+        const wallMaterial = new MeshLambertMaterial({
+            color: config.wallsColor,
+        });
 
         for (const wall of this.walls.children) {
             wall.updateMatrixWorld(true);
@@ -68,11 +71,9 @@ export class LevelLayout {
             body.quaternion.copy(worldQuaternion);
 
             core.physics.world.addBody(body);
-        }
 
-        materials.replace(this.walls, 'lambert', {
-            color: config.wallsColor,
-        });
+            wall.material = wallMaterial;
+        }
     }
 
     enableShadows() {
