@@ -1,8 +1,9 @@
+import { MeshLambertMaterial } from 'three';
 import { StickmanSkin } from './stickman-skin';
-import { materials } from '../../systems/materials';
 
 export class TigerSkin extends StickmanSkin {
     setupMaterials() {
-        materials.replace(this.model, 'lambert', {}, true);
+        const { map } = this.skinnedMesh.material;
+        this.skinnedMesh.material = new MeshLambertMaterial({ map });
     }
 }

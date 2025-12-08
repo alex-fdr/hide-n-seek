@@ -1,5 +1,5 @@
+import { MeshPhongMaterial } from 'three';
 import { animations } from '../../systems/animations';
-import { materials } from '../../systems/materials';
 
 export class StickmanSkin {
     constructor({ parent, animationsList, size, color }) {
@@ -18,10 +18,9 @@ export class StickmanSkin {
     }
 
     setupMaterials(color) {
-        const materialProps = {
+        this.skinnedMesh.material = new MeshPhongMaterial({
             color,
             shininess: 300,
-        };
-        materials.replace(this.model, 'phong', materialProps, true);
+        });
     }
 }

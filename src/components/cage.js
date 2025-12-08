@@ -1,7 +1,7 @@
 import { assets, core } from '@alexfdr/three-game-core';
+import { MeshPhongMaterial } from 'three';
 import { config } from '../data/config';
 import { ROLE_HIDER } from '../data/game-const';
-import { materials } from '../systems/materials';
 import { tweens } from '../systems/tweens';
 
 export class Cage {
@@ -14,15 +14,16 @@ export class Cage {
         model.name = 'cage-group';
         model.scale.y *= 1.4;
         model.visible = false;
-        model.children[0].castShadow = true;
 
-        const size = config.playerRole === ROLE_HIDER ? config.playerSize : config.enemiesSize;
-        model.scale.multiplyScalar(size * 0.75);
-
-        materials.replace(model, 'phong', {
+        const mesh = model.children[0];
+        mesh.castShadow = true;
+        mesh.material = new MeshPhongMaterial({
             color: '#496176',
             shininess: 300,
         });
+
+        const size = config.playerRole === ROLE_HIDER ? config.playerSize : config.enemiesSize;
+        model.scale.multiplyScalar(size * 0.75);
 
         core.scene.add(model);
         return model;
