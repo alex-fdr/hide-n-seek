@@ -1,8 +1,8 @@
+import { tweens } from '@alexfdr/three-game-components';
 import { Container, Text } from 'pixi.js';
 import { config } from '../../data/config';
 import { ROLE_HIDER } from '../../data/game-const';
 import { locale } from '../../data/locale';
-import { tweens } from '../../systems/tweens';
 
 export class TutorialScreen {
     constructor({ parent, visible }) {

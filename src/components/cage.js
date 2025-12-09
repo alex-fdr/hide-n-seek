@@ -1,8 +1,8 @@
+import { tweens } from '@alexfdr/three-game-components';
 import { assets, core } from '@alexfdr/three-game-core';
 import { MeshPhongMaterial } from 'three';
 import { config } from '../data/config';
 import { ROLE_HIDER } from '../data/game-const';
-import { tweens } from '../systems/tweens';
 
 export class Cage {
     constructor() {

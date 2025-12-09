@@ -1,3 +1,4 @@
+import { tweens } from '@alexfdr/three-game-components';
 import { core } from '@alexfdr/three-game-core';
 import { pixiUI } from '@alexfdr/three-pixi-ui';
 import { Object3D } from 'three';
@@ -13,7 +14,6 @@ import { LevelLayout } from './components/level-layout';
 import { Signal } from './helpers/signal';
 import { config } from './data/config';
 import { ROLE_HIDER, ROLE_SEEKER, STATUS_PLAYER_LOSE, STATUS_PLAYER_WIN } from './data/game-const';
-import { tweens } from './systems/tweens';
 
 class LevelInstance {
     constructor() {
@@ -267,7 +267,7 @@ class LevelInstance {
         this.characters.update(this.layout.walls, dt, this.status.firstInteraction);
     }
 
-    remove() {}
+    remove() { }
 }
 
 export const level = new LevelInstance();

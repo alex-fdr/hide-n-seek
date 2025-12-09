@@ -1,7 +1,7 @@
+import { tweens } from '@alexfdr/three-game-components';
 import { SightRange } from '../sight-range';
 import { Enemy } from './enemy';
 import { ROLE_SEEKER } from '../../data/game-const';
-import { tweens } from '../../systems/tweens';
 
 export class AISeeker extends Enemy {
     constructor(props) {

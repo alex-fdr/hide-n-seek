@@ -1,7 +1,7 @@
+import { tweens } from '@alexfdr/three-game-components';
 import { Container } from 'pixi.js';
 import { Timer } from '../components/timer';
 import { config } from '../../data/config';
-import { tweens } from '../../systems/tweens';
 
 export class UIScreen {
     constructor({ parent, visible }) {

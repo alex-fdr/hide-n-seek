@@ -1,8 +1,7 @@
 import { debug } from '@alexfdr/three-debug-gui';
 import { assets, core } from '@alexfdr/three-game-core';
 import { pixiUI } from '@alexfdr/three-pixi-ui';
-import { animations } from './systems/animations';
-import { tweens } from './systems/tweens';
+import { tweens, animations } from '@alexfdr/three-game-components';
 import { htmlScreens } from './systems/html-screens';
 
 import { level } from './level';

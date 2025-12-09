@@ -1,13 +1,13 @@
+import { animations } from '@alexfdr/three-game-components';
 import { MeshPhongMaterial } from 'three';
-import { animations } from '../../systems/animations';
 
 export class StickmanSkin {
     constructor({ parent, animationsList, size, color }) {
         this.parent = parent;
         this.size = size;
 
-        const { mesh, animationsMap } = animations.parse(animationsList);
-        this.animations = animationsMap;
+        const { mesh, anims } = animations.parse(animationsList);
+        this.animations = anims;
         this.model = mesh;
         this.model.scale.multiplyScalar(this.size);
         this.parent.add(this.model);

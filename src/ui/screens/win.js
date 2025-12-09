@@ -1,6 +1,6 @@
+import { tweens } from '@alexfdr/three-game-components';
 import { Container } from 'pixi.js';
 import { Button } from '../components/button';
-import { tweens } from '../../systems/tweens';
 
 export class WinScreen {
     constructor({ parent, visible }) {

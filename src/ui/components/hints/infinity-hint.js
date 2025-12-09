@@ -1,5 +1,5 @@
+import { tweens } from '@alexfdr/three-game-components';
 import { Assets, Container, Sprite } from 'pixi.js';
-import { tweens } from '../../../systems/tweens';
 
 export class InfinityHint {
     constructor(props) {

@@ -1,7 +1,7 @@
+import { tweens } from '@alexfdr/three-game-components';
 import { core } from '@alexfdr/three-game-core';
 import { FrontSide, Mesh, MeshLambertMaterial, PlaneGeometry, Scene } from 'three';
 import { config } from '../../data/config';
-import { tweens } from '../../systems/tweens';
 
 export class OverlayHelper {
     constructor({ frontObjects = [] }) {
@@ -81,5 +81,5 @@ export class OverlayHelper {
         core.renderer.render(this.frontScene, core.camera);
     }
 
-    update() {}
+    update() { }
 }
