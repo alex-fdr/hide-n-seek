@@ -1,4 +1,4 @@
-import { core } from '@alexfdr/three-game-core';
+import { physics } from '@alexfdr/three-game-components';
 import { Body, Sphere } from 'cannon-es';
 import { CylinderGeometry, Mesh, MeshPhongMaterial, Object3D, Raycaster, Vector3 } from 'three';
 import { Cage } from '../cage';
@@ -72,7 +72,7 @@ export class Player {
         body.addShape(shape);
         body.position.copy(this.group.position);
         body.fixedRotation = true;
-        core.physics.world.addBody(body);
+        physics.world.addBody(body);
         return body;
     }
 

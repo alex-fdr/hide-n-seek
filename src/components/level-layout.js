@@ -1,4 +1,5 @@
-import { assets, core, utils } from '@alexfdr/three-game-core';
+import { physics } from '@alexfdr/three-game-components';
+import { assets, utils } from '@alexfdr/three-game-core';
 import { Body, Box, Vec3 } from 'cannon-es';
 import { MeshLambertMaterial, MeshPhongMaterial, Quaternion, Vector3 } from 'three';
 import { config } from '../data/config';
@@ -30,7 +31,7 @@ export class LevelLayout {
         const shape = makeCannonBox(this.ground);
         body.addShape(shape);
         body.position.copy(this.ground.position);
-        core.physics.world.addBody(body);
+        physics.world.addBody(body);
 
         this.ground.material = new MeshPhongMaterial({
             color: config.groundColor,
@@ -70,7 +71,7 @@ export class LevelLayout {
             body.position.copy(worldPosition);
             body.quaternion.copy(worldQuaternion);
 
-            core.physics.world.addBody(body);
+            physics.world.addBody(body);
 
             wall.material = wallMaterial;
         }

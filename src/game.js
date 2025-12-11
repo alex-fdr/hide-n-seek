@@ -1,7 +1,7 @@
 import { debug } from '@alexfdr/three-debug-gui';
 import { assets, core } from '@alexfdr/three-game-core';
 import { pixiUI } from '@alexfdr/three-pixi-ui';
-import { tweens, animations } from '@alexfdr/three-game-components';
+import { tweens, animations, physics } from '@alexfdr/three-game-components';
 import { htmlScreens } from './systems/html-screens';
 
 import { level } from './level';
@@ -101,7 +101,7 @@ export class Game {
             initialValue: false,
             instance: new DebugPhysics({
                 scene: core.scene,
-                world: core.physics.world,
+                world: physics.world,
             }),
         });
 
@@ -162,6 +162,7 @@ export class Game {
         level.render();
         pixiUI.render();
 
+        physics.update(time);
         animations.update(deltaTime);
         tweens.update(time);
         debug.update(deltaTime);
