@@ -41,6 +41,7 @@ export class Game {
 
     async start({ width, height }) {
         core.init(width, height, gameSettings);
+        physics.init(gameSettings.physics);
 
         // load three.js assets
         await assets.load({
