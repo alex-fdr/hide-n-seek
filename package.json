@@ -7,7 +7,7 @@
         "build": "vite build"
     },
     "dependencies": {
-        "@alexfdr/three-game-components": "^1.0.4",
+        "@alexfdr/three-game-components": "^1.0.5",
         "@alexfdr/three-game-core": "^1.0.21",
         "@alexfdr/three-pixi-ui": "^1.0.0",
         "@tweenjs/tween.js": "^22.0.0",
