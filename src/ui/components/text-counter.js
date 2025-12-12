@@ -1,6 +1,6 @@
 import { tweens } from '@alexfdr/three-game-components';
+import { Signal } from '@alexfdr/three-game-core';
 import { Container, Text } from 'pixi.js';
-import { Signal } from '../../helpers/signal';
 
 export class TextCounter {
     constructor(props) {

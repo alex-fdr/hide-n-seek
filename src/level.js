@@ -1,5 +1,5 @@
 import { tweens } from '@alexfdr/three-game-components';
-import { core } from '@alexfdr/three-game-core';
+import { core, Signal } from '@alexfdr/three-game-core';
 import { pixiUI } from '@alexfdr/three-pixi-ui';
 import { Object3D } from 'three';
 import { Background } from './components/background';
@@ -11,7 +11,6 @@ import { OverlayHelper } from './components/helpers/overlay-helper';
 import { ShadowsHelper } from './components/helpers/shadows-helper';
 import { DragHandler } from './components/input/drag-handler';
 import { LevelLayout } from './components/level-layout';
-import { Signal } from './helpers/signal';
 import { config } from './data/config';
 import { ROLE_HIDER, ROLE_SEEKER, STATUS_PLAYER_LOSE, STATUS_PLAYER_WIN } from './data/game-const';
 

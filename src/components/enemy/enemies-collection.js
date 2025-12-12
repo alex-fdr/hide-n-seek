@@ -1,5 +1,5 @@
+import { Signal } from '@alexfdr/three-game-core';
 import { Enemy } from './enemy';
-import { Signal } from '../../helpers/signal';
 import { config } from '../../data/config';
 import {
     ROLE_HIDER,
