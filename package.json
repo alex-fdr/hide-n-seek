@@ -8,7 +8,7 @@
     },
     "dependencies": {
         "@alexfdr/three-game-components": "^1.0.5",
-        "@alexfdr/three-game-core": "^1.0.23",
+        "@alexfdr/three-game-core": "^1.0.24",
         "@alexfdr/three-pixi-ui": "^1.0.0",
         "@tweenjs/tween.js": "^22.0.0",
         "cannon-es": "^0.20.0",
