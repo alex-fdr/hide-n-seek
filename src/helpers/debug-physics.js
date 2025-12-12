@@ -8,15 +8,17 @@ export class DebugPhysics {
         this.meshes = [];
     }
 
-    action() {
+    init() {
         this.debugger = new CannonDebugger(this.scene, this.world, {
-            onInit: (_, mesh) => this.meshes.push(mesh),
+            onInit: (_, mesh) => {
+                this.meshes.push(mesh);
+            },
         });
     }
 
     toggle(status) {
         if (!this.debugger) {
-            this.action();
+            this.init();
         }
 
         for (const mesh of this.meshes) {
