@@ -26,7 +26,7 @@ body {
     min-height: 100dvh;
 }
 
-#game > canvas {
+#game>canvas {
     width: 100dvw;
     height: 100dvh;
 }
@@ -245,7 +245,7 @@ body {
     animation-duration: 0.5s;
 }
 
-.menu > .button {
+.menu>.button {
     position: absolute;
     bottom: min(15vh, 30vw);
 }
@@ -276,7 +276,7 @@ body {
     }
 }
 
-.end > .overlay {
+.end>.overlay {
     opacity: 0.7;
 }
 
