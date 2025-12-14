@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
+import { name } from './package.json';
 
 export default defineConfig({
-    base: '/hide-n-seek/',
+    base: `/${name}/`,
     build: {
         assetsInlineLimit: 40960000,
         outDir: './dist',
