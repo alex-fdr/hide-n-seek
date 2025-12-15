@@ -1,7 +1,6 @@
 import { debug } from '@alexfdr/three-debug-gui';
 import { assets, core } from '@alexfdr/three-game-core';
-import { pixiUI } from '@alexfdr/three-pixi-ui';
-import { tweens, animations, physics, htmlScreens } from '@alexfdr/three-game-components';
+import { tweens, animations, physics, htmlScreens, pixiUI } from '@alexfdr/three-game-components';
 
 import { level } from './level';
 import { DebugPhysics } from './helpers/debug-physics';

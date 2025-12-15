@@ -1,6 +1,5 @@
-import { tweens } from '@alexfdr/three-game-components';
+import { tweens, pixiUI } from '@alexfdr/three-game-components';
 import { core, Signal } from '@alexfdr/three-game-core';
-import { pixiUI } from '@alexfdr/three-pixi-ui';
 import { Object3D } from 'three';
 import { Background } from './components/background';
 import { Characters } from './components/characters';
